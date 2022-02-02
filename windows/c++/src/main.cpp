@@ -7,7 +7,6 @@
 
 // Test
 
-// Michou
 template <typename Bot>
 void dispatchEvents(Bot &bot) {
     for (auto &e : BWAPI::Broodwar->getEvents())
