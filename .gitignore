@@ -1,32 +1,31 @@
-# Prerequisites
-*.d
-
-# Compiled Object files
-*.slo
-*.lo
-*.o
-*.obj
-
-# Precompiled Headers
-*.gch
-*.pch
-
-# Compiled Dynamic libraries
-*.so
-*.dylib
+windows/c++/visualstudio/Release
+windows/c++/visualstudio/Debug
+windows/c++/visualstudio/.vs
+windows/starcraft/bwapi-data/*
+windows/starcraft/characters/*
+windows/starcraft/maps/*
+windows/starcraft/*.exe
+windows/starcraft/*.snp
+windows/starcraft/*.bat
+windows/starcraft/*.dll
+windows/starcraft/*.ini
+windows/starcraft/*.MPQ
+windows/starcraft/*.mpq
+*.sdf
+*.suo
+*.opensdf
 *.dll
-
-# Fortran module files
-*.mod
-*.smod
-
-# Compiled Static libraries
-*.lai
-*.la
-*.a
-*.lib
-
-# Executables
-*.exe
-*.out
-*.app
+*.o
+*.pd_
+*.bwta
+*.db
+*.ipch
+*.opendb
+*.db-shm
+*.db-wal
+*.zip
+*.iobj
+*.ipdb
+*.map
+*.pdb
+*.ilk
