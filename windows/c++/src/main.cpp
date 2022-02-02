@@ -5,7 +5,6 @@
 #include <iostream>
 #include <thread>
 
-// Test
 
 template <typename Bot>
 void dispatchEvents(Bot &bot) {
