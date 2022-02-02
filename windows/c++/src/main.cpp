@@ -5,7 +5,6 @@
 #include <iostream>
 #include <thread>
 
-// Test
 
 // Michou
 template <typename Bot>
