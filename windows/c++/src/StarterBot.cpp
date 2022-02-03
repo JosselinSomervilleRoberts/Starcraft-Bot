@@ -3,10 +3,10 @@
 #include "MapTools.h"
 
 #include "BuildOrder/BOs/BOTest.h"
+#include "Manager.h"
 
-StarterBot::StarterBot(): bo(BOTest())
-{
-}
+
+StarterBot::StarterBot(): bo(BOTest()), m_manager(*this) {}
 
 // Called when the bot starts!
 void StarterBot::onStart()
@@ -22,6 +22,24 @@ void StarterBot::onStart()
     m_mapTools.onStart();
 
     std::cout << Tools::GetNbUnits() << std::endl;
+
+    using namespace BWAPI::UnitTypes;
+
+    const auto workerType = BWAPI::Broodwar->self()->getRace().getWorker();
+    const auto supplyProviderType = BWAPI::Broodwar->self()->getRace().getSupplyProvider();
+    const auto refineryType = BWAPI::Broodwar->self()->getRace().getRefinery();
+
+
+    const auto buildorder = {
+        workerType,    workerType,          workerType,
+        workerType,    workerType,          supplyProviderType, // @ 9/10 supply
+        workerType,    workerType };
+
+    int priority = (int)BuildTask::Priority::buildorder;
+    for (const auto& unit : buildorder)
+        m_manager.addBuildTask({ m_manager, unit, (BuildTask::Priority)priority-- });
+
+    Tools::GetUnitOfType(BWAPI::Broodwar->self()->getRace().getCenter())->train(BWAPI::Broodwar->self()->getRace().getWorker());
 }
 
 // Called whenever the game ends and tells you if you won or not
@@ -33,12 +51,14 @@ void StarterBot::onEnd(bool isWinner)
 // Called on each frame of the game
 void StarterBot::onFrame()
 {
+    // Update manager
+    m_manager.update();
     // Update our MapTools information
     m_mapTools.onFrame();
 
     // Send our idle workers to mine minerals so they don't just stand there
-    sendIdleWorkersToMinerals();
-    followBuildOrder();
+    //sendIdleWorkersToMinerals();
+    //followBuildOrder();
     //buildAdditionalSupply();
 
     // Train more workers so we can gather more income
@@ -53,7 +73,7 @@ void StarterBot::onFrame()
     // Draw some relevent information to the screen to help us debug the bot
     //drawDebugInformation();
 
-
+    /*
     if (BWAPI::Broodwar->self()->supplyUsed() >= 22) {
         const BWAPI::Unitset& myUnits = BWAPI::Broodwar->self()->getUnits();
         BWAPI::Unit unitSelected;
@@ -67,7 +87,7 @@ void StarterBot::onFrame()
         }
         BWAPI::Position pos = unitSelected->getPosition() + BWAPI::Position(0, 50);
         unitSelected->move(pos);
-    }
+    }*/
 }
 
 // Send our idle workers to mine minerals so they don't just stand there

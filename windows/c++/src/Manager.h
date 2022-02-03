@@ -1,17 +1,17 @@
 #pragma once
 
-#include "Base.h"
 #include "BuildTask.h"
+#include "WorkerManager.h"
 #include <BWAPI.h>
 #include <vector>
 
-namespace KBot {
 
-    class KBot;
+
+    class StarterBot;
 
     class Manager {
     public:
-        Manager(KBot& kBot);
+        Manager(StarterBot& bot);
 
         // Prohibit copy & move. There is only one manager.
         Manager(const Manager&) = delete;
@@ -46,12 +46,11 @@ namespace KBot {
         void releaseWorker(const BWAPI::Unit& worker);
 
     private:
-        KBot& m_kBot;
-        std::vector<Base>        m_bases;
+        StarterBot& m_bot;
         std::vector<BuildTask>   m_buildQueue;
         int                      m_reservedMinerals = 0;
         int                      m_reservedGas = 0;
         std::vector<BWAPI::Unit> m_workers; // for build tasks
-    };
 
-} // namespace
+        WorkerManager workerManager;
+    };

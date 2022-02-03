@@ -2,8 +2,9 @@
 
 #include <BWAPI.h>
 #include <string>
+#include "Tools.h"
 
-namespace KBot {
+
 
     class Manager;
 
@@ -55,4 +56,3 @@ namespace KBot {
         BWAPI::Unit         m_buildingUnit = nullptr;
     };
 
-} // namespace

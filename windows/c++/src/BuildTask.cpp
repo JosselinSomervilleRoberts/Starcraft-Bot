@@ -5,7 +5,7 @@
 #include <stdexcept>
 #include <type_traits>
 
-namespace KBot {
+
 
     using namespace BWAPI;
 
@@ -13,6 +13,7 @@ namespace KBot {
         bool exactPosition)
         : m_manager(&manager), m_toBuild(std::move(toBuild)), m_priority(priority),
         m_position(std::move(position)), m_exactPosition(exactPosition) {}
+
 
     void BuildTask::update() {
         // ----- Prevent spamming -----------------------------------------------
@@ -37,6 +38,9 @@ namespace KBot {
                     m_state = State::moveToPosition;
                 else
                     m_state = State::startBuild;
+            }
+            else {
+                std::cout << "null" << std::endl;
             }
             break;
         case State::moveToPosition: {
@@ -153,5 +157,3 @@ namespace KBot {
             throw std::logic_error("Unknown BuildTask::State!");
         }
     }
-
-} // namespaces

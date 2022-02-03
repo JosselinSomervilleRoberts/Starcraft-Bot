@@ -1,20 +1,30 @@
 #include "Manager.h"
-// Marie
-#include "KBot.h"
+#include "StarterBot.h"
 #include "utils.h"
 #include <algorithm>
 
-namespace KBot {
+
 
     using namespace BWAPI;
 
-    Manager::Manager(KBot& kBot) : m_kBot(kBot) {
+    Manager::Manager(StarterBot& bot) : m_bot(bot) {
         // Create initial base
-        m_bases.emplace_back(*this, Broodwar->self()->getStartLocation());
+        // m_bases.emplace_back(*this, Broodwar->self()->getStartLocation());
+        const BWAPI::Unitset& myUnits = BWAPI::Broodwar->self()->getUnits();
+        for (auto& unit : myUnits)
+        {
+            // Check the unit type, if it is an idle worker, then we want to send it somewhere
+            if (unit->getType().isWorker() && unit->isIdle())
+            {
+                workerManager.addWorker(unit);
+            }
+        }
     }
 
     void Manager::update() {
+        workerManager.update();
         // Display debug information
+        /*
         Broodwar->drawTextScreen(2, 50, "Manager: -");
 
         // Display build tasks
@@ -31,8 +41,8 @@ namespace KBot {
         Broodwar->drawTextScreen(518, 15, "(%d)", getAvailableGas());
 
         // Update bases
-        for (auto& base : m_bases)
-            base.update();
+        // for (auto& base : m_bases)
+        //    base.update();
 
         // Update build tasks
         for (auto& buildTask : m_buildQueue)
@@ -49,27 +59,29 @@ namespace KBot {
                 it = m_buildQueue.erase(it);
             else
                 ++it;
-        }
+        }*/
     }
 
     void Manager::giveOwnership(const Unit& unit) {
         // Assign unit to nearest base.
+        /*
         const auto it =
             std::min_element(m_bases.begin(), m_bases.end(), [&unit](const Base& a, const Base& b) {
             return distance(unit->getPosition(), a.getPosition()) <
                 distance(unit->getPosition(), b.getPosition());
                 });
         assert(it != m_bases.end());
-        it->giveOwnership(unit);
+        it->giveOwnership(unit); */
     }
 
     void Manager::takeOwnership(const Unit& unit) {
         // Remove unit from workers
+        /*
         m_workers.erase(std::remove(m_workers.begin(), m_workers.end(), unit), m_workers.end());
 
         // And pass on to bases...
         for (auto& base : m_bases)
-            base.takeOwnership(unit);
+            base.takeOwnership(unit); */
     }
 
     void Manager::addBuildTask(const BuildTask& buildTask) { m_buildQueue.push_back(buildTask); }
@@ -120,13 +132,26 @@ namespace KBot {
     void Manager::releaseResources(int minerals, int gas) {
         m_reservedMinerals -= minerals;
         m_reservedGas -= gas;
-        assert(m_reservedMinerals >= 0);
-        assert(m_reservedGas >= 0);
+        //assert(m_reservedMinerals >= 0);
+        //assert(m_reservedGas >= 0);
     }
 
     Unit Manager::acquireWorker(const UnitType& workerType, const Position& nearPosition) {
+        if (!workerType.isBuilding()) {
+            return Tools::GetDepot();
+        }
+
+        const BWAPI::Unitset& myUnits = BWAPI::Broodwar->self()->getUnits();
+        for (auto& unit : myUnits)
+        {
+            // Check the unit type, if it is an idle worker, then we want to send it somewhere
+            if (unit->getType().isWorker() && unit->isIdle())
+            {
+                return unit;
+            }
+        }
         // Search for matching workers and remember their bases.
-        std::vector<std::pair<Unit, Base*>> workers;
+        /* std::vector<std::pair<Unit, Base*>> workers;
         for (auto& base : m_bases) {
             const auto worker = base.findWorker(workerType, nearPosition);
             if (worker != nullptr)
@@ -148,7 +173,8 @@ namespace KBot {
         // ...and take ownership explicitly!
         closestWorker->second->takeOwnership(closestWorker->first);
         m_workers.push_back(closestWorker->first);
-        return closestWorker->first;
+        return closestWorker->first; */
+        return nullptr;
     }
 
     void Manager::releaseWorker(const Unit& worker) {
@@ -157,5 +183,3 @@ namespace KBot {
         // Pass ownership back to bases
         giveOwnership(worker);
     }
-
-} // namespace

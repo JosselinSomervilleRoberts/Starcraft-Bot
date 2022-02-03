@@ -2,6 +2,7 @@
 
 #include "MapTools.h"
 #include "BuildOrder/BuildOrder.h"
+#include "Manager.h"
 #include <BWAPI.h>
 
 class StarterBot
@@ -33,6 +34,11 @@ public:
 
 	void followBuildOrder();
 
+	// Getter for members.
+	// Manager& manager() { return m_manager; };
+	// const Manager& manager() const { return m_manager; };
+
 private:
 	BuildOrder bo;
+	Manager m_manager;
 };
