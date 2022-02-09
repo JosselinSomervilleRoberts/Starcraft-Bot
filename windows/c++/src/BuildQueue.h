@@ -18,7 +18,7 @@
         // Called every KBot::onFrame().
         void update();
 
-        std::string toString() const;
+        std::string toString();
 
     private:
         std::vector<BuildTask*> m_buildQueue;

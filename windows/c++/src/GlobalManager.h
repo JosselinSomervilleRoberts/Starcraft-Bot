@@ -5,6 +5,8 @@
 
 #include "BaseManager.h"
 #include "Tools.h"
+#include "WorkerManager.h"
+
 
 
 class GlobalManager {
@@ -35,6 +37,7 @@ public:
 
 private:
     std::vector<BaseManager> bases;
+    WorkerManager workerManager;
     int reservedGas = 0;
     int reservedMinerals = 0;
 };

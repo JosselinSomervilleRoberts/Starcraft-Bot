@@ -25,8 +25,12 @@ void GlobalManager::initiate() {
 }
 
 void GlobalManager::update() {
+	workerManager.update();
 	for (int i = 0; i < bases.size(); i++) {
 		bases[i].update();
+		std::cout << "StarterBot On GlobalManager update\n";
+
+
 	}
 }
 
