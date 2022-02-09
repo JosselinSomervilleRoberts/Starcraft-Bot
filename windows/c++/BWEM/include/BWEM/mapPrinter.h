@@ -7,16 +7,14 @@
 //
 //////////////////////////////////////////////////////////////////////////
 
+#pragma once
 
-#ifndef BWEM_MAP_PRINTER_H
-#define BWEM_MAP_PRINTER_H
+#ifdef BWEM_USE_MAP_PRINTER
 
 #include <BWAPI.h>
 #include <memory>
 #include "utils.h"
 #include "defs.h"
-
-#if BWEM_USE_MAP_PRINTER
 
 class BMP;
 namespace BWEM {
@@ -124,6 +122,4 @@ private:
 }} // namespace BWEM::detail::detail
 
 #endif // BWEM_USE_MAP_PRINTER
-
-#endif
 

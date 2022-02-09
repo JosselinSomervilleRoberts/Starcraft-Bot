@@ -7,14 +7,10 @@
 //
 //////////////////////////////////////////////////////////////////////////
 
-
-#ifndef BWEM_BASE_H
-#define BWEM_BASE_H
+#pragma once
 
 #include <BWAPI.h>
 #include "utils.h"
-#include "defs.h"
-
 
 namespace BWEM {
 
@@ -23,9 +19,6 @@ class Mineral;
 class Geyser;
 class Area;
 class Map;
-
-
-
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 //                                                                                          //
@@ -105,13 +98,5 @@ private:
 	std::vector<Mineral *>			m_BlockingMinerals;
 	bool							m_starting = false;
 };
-
-
-
-
-
 } // namespace BWEM
-
-
-#endif
 

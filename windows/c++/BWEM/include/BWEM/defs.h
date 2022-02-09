@@ -8,12 +8,13 @@
 //////////////////////////////////////////////////////////////////////////
 
 
-#ifndef BWEM_DEFS_H
-#define BWEM_DEFS_H
+#pragma once
 
-#include <assert.h>
 #include <cstdint>
 #include <string>
+#if BWEM_TRACE
+#include <iostream>
+#endif
 
 namespace BWEM
 {
@@ -24,19 +25,22 @@ namespace detail
 
 } // namespace details
 
+#ifdef BWEM_ASSERTS
+#include <cassert>
 #define bwem_assert_debug_only(expr)			assert(expr)
 #define bwem_assert_plus(expr, message)			assert(expr)
+#else
+#if BWEM_TRACE
+#define bwem_assert_plus(expr, message)			if(!(expr)) { std::cout << __FILE__ << ", line " << std::to_string(__LINE__) << " " << #expr << " - " << (message) << std::endl; }
+#define bwem_assert_debug_only(expr)			bwem_assert_plus(expr, "")
+#else
+#define bwem_assert_debug_only(expr)
+#define bwem_assert_plus(expr, message)
+#endif
 #define bwem_assert(expr)						bwem_assert_plus(expr, "")
 #define bwem_assert_throw_plus(expr, message)   ((expr)?(void)0:detail::onAssertThrowFailed(__FILE__,__LINE__, #expr, message))
 #define bwem_assert_throw(expr)					bwem_assert_throw_plus(expr, "")
-
-
-#define BWEM_USE_WINUTILS 1		// enable(1) or disable(0) the compilation of winutils.cpp
-								// winutils.h provides optional utils that require the windows headers.
-
-#define BWEM_USE_MAP_PRINTER 1	// enable(1) or disable(0) the compilation of mapPrinter.cpp
-								// mapPrinter.h provides optional utils that require the EasyBMP Library (windows).
-
+#endif
 
 class Exception : public std::runtime_error
 {
@@ -83,7 +87,3 @@ const int max_tiles_between_StartingLocation_and_its_AssignedBase = 3;
 
 
 } // namespace BWEM
-
-
-#endif
-
