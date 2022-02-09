@@ -28,15 +28,17 @@ void BuildTask::update() {
             m_state = State::acquireWorker; // go to next state
         break;
     case State::acquireWorker:
-        m_worker = m_manager->acquireWorker();// m_toBuild.whatBuilds().first);// , Position(m_position));
-        if (m_worker != nullptr) {
-            // Go to next state
-            if (m_toBuild.isBuilding())
+        if (m_toBuild.isBuilding()) {
+            m_worker = m_manager->acquireWorker();// m_toBuild.whatBuilds().first);// , Position(m_position));
+            if (m_worker != nullptr) {
+                // Go to next state
                 m_state = State::moveToPosition;
-            else
-                m_state = State::startBuild;
+            }
         }
+        else
+            m_state = State::startBuild;
         break;
+
     case State::moveToPosition: {
         if (!m_allocatedBuildPosition) {
             m_buildPosition =
@@ -76,7 +78,7 @@ void BuildTask::update() {
         }
         else {
             // Train unit
-            if (m_worker->train(m_toBuild))
+            if (Tools::GetDepot()->train(m_toBuild))
                 m_state = State::waitForUnit; // go to next state
         }
         break;

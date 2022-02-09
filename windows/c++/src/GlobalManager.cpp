@@ -38,7 +38,7 @@ void GlobalManager::update() {
 
 
 bool GlobalManager::reserveGas(int gas_) {
-	if (getAvailableGas() > gas_) {
+	if (getAvailableGas() >= gas_) {
 		reservedGas += gas_;
 		return true;
 	}
@@ -46,7 +46,7 @@ bool GlobalManager::reserveGas(int gas_) {
 }
 
 bool GlobalManager::reserveMinerals(int minerals_) {
-	if (getAvailableMinerals() > minerals_) {
+	if (getAvailableMinerals() >= minerals_) {
 		reservedMinerals += minerals_;
 		return true;
 	}
