@@ -1,4 +1,6 @@
 #include "WorkerManager.h"
+#include "BaseManager.h"
+
 
 // This is based on https://liquipedia.net/starcraft/Mining
 
@@ -11,7 +13,7 @@
 
 
 
-WorkerManager::WorkerManager() {
+WorkerManager::WorkerManager(BaseManager* base_): base(base_) {
 	this->computeNeed();
 }
 
@@ -22,10 +24,12 @@ void WorkerManager::computeNeed() {
 
 
 void WorkerManager::addWorker(BWAPI::Unit worker) {
-	workers.push_back(worker);
-	workersAvailable.push_back(worker);
-	nbWorkersTotal += 1;
-	this->computeRepartition();
+	if (!(std::find(workers.begin(), workers.end(), worker) != workers.end())) {
+		workers.push_back(worker);
+		workersAvailable.push_back(worker);
+		nbWorkersTotal += 1;
+		this->computeRepartition();
+	}
 }
 
 
@@ -38,6 +42,7 @@ void WorkerManager::computeRepartition() {
 	if ((nbWorkersGasWanted > 0) && (!hasRefinery)) {
 		// Need refinery
 		nbWorkersCristalWanted = nbWorkersTotal;
+		base->constructRefinery(nbWorkersGasWanted);
 	}
 
 	float timeForCristal = timeForCristalPerWorker / nbWorkersCristalWanted;
@@ -48,12 +53,15 @@ void WorkerManager::computeRepartition() {
 
 		if ((timeForGas > TIME_MAX_MINUTE) && (nbWorkersGasWanted == NB_WORKERS_MAX_PER_GAS)) {
 			// Need to expand for gas
+			base->transmit_expansion();
 		}
 		else if (nbWorkersTotal >= NB_WORKERS_MAX_PER_BASE) {
 			// Need to expand for more workers
+			base->transmit_expansion();
 		}
 		else {
 			// We can ask for a new worker in this base
+			base->newWorker();
 		}
 	}
 }
@@ -140,6 +148,22 @@ void WorkerManager::findAvailableWorkers(int nbWanted) {
 			}
 		}
 	}
+}
+
+
+
+BWAPI::Unit WorkerManager::getAvailableWorker() {
+	if (workersAvailable.size() > 0) {
+		BWAPI::Unit worker = workersAvailable[0];
+		std::remove(workers.begin(), workersCristal.end(), worker);
+		std::remove(workersGas.begin(), workersGas.end(), worker);
+		std::remove(workersCristal.begin(), workersCristal.end(), worker);
+		std::remove(workersAvailable.begin(), workersGas.end(), worker);
+		nbWorkersTotal--;
+		return worker;
+	}
+
+	return nullptr;
 }
 
 
