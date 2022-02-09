@@ -7,28 +7,21 @@
 //
 //////////////////////////////////////////////////////////////////////////
 
-
-#ifndef BWEM_BWAPI_EXT_H
-#define BWEM_BWAPI_EXT_H
+#pragma once
 
 #include <BWAPI.h>
 #include "utils.h"
-#include "defs.h"
 #include <vector>
 
 namespace BWEM {
 
-
 namespace BWAPI_ext {
-
 
 template<typename T, int Scale = 1>
 inline std::ostream & operator<<(std::ostream & out, BWAPI::Point<T, Scale> A)		{ out << "(" << A.x << ", " << A.y << ")"; return out; }
 
-
 template<typename T, int Scale = 1>
 inline BWAPI::Position center(BWAPI::Point<T, Scale> A)	{ return BWAPI::Position(A) + BWAPI::Position(Scale/2, Scale/2); }
-
 
 template<typename T, int Scale = 1>
 inline BWAPI::Point<T, Scale> operator+(BWAPI::Point<T, Scale> A, int b)	{ return A + BWAPI::Point<T, Scale>(b, b); }
@@ -42,7 +35,6 @@ inline BWAPI::Point<T, Scale> operator-(BWAPI::Point<T, Scale> A, int b)		{ retu
 template<typename T, int Scale = 1>
 inline BWAPI::Point<T, Scale> operator-(int a, BWAPI::Point<T, Scale> B)		{ return a + (B*-1); }
 
-
 // Enlarges the bounding box [TopLeft, BottomRight] so that it includes A.
 template<typename T, int Scale = 1>
 inline void makeBoundingBoxIncludePoint(BWAPI::Point<T, Scale> & TopLeft, BWAPI::Point<T, Scale> & BottomRight, const BWAPI::Point<T, Scale> & A)
@@ -53,7 +45,6 @@ inline void makeBoundingBoxIncludePoint(BWAPI::Point<T, Scale> & TopLeft, BWAPI:
 	if (A.y < TopLeft.y)		TopLeft.y = A.y;
 	if (A.y > BottomRight.y)	BottomRight.y = A.y;
 }
-
 
 // Makes the smallest change to A so that it is included in the bounding box [TopLeft, BottomRight].
 template<typename T, int Scale = 1>
@@ -66,14 +57,12 @@ inline void makePointFitToBoundingBox(BWAPI::Point<T, Scale> & A, const BWAPI::P
 	else if (A.y > BottomRight.y)	A.y = BottomRight.y;
 }
 
-
 template<typename T, int Scale = 1>
 bool inBoundingBox(const BWAPI::Point<T, Scale> & A, const BWAPI::Point<T, Scale> & topLeft, const BWAPI::Point<T, Scale> & bottomRight)
 {
 	return  (A.x >= topLeft.x) && (A.x <= bottomRight.x) &&
 			(A.y >= topLeft.y) && (A.y <= bottomRight.y);
 }
-
 
 template<typename T, int Scale = 1>
 inline int queenWiseDist(BWAPI::Point<T, Scale> A, BWAPI::Point<T, Scale> B){ A -= B; return utils::queenWiseNorm(A.x, A.y); }
@@ -86,7 +75,6 @@ inline double dist(BWAPI::Point<T, Scale> A, BWAPI::Point<T, Scale> B)		{ A -= B
 
 template<typename T, int Scale = 1>
 inline int roundedDist(BWAPI::Point<T, Scale> A, BWAPI::Point<T, Scale> B)	{ return int(0.5 + dist(A, B)); }
-
 
 inline int distToRectangle(const BWAPI::Position & a, const BWAPI::TilePosition & TopLeft, const BWAPI::TilePosition & Size)
 {
@@ -107,7 +95,6 @@ inline int distToRectangle(const BWAPI::Position & a, const BWAPI::TilePosition 
 		else if (a.y < topLeft.y)		return roundedDist(a, topLeft);										// NW
 		else							return topLeft.x - a.x;												// W
 }
-
 
 template<typename T, int Scale = 1>
 inline std::vector<BWAPI::Point<T, Scale>> innerBorder(BWAPI::Point<T, Scale> TopLeft, BWAPI::Point<T, Scale> Size, bool noCorner = false)
@@ -131,21 +118,17 @@ inline std::vector<BWAPI::Point<T, Scale>> outerBorder(BWAPI::Point<T, Scale> To
 	return innerBorder(TopLeft - 1, Size + 2, noCorner);
 }
 
-
 inline std::vector<BWAPI::WalkPosition> outerMiniTileBorder(BWAPI::TilePosition TopLeft, BWAPI::TilePosition Size, bool noCorner = false)
 {
 	return outerBorder(BWAPI::WalkPosition(TopLeft), BWAPI::WalkPosition(Size), noCorner);
 }
-
 
 inline std::vector<BWAPI::WalkPosition> innerMiniTileBorder(BWAPI::TilePosition TopLeft, BWAPI::TilePosition Size, bool noCorner = false)
 {
 	return innerBorder(BWAPI::WalkPosition(TopLeft), BWAPI::WalkPosition(Size), noCorner);
 }
 
-
-void drawDiagonalCrossMap(BWAPI::Position topLeft, BWAPI::Position bottomRight, BWAPI::Color col);
-
+void drawDiagonalCrossMap(BWAPI::Position topLeft, BWAPI::Position bottomRight, BWAPI::Color col, BWAPI::Game *g);
 
 template<typename T, int Scale = 1>
 inline bool overlap(const BWAPI::Point<T, Scale> & TopLeft1, const BWAPI::Point<T, Scale> & Size1, const BWAPI::Point<T, Scale> & TopLeft2, const BWAPI::Point<T, Scale> & Size2)
@@ -167,13 +150,4 @@ inline bool disjoint(const BWAPI::Point<T, Scale> & TopLeft1, const BWAPI::Point
 	return false;
 }
 
-
-
-
 }} // namespace BWEM::BWAPI_ext
-
-
-
-
-#endif
-

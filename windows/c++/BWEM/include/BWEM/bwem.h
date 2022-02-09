@@ -7,10 +7,7 @@
 //
 //////////////////////////////////////////////////////////////////////////
 
-
-#ifndef BWEM_H
-#define BWEM_H
-
+#pragma once
 
 #include "map.h"
 #include "tiles.h"
@@ -19,7 +16,6 @@
 #include "base.h"
 #include "neutral.h"
 #include "gridMap.h"
-#include "examples.h"
 #include "mapPrinter.h"
 #include "mapDrawer.h"
 #include "utils.h"
@@ -27,6 +23,8 @@
 #include "defs.h"
 
 /*
+Add following line to your code to run examples.
+#include "examples.h"
 
 
 To see examples of how to use the BWEM library, have a look at the functions declared in examples.h.
@@ -69,7 +67,3 @@ namespace BWEM
 
 
 } // namespace BWEM
-
-
-#endif
-

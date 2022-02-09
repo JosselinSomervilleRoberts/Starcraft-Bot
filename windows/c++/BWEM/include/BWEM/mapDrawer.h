@@ -8,14 +8,9 @@
 //////////////////////////////////////////////////////////////////////////
 
 
-#ifndef BWEM_MAP_DRAWER_H
-#define BWEM_MAP_DRAWER_H
+#pragma once
 
 #include <BWAPI.h>
-#include <memory>
-#include "utils.h"
-#include "defs.h"
-
 
 class BMP;
 namespace BWEM {
@@ -72,7 +67,3 @@ private:
 
 
 }} // namespace BWEM::detail::detail
-
-
-#endif
-

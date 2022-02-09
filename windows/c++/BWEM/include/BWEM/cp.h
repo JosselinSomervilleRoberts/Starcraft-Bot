@@ -7,9 +7,7 @@
 //
 //////////////////////////////////////////////////////////////////////////
 
-
-#ifndef BWEM_CP_H
-#define BWEM_CP_H
+#pragma once
 
 #include <BWAPI.h>
 #include "bwapiExt.h"
@@ -170,7 +168,3 @@ typedef ChokePoint::Path CPPath;
 
 
 } // namespace BWEM
-
-
-#endif
-

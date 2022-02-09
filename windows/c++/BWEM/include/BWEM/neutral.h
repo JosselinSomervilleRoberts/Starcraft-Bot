@@ -7,16 +7,11 @@
 //
 //////////////////////////////////////////////////////////////////////////
 
-
-#ifndef BWEM_NEUTRAL_H
-#define BWEM_NEUTRAL_H
+#pragma once
 
 #include <BWAPI.h>
-#include "bwapiExt.h"
 #include <vector>
 #include "utils.h"
-#include "defs.h"
-
 
 namespace BWEM {
 
@@ -109,7 +104,7 @@ public:
 protected:
 									Neutral(BWAPI::Unit u, Map * pMap);
 									~Neutral();
-	Map *							GetMap() const				{ return m_pMap; }
+	Map * const 					GetMap() const				{ return m_pMap; }
 
 private:
 	void							PutOnTiles();
@@ -219,11 +214,5 @@ public:
 private:
 };
 
-
-
-
 } // namespace BWEM
-
-
-#endif
 

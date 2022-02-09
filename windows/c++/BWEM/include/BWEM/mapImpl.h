@@ -7,17 +7,13 @@
 //
 //////////////////////////////////////////////////////////////////////////
 
-
-#ifndef BWEM_MAP_IMPL_H
-#define BWEM_MAP_IMPL_H
+#pragma once
 
 #include <BWAPI.h>
 #include "graph.h"
 #include "map.h"
 #include "tiles.h"
-#include <queue>
 #include <memory>
-#include "utils.h"
 #include "defs.h"
 
 
@@ -58,7 +54,7 @@ public:
 								MapImpl();
 								~MapImpl();
 
-	void						Initialize() override;
+	void						Initialize(BWAPI::Game *) override;
 
 	bool						AutomaticPathUpdate() const override					{ return m_automaticPathUpdate; }
 	void						EnableAutomaticPathAnalysis() const override			{ m_automaticPathUpdate = true; }
@@ -117,8 +113,8 @@ public:
 private:
 	void						ReplaceAreaIds(BWAPI::WalkPosition p, Area::id newAreaId);
 
-	void						InitializeNeutrals();
-	void						LoadData();
+	void						InitializeNeutrals(BWAPI::Game *);
+	void						LoadData(BWAPI::Game *);
 	void						DecideSeasOrLakes();
 	void						ComputeAltitude();
 	void						ProcessBlockingNeutrals();
@@ -145,12 +141,4 @@ private:
 	vector<pair<pair<Area::id, Area::id>, BWAPI::WalkPosition>>	m_RawFrontier;
 };
 
-
-
-
-
 }} // namespace BWEM::detail
-
-
-#endif
-
