@@ -19,9 +19,9 @@ void GlobalManager::initiate() {
 		workerType,    workerType };
 
 
-	BaseManager base;
+	BaseManager base(this);
 	bases.push_back(base);
-	base.setBuildOrder(buildorder);
+	//base.setBuildOrder(buildorder);
 }
 
 void GlobalManager::update() {
@@ -33,17 +33,30 @@ void GlobalManager::update() {
 
 
 
-void GlobalManager::reserveGas(int gas_) {
-	reservedGas += gas_;
+bool GlobalManager::reserveGas(int gas_) {
+	if (getAvailableGas() > gas_) {
+		reservedGas += gas_;
+		return true;
+	}
+	return false;
 }
 
-void GlobalManager::reserveMinerals(int minerals_) {
-	reservedMinerals += minerals_;
+bool GlobalManager::reserveMinerals(int minerals_) {
+	if (getAvailableMinerals() > minerals_) {
+		reservedMinerals += minerals_;
+		return true;
+	}
+	return false;
 }
 
-void GlobalManager::reserveRessources(int minerals_, int gas_) {
-	reserveGas(gas_);
-	reserveMinerals(minerals_);
+bool GlobalManager::reserveRessources(int minerals_, int gas_) {
+	bool ok = reserveGas(gas_);
+	if (ok) {
+		bool ok2 = reserveMinerals(minerals_);
+		if (!ok2) releaseGas(gas_);
+		return ok2;
+	}
+	return false;
 }
 
 void GlobalManager::releaseGas(int gas_) {
@@ -89,4 +102,10 @@ void GlobalManager::onUnitDestroy(BWAPI::Unit unit) {
 void GlobalManager::onUnitComplete(BWAPI::Unit unit) {
 	// TODO :change for several bases
 	bases[0].unitCompleted(unit);
+}
+
+
+void GlobalManager::releaseWorker(BWAPI::Unit worker) {
+	// TODO : clean that shit
+	onUnitComplete(worker);
 }

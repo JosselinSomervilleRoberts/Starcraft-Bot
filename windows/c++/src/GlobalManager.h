@@ -15,9 +15,9 @@ public:
     void initiate();
     void update();
 
-    void reserveGas(int gas_);
-    void reserveMinerals(int minerals_);
-    void reserveRessources(int minerals_, int gas_);
+    bool reserveGas(int gas_);
+    bool reserveMinerals(int minerals_);
+    bool reserveRessources(int minerals_, int gas_);
     void releaseGas(int gas_);
     void releaseMinerals(int minerals_);
     void releaseRessources(int minerals_, int gas_);
@@ -25,6 +25,7 @@ public:
     int getAvailableMinerals();
 
     BWAPI::Unit acquireWorker();
+    void releaseWorker(BWAPI::Unit worker);
 
 
     void onUnitCreate(BWAPI::Unit unit);

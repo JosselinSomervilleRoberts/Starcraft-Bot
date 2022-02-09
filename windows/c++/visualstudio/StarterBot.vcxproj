@@ -15,9 +15,10 @@
     <ClInclude Include="..\src\BuildOrder\BOs\BOTest.h" />
     <ClInclude Include="..\src\BuildOrder\BuildOrder.h" />
     <ClInclude Include="..\src\BuildOrder\BuildOrderStep.h" />
+    <ClInclude Include="..\src\BuildQueue.h" />
     <ClInclude Include="..\src\BuildTask.h" />
+    <ClInclude Include="..\src\GlobalManager.h" />
     <ClInclude Include="..\src\Grid.hpp" />
-    <ClInclude Include="..\src\Manager.h" />
     <ClInclude Include="..\src\MapTools.h" />
     <ClInclude Include="..\src\StarterBot.h" />
     <ClInclude Include="..\src\Tools.h" />
@@ -31,9 +32,10 @@
     <ClCompile Include="..\src\BuildOrder\BOs\BOTest.cpp" />
     <ClCompile Include="..\src\BuildOrder\BuildOrder.cpp" />
     <ClCompile Include="..\src\BuildOrder\BuildOrderStep.cpp" />
+    <ClCompile Include="..\src\BuildQueue.cpp" />
     <ClCompile Include="..\src\BuildTask.cpp" />
+    <ClCompile Include="..\src\GlobalManager.cpp" />
     <ClCompile Include="..\src\main.cpp" />
-    <ClCompile Include="..\src\Manager.cpp" />
     <ClCompile Include="..\src\MapTools.cpp" />
     <ClCompile Include="..\src\StarterBot.cpp" />
     <ClCompile Include="..\src\Tools.cpp" />

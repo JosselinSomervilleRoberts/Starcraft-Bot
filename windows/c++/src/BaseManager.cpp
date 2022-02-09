@@ -1,13 +1,13 @@
 #include "BaseManager.h"
 
-BaseManager::BaseManager() : workerManager(this) {
+BaseManager::BaseManager(GlobalManager* manager_) : workerManager(this), queue(manager_), manager(manager_) {
     const BWAPI::UnitType commandCenterType = BWAPI::Broodwar->self()->getRace().getCenter();
     const BWAPI::Unit commandCenter = Tools::GetUnitOfType(commandCenterType);
-    BaseManager(commandCenter);
+    BaseManager(manager_, commandCenter);
 }
 
 
-BaseManager::BaseManager(BWAPI::Unit commandCenter) : workerManager(this) {
+BaseManager::BaseManager(GlobalManager* manager_, BWAPI::Unit commandCenter) : workerManager(this), queue(manager_), manager(manager_) {
     baseNumber = 0;
     this->buildings.push_back(commandCenter);
 
@@ -20,7 +20,7 @@ BaseManager::BaseManager(BWAPI::Unit commandCenter) : workerManager(this) {
     }
 }
 
-BaseManager::BaseManager(int baseNumber_, BWAPI::Unit worker) : workerManager(this) {
+BaseManager::BaseManager(GlobalManager* manager_, int baseNumber_, BWAPI::Unit worker) : workerManager(this), queue(manager_), manager(manager_) {
     baseNumber = baseNumber_;
     this->constructCommandCenter(worker);
 }
@@ -43,12 +43,12 @@ void BaseManager::constructCommandCenter(BWAPI::Unit worker) {
 
 void BaseManager::newWorker() {
     BWAPI::UnitType workerType = BWAPI::Broodwar->self()->getRace().getWorker();
-    queue.addTrain(workerType, 10);
+    queue.addTask(workerType, 10);
 }
 
 void BaseManager::constructRefinery(int importance) {
     BWAPI::UnitType refineryType = BWAPI::Broodwar->self()->getRace().getRefinery();
-    queue.addTrain(refineryType, 20);
+    queue.addTask(refineryType, 20);
     workerManager.refineryState = BuildingState::CONSTRUCTING;
 }
 
@@ -76,7 +76,7 @@ void BaseManager::unitDestroyed(BWAPI::Unit unit) {
         // Here decide what we do
         // TODO : change to have more clever behaviour
         BWAPI::UnitType type = unit->getType();
-        queue.add(type, 100);
+        queue.addTask(type, 100);
     }
 }
 

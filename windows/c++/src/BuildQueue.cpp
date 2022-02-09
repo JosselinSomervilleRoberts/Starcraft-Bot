@@ -1,4 +1,5 @@
 #include "BuildQueue.h"
+#include "GlobalManager.h"
 
 
 #include <cassert>
@@ -9,25 +10,12 @@
 
 using namespace BWAPI;
 
-BuildQueue::BuildQueue(GlobalManager& manager)
-    : m_manager(&manager) {}
+BuildQueue::BuildQueue(GlobalManager* manager)
+    : m_manager(manager) {}
 
 
-void BuildQueue::addTask(UnitType toBuild, int place = 0, TilePosition position = BWAPI::Broodwar->self()->getStartLocation(),
-    bool setPlaceInQueue = false) {
 
-    BuildTask* buildtask = new BuildTask(m_manager, toBuild, position);
-    if (!setPlaceInQueue) {
-        m_buildQueue.push_back(buildtask);
-    }
-    else {
-        auto Pos = m_buildQueue.begin() + place;
-        m_buildQueue.insert(Pos, buildtask);
-    }
-
-}
-
-void BuildQueue::addTask(UnitType toBuild, int priority = 0, TilePosition position = BWAPI::Broodwar->self()->getStartLocation()) {
+void BuildQueue::addTask(UnitType toBuild, int priority, TilePosition position) {
 
     BuildTask* buildtask = new BuildTask(m_manager, toBuild, priority, position);
     auto Pos = m_buildQueue.begin();

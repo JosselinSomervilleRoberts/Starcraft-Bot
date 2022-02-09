@@ -4,15 +4,16 @@
 #include <vector>
 
 #include "WorkerManager.h"
+#include "BuildQueue.h"
 
-class BuildQueue;
+class GlobalManager;
 
 class BaseManager {
 
 public:
-    BaseManager();
-    BaseManager(BWAPI::Unit commandCenter);
-    BaseManager(int baseNumber_, BWAPI::Unit worker);
+    BaseManager(GlobalManager* manager_);
+    BaseManager(GlobalManager* manager_, BWAPI::Unit commandCenter);
+    BaseManager(GlobalManager* manager_, int baseNumber_, BWAPI::Unit worker);
 
     void update();
     void setBuildOrder(std::vector<BWAPI::Unit> buildOrder);
@@ -33,4 +34,5 @@ private:
     int baseNumber;
     std::vector<BWAPI::Unit> buildings;
     BuildQueue queue;
+    GlobalManager* manager;
 };

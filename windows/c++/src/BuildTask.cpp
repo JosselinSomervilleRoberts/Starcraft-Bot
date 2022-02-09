@@ -6,17 +6,16 @@
 #include <type_traits>
 
 
-using namespace BWAPI;
 
-BuildTask::BuildTask(GlobalManager& manager, UnitType toBuild, Priority priority, TilePosition position,
+BuildTask::BuildTask(GlobalManager* manager, BWAPI::UnitType toBuild, int priority, BWAPI::TilePosition position,
     bool exactPosition)
-: m_manager(&manager), m_toBuild(std::move(toBuild)), m_priority(priority),
+: m_manager(manager), m_toBuild(std::move(toBuild)), m_priority(priority),
     m_position(std::move(position)), m_exactPosition(exactPosition) {}
 
 void BuildTask::update() {
     // ----- Prevent spamming -----------------------------------------------
     // Everything below is executed only occasionally and not on every frame.
-    if (Broodwar->getFrameCount() % Broodwar->getLatencyFrames() != 0)
+    if (BWAPI::Broodwar->getFrameCount() % BWAPI::Broodwar->getLatencyFrames() != 0)
         return;
 
     switch (m_state) {
@@ -25,11 +24,11 @@ void BuildTask::update() {
         m_state = State::reserveResources; // go to next state
         break;
     case State::reserveResources:
-        if (m_manager->reserveResources(m_toBuild.mineralPrice(), m_toBuild.gasPrice()))
+        if (m_manager->reserveRessources(m_toBuild.mineralPrice(), m_toBuild.gasPrice()))
             m_state = State::acquireWorker; // go to next state
         break;
     case State::acquireWorker:
-        m_worker = m_manager->acquireWorker(m_toBuild.whatBuilds().first, Position(m_position));
+        m_worker = m_manager->acquireWorker();// m_toBuild.whatBuilds().first);// , Position(m_position));
         if (m_worker != nullptr) {
             // Go to next state
             if (m_toBuild.isBuilding())
@@ -41,22 +40,22 @@ void BuildTask::update() {
     case State::moveToPosition: {
         if (!m_allocatedBuildPosition) {
             m_buildPosition =
-                m_exactPosition ? m_position : Broodwar->getBuildLocation(m_toBuild, m_position);
+                m_exactPosition ? m_position : BWAPI::Broodwar->getBuildLocation(m_toBuild, m_position);
             m_allocatedBuildPosition = true;
         }
         assert(m_worker != nullptr);
-        const Position movePosition =
-            Position(m_buildPosition) + Position(m_toBuild.tileSize()) / 2;
+        const BWAPI::Position movePosition =
+            BWAPI::Position(m_buildPosition) + BWAPI::Position(m_toBuild.tileSize()) / 2;
 
         // DEBUG
-        Broodwar->registerEvent([worker = m_worker, movePosition](Game*) {
-            Broodwar->drawLineMap(worker->getPosition(), movePosition, Colors::Purple);
-            Broodwar->drawTextMap(worker->getPosition(), "Distance: %d",
+        BWAPI::Broodwar->registerEvent([worker = m_worker, movePosition](BWAPI::Game*) {
+            BWAPI::Broodwar->drawLineMap(worker->getPosition(), movePosition, BWAPI::Colors::Purple);
+            BWAPI::Broodwar->drawTextMap(worker->getPosition(), "Distance: %d",
                 worker->getDistance(movePosition));
             },
-            nullptr, Broodwar->getLatencyFrames());
+            nullptr, BWAPI::Broodwar->getLatencyFrames());
 
-        if (m_worker->getOrder() != Orders::Move ||
+        if (m_worker->getOrder() != BWAPI::Orders::Move ||
             m_worker->getOrderTargetPosition() != movePosition)
             m_worker->move(movePosition);
         if (m_worker->getDistance(movePosition) < 100) // TODO!
@@ -66,7 +65,7 @@ void BuildTask::update() {
     case State::startBuild:
         if (m_toBuild.isBuilding()) {
             // Construct building
-            if (Broodwar->canBuildHere(m_buildPosition, m_toBuild, m_worker)) {
+            if (BWAPI::Broodwar->canBuildHere(m_buildPosition, m_toBuild, m_worker)) {
                 if (m_worker->build(m_toBuild, m_buildPosition))
                     m_state = State::waitForUnit; // go to next state
             }
@@ -83,7 +82,7 @@ void BuildTask::update() {
         break;
     case State::waitForUnit:
         if (m_buildingUnit != nullptr) {
-            m_manager->releaseResources(m_toBuild.mineralPrice(), m_toBuild.gasPrice());
+            m_manager->releaseRessources(m_toBuild.mineralPrice(), m_toBuild.gasPrice());
             m_state = State::building; // go to next state
         }
         break;
@@ -102,7 +101,7 @@ void BuildTask::update() {
     }
 }
 
-bool BuildTask::onUnitCreatedOrMorphed(const Unit& unit) {
+bool BuildTask::onUnitCreatedOrMorphed(const BWAPI::Unit& unit) {
     // Accept new unit if we are waiting for one.
     if (m_state != State::waitForUnit)
         return false;
@@ -116,7 +115,7 @@ bool BuildTask::onUnitCreatedOrMorphed(const Unit& unit) {
     return false;
 }
 
-bool BuildTask::onUnitDestroyed(const Unit& unit) {
+bool BuildTask::onUnitDestroyed(const BWAPI::Unit& unit) {
     if (unit == m_worker) {
         // FIXME!
         return true;

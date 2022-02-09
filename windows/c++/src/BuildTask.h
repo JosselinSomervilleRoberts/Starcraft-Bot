@@ -3,7 +3,7 @@
 #include <BWAPI.h>
 #include <string>
 
-namespace BWAPI {
+
 
     class GlobalManager;
 
@@ -26,7 +26,7 @@ namespace BWAPI {
         // always have to wait for the higher tasks to allocate their resources.
 
     public:
-        BuildTask(GlobalManager& manager, BWAPI::UnitType toBuild, int priority = 0,
+        BuildTask(GlobalManager* manager, BWAPI::UnitType toBuild, int priority = 0,
             BWAPI::TilePosition position = BWAPI::Broodwar->self()->getStartLocation(),
             bool                exactPosition = false);
 
@@ -54,4 +54,4 @@ namespace BWAPI {
         BWAPI::Unit         m_buildingUnit = nullptr;
     };
 
-} // namespace
+// namespace
