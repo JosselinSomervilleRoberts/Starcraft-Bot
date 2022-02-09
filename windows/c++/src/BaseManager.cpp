@@ -1,4 +1,5 @@
 #include "BaseManager.h"
+#include "GlobalManager.h"
 
 BaseManager::BaseManager(GlobalManager* manager_) : workerManager(this), queue(manager_), manager(manager_) {
     const BWAPI::UnitType commandCenterType = BWAPI::Broodwar->self()->getRace().getCenter();
@@ -10,6 +11,7 @@ BaseManager::BaseManager(GlobalManager* manager_) : workerManager(this), queue(m
 BaseManager::BaseManager(GlobalManager* manager_, BWAPI::Unit commandCenter) : workerManager(this), queue(manager_), manager(manager_) {
     baseNumber = 0;
     this->buildings.push_back(commandCenter);
+    std::cout << "CONSTRUCTOR" << std::endl;
 
     const BWAPI::Unitset& myUnits = BWAPI::Broodwar->self()->getUnits();
     for (auto& unit : myUnits)
@@ -28,6 +30,13 @@ BaseManager::BaseManager(GlobalManager* manager_, int baseNumber_, BWAPI::Unit w
 void BaseManager::update() {
     queue.update();
     workerManager.update();
+
+
+    // TO TEST
+    if (manager->getAvailableMinerals() > 300) {
+        BWAPI::UnitType workerType = BWAPI::Broodwar->self()->getRace().getWorker();
+        queue.addTask(workerType, 200);
+    }
 }
 
 void BaseManager::setBuildOrder(std::vector<BWAPI::Unit> buildOrder) {
@@ -43,7 +52,7 @@ void BaseManager::constructCommandCenter(BWAPI::Unit worker) {
 
 void BaseManager::newWorker() {
     BWAPI::UnitType workerType = BWAPI::Broodwar->self()->getRace().getWorker();
-    queue.addTask(workerType, 10);
+    //queue.addTask(workerType, 10);
 }
 
 void BaseManager::constructRefinery(int importance) {

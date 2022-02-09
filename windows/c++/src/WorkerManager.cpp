@@ -60,7 +60,7 @@ void WorkerManager::computeRepartition() {
 			// Need to expand for more workers
 			base->transmit_expansion();
 		}
-		else {
+		else if(nbWorkersTotal > 0) {
 			// We can ask for a new worker in this base
 			base->newWorker();
 		}
