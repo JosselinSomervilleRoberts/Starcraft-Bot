@@ -3,7 +3,7 @@
 #include "MapTools.h"
 
 #include "BuildOrder/BOs/BOTest.h"
-#include "Manager.h"
+#include "GlobalManager.h"
 
 
 StarterBot::StarterBot(): manager() {}
