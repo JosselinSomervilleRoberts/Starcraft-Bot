@@ -9,6 +9,12 @@
 
 class BaseManager;
 
+enum class BuildingState {
+    NOT_BUILT,
+    CONSTRUCTING,
+    CONSTRUCTED,
+};
+
 class WorkerManager {
 
     public:
@@ -29,6 +35,9 @@ class WorkerManager {
         void setCristalAim(int cristal) { cristalAim = cristal; };
         void setGasAim(int gas) { gasAim = gas; };
 
+
+        BuildingState refineryState = BuildingState::NOT_BUILT;
+
     private:
         BaseManager* base;
         std::vector<BWAPI::Unit> workers;
@@ -44,5 +53,4 @@ class WorkerManager {
         int cristalNeed = 0;
         int gasNeed = 0;
 
-        bool hasRefinery = false;
 };

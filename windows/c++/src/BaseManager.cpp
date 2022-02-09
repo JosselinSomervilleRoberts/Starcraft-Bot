@@ -49,6 +49,7 @@ void BaseManager::newWorker() {
 void BaseManager::constructRefinery(int importance) {
     BWAPI::UnitType refineryType = BWAPI::Broodwar->self()->getRace().getRefinery();
     queue.addTrain(refineryType, 20);
+    workerManager.refineryState = BuildingState::CONSTRUCTING;
 }
 
 
@@ -69,14 +70,28 @@ void BaseManager::unitCreated(BWAPI::Unit unit) {
 }
 
 void BaseManager::unitDestroyed(BWAPI::Unit unit) {
-    // TODO
+    if (unit->getType().isBuilding()) {
+        std::remove(buildings.begin(), buildings.end(), unit);
+
+        // Here decide what we do
+        // TODO : change to have more clever behaviour
+        BWAPI::UnitType type = unit->getType();
+        queue.add(type, 100);
+    }
 }
 
 void BaseManager::unitCompleted(BWAPI::Unit unit) {
+    BWAPI::UnitType type = unit->getType();
+
     BWAPI::UnitType workerType = BWAPI::Broodwar->self()->getRace().getWorker();
-    if (unit->getType() == workerType)
+    if (type == workerType)
         workerManager.addWorker(unit);
 
-    if (unit->getType().isBuilding())
+    if (type.isBuilding()) {
         buildings.push_back(unit);
+
+        BWAPI::UnitType refineryType = BWAPI::Broodwar->self()->getRace().getRefinery();
+        if(type == refineryType)
+            workerManager.refineryState = BuildingState::CONSTRUCTED;
+    }
 }

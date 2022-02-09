@@ -39,10 +39,11 @@ void WorkerManager::computeRepartition() {
 	nbWorkersGasWanted     = std::min(NB_WORKERS_MAX_PER_GAS, (int)(std::ceil(nbWorkersTotal * timeForGasPerWorker / (timeForCristalPerWorker + timeForGasPerWorker))));
 	nbWorkersCristalWanted = nbWorkersTotal - nbWorkersGasWanted;
 
-	if ((nbWorkersGasWanted > 0) && (!hasRefinery)) {
+	if ((nbWorkersGasWanted > 0) && (refineryState != BuildingState::CONSTRUCTED)) {
 		// Need refinery
 		nbWorkersCristalWanted = nbWorkersTotal;
-		base->constructRefinery(nbWorkersGasWanted);
+		if(refineryState == BuildingState::NOT_BUILT)
+			base->constructRefinery(nbWorkersGasWanted);
 	}
 
 	float timeForCristal = timeForCristalPerWorker / nbWorkersCristalWanted;
