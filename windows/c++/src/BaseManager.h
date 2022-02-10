@@ -20,13 +20,14 @@ public:
 
     void constructCommandCenter(BWAPI::Unit worker);
     void constructRefinery(int importance = 0);
-    void newWorker();
+    void newWorker(int importance = 0);
     BWAPI::Unit acquireWorker();
     
     void transmit_expansion();
     void unitCreated(BWAPI::Unit unit);
     void unitDestroyed(BWAPI::Unit unit);
     void unitCompleted(BWAPI::Unit unit);
+    void BaseManager::Initialize(std::vector<BWAPI::UnitType> unitQueue, std::vector<int> priorityQueue);
 
 
 private:

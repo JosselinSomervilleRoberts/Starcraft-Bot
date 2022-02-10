@@ -17,18 +17,19 @@ void GlobalManager::initiate() {
 		workerType,    workerType,          workerType,
 		workerType,    workerType,          supplyProviderType, // @ 9/10 supply
 		workerType,    workerType };
-
+	
 
 	BaseManager base(this);
+
 	bases.push_back(base);
+	//base.constructRefinery(300);
+
 	//base.setBuildOrder(buildorder);
 }
 
 void GlobalManager::update() {
-	workerManager.update();
 	for (int i = 0; i < bases.size(); i++) {
 		bases[i].update();
-		std::cout << "StarterBot On GlobalManager update\n";
 
 
 	}

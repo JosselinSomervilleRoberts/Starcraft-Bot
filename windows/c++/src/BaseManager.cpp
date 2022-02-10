@@ -20,22 +20,35 @@ BaseManager::BaseManager(GlobalManager* manager_, BWAPI::Unit commandCenter) : w
         if (unit->getType().isWorker() && unit->isIdle())
             workerManager.addWorker(unit);
     }
+    
 }
+
 
 BaseManager::BaseManager(GlobalManager* manager_, int baseNumber_, BWAPI::Unit worker) : workerManager(this), queue(manager_), manager(manager_) {
     baseNumber = baseNumber_;
     this->constructCommandCenter(worker);
+    
 }
 
+void BaseManager::Initialize(std::vector<BWAPI::UnitType> unitQueue, std::vector<int> priorityQueue) {
+    queue.clearAll();
+    for (int i = 0;i < unitQueue.size(); i++)
+        queue.addTask(unitQueue[i], priorityQueue[i]);
+}
 void BaseManager::update() {
-    queue.update();
+    
+
     workerManager.update();
+    queue.update();
+    std::cout << queue.toString() << std::endl;
 
 
     // TO TEST
     if (manager->getAvailableMinerals() > 300) {
-        BWAPI::UnitType workerType = BWAPI::Broodwar->self()->getRace().getWorker();
-        queue.addTask(workerType, 200);
+        //this->newWorker(200);
+        //BWAPI::UnitType workerType = BWAPI::Broodwar->self()->getRace().getWorker();
+        //queue.addTask(workerType, 200);
+        //std::cout << queue.toString() << std::endl;
     }
 }
 
@@ -47,17 +60,21 @@ void BaseManager::setBuildOrder(std::vector<BWAPI::Unit> buildOrder) {
 void BaseManager::constructCommandCenter(BWAPI::Unit worker) {
     BWAPI::UnitType centerType = BWAPI::Broodwar->self()->getRace().getCenter();
     // TODO : construct command center (without using the queue)
+    
+
+    
 }
 
 
-void BaseManager::newWorker() {
+void BaseManager::newWorker(int importance) {
+    std::cout << "addTask new worker" << std::endl;
     BWAPI::UnitType workerType = BWAPI::Broodwar->self()->getRace().getWorker();
-    //queue.addTask(workerType, 10);
+    queue.addTask(workerType, importance);
 }
 
 void BaseManager::constructRefinery(int importance) {
     BWAPI::UnitType refineryType = BWAPI::Broodwar->self()->getRace().getRefinery();
-    queue.addTask(refineryType, 20);
+    queue.addTask(refineryType, importance);
     workerManager.refineryState = BuildingState::CONSTRUCTING;
 }
 

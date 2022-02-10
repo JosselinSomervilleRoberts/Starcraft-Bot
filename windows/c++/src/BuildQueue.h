@@ -17,8 +17,8 @@
         BuildTask* getTask(int Position);
         // Called every KBot::onFrame().
         void update();
-
-        std::string toString();
+        void clearAll();
+        std::string toString() const;
 
     private:
         std::vector<BuildTask*> m_buildQueue;
