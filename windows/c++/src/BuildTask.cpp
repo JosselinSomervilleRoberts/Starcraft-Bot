@@ -11,6 +11,10 @@ BuildTask::BuildTask(GlobalManager* manager, BWAPI::UnitType toBuild, int priori
     bool exactPosition)
 : m_manager(manager), m_toBuild(std::move(toBuild)), m_priority(priority),
     m_position(std::move(position)), m_exactPosition(exactPosition) {}
+BuildTask::BuildTask(GlobalManager* manager, BWAPI::UpgradeType toUpgrade, int priority, BWAPI::TilePosition position,
+    bool exactPosition)
+    : m_manager(manager), m_toUpgrade(std::move(toUpgrade)), m_priority(priority),
+    m_position(std::move(position)), m_exactPosition(exactPosition) {}
 
 void BuildTask::update() {
     // ----- Prevent spamming -----------------------------------------------
@@ -80,10 +84,18 @@ void BuildTask::update() {
                 m_state = State::moveToPosition; // go back and try again
             }
         }
-        else {
+        else if(true){
             // Train unit
             if (Tools::GetDepot()->train(m_toBuild))
                 m_state = State::waitForUnit; // go to next state
+        }
+        else {
+            m_toUpgrade.whatUpgrades();
+            /*auto units = BWAPI::PlayerInterface::getUnits();
+            for (auto unit : units) {
+                if(unit.canUpgrade(m_toUpgrade))
+
+            }*/
         }
         break;
     case State::waitForUnit:
@@ -166,3 +178,9 @@ std::string BuildTask::toString() const {
     }
 }
 
+std::variant<BWAPI::UnitType, BWAPI::UpgradeType> BuildTask::getObject() {
+    BWAPI::UnitType test = BWAPI::UnitType();
+    if(m_toBuild.getID() != BWAPI::UnitTypes::Enum::None)
+        return m_toBuild;
+    return m_toUpgrade;
+}

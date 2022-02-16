@@ -58,7 +58,9 @@ void BuildQueue::update() {
     for (int i = 0; i < std::min((size_t)(5), m_buildQueue.size()); i++) {
         std::string s = std::to_string(1 + i) + std::string(" - " + m_buildQueue[i]->getName());
         BWAPI::Broodwar->drawTextScreen(30, 15 + 10*i, s.c_str());
-        BWAPI::Broodwar->drawTextScreen(155, 15 + 10 * i, m_buildQueue[i]->toString().c_str());
+        BWAPI::Broodwar->drawTextScreen(155, 15 + 10 * i, ("M : " + std::to_string(std::visit([](const auto& field) { return field.mineralPrice(); }, m_buildQueue[i]->getObject()))).c_str());
+        BWAPI::Broodwar->drawTextScreen(195, 15 + 10 * i, ("G : " + std::to_string(std::visit([](const auto& field) { return field.mineralPrice(); }, m_buildQueue[i]->getObject()))).c_str());
+        BWAPI::Broodwar->drawTextScreen(235, 15 + 10 * i, m_buildQueue[i]->toString().c_str());
     }
 }
 void BuildQueue::clearAll() {
@@ -94,8 +96,8 @@ void BuildQueue::computeNeed() {
     for (int i = 0; i < std::min((size_t)(profondeur), m_buildQueue.size()); i++) {
         auto task = m_buildQueue[i];
         float factor = std::pow(alpha, (1.0f + m_buildQueue[0]->getPriority()) / (1.0f + m_buildQueue[i]->getPriority()) - 1.0f);
-        needCristal += factor * task->m_toBuild.mineralPrice();
-        needGas     += factor * task->m_toBuild.gasPrice();
+        needCristal += factor * std::visit([](const auto& field) { return field.mineralPrice(); }, task->getObject());
+        needGas     += factor * std::visit([](const auto& field) { return field.gasPrice(); }, task->getObject());
     }
 
     m_manager->setRessourceAim(std::ceil(needCristal), std::ceil(needGas));
