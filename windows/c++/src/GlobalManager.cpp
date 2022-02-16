@@ -22,6 +22,10 @@ void GlobalManager::initiate() {
 	BaseManager base(this);
 
 	bases.push_back(base);
+	std::vector<BWAPI::UnitType> build_vect = { workerType, workerType, supplyProviderType, refineryType };
+	std::vector<int> priority_vect = { 3, 0, 2, 1 };
+	base.Initialize(build_vect, priority_vect);
+	
 	//base.constructRefinery(300);
 
 	//base.setBuildOrder(buildorder);
