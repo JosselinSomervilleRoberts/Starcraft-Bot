@@ -23,6 +23,8 @@
         void unitCompleted(BWAPI::Unit unit);
         void computeNeed();
 
+        int getPriorityOfGas();
+
     private:
         std::vector<BuildTask*> m_buildQueue;
         GlobalManager* m_manager;

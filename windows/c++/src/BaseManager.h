@@ -19,7 +19,6 @@ public:
     void setBuildOrder(std::vector<BWAPI::Unit> buildOrder);
 
     void constructCommandCenter(BWAPI::Unit worker);
-    void constructRefinery(int importance = 0);
     void newWorker(int importance = 0);
     BWAPI::Unit acquireWorker();
     
@@ -32,6 +31,7 @@ public:
 
     void setRessourceAim(int cristalAim, int gasAim);
     void setRefineryState(BuildingState state);
+    void constructRefinery(int additionalPriority);
 
 private:
     WorkerManager workerManager;

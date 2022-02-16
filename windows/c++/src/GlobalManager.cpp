@@ -19,15 +19,15 @@ void GlobalManager::initiate() {
 		workerType,    workerType };
 	
 
-	BaseManager base(this);
+	BaseManager* base = new BaseManager(this);
 
 	bases.push_back(base); // ICI Ca fait une copie c'ets pas ouf
 	using namespace BWAPI::UnitTypes;
 
 	const auto roboticsType = Protoss_Dragoon;
-	std::vector<BWAPI::UnitType> build_vect = { workerType, workerType, workerType, workerType, workerType, supplyProviderType, refineryType, roboticsType };
-	std::vector<int> priority_vect = { 3, 3, 3, 3, 0, 2, 1, -2 };
-	bases[0].initializeQueue(build_vect, priority_vect);
+	std::vector<BWAPI::UnitType> build_vect = { workerType, workerType, workerType, workerType, workerType, supplyProviderType, roboticsType };
+	std::vector<int> priority_vect = { 3, 3, 3, 3, 1, 2, 0 };
+	bases[0]->initializeQueue(build_vect, priority_vect);
 	
 	
 	//base.constructRefinery(300);
@@ -38,7 +38,7 @@ void GlobalManager::initiate() {
 
 void GlobalManager::update() {
 	for (int i = 0; i < bases.size(); i++) {
-		bases[i].update();
+		bases[i]->update();
 	}
 }
 
@@ -94,7 +94,7 @@ int GlobalManager::getAvailableMinerals() {
 
 BWAPI::Unit GlobalManager::acquireWorker() {
 	// TODO :change for several bases
-	return bases[0].acquireWorker();
+	return bases[0]->acquireWorker();
 }
 
 
@@ -103,17 +103,17 @@ BWAPI::Unit GlobalManager::acquireWorker() {
 
 void GlobalManager::onUnitCreate(BWAPI::Unit unit) {
 	// TODO :change for several bases
-	bases[0].unitCreated(unit);
+	bases[0]->unitCreated(unit);
 }
 
 void GlobalManager::onUnitDestroy(BWAPI::Unit unit) {
 	// TODO :change for several bases
-	bases[0].unitDestroyed(unit);
+	bases[0]->unitDestroyed(unit);
 }
 
 void GlobalManager::onUnitComplete(BWAPI::Unit unit) {
 	// TODO :change for several bases
-	bases[0].unitCompleted(unit);
+	bases[0]->unitCompleted(unit);
 }
 
 
@@ -125,10 +125,10 @@ void GlobalManager::releaseWorker(BWAPI::Unit worker) {
 
 void  GlobalManager::setRessourceAim(int cristalAim, int gasAim) {
 	// TODO :change for several bases
-	bases[0].setRessourceAim(cristalAim, gasAim);
+	bases[0]->setRessourceAim(cristalAim, gasAim);
 }
 
 void GlobalManager::setRefineryState(BuildingState state) {
 	// TODO :change for several bases
-	bases[0].setRefineryState(state);
+	bases[0]->setRefineryState(state);
 }

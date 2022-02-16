@@ -37,7 +37,7 @@ public:
 
 
 private:
-    std::vector<BaseManager> bases;
+    std::vector<BaseManager*> bases;
     int reservedGas = 0;
     int reservedMinerals = 0;
 };

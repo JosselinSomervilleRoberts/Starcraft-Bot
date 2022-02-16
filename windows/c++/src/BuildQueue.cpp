@@ -36,12 +36,22 @@ void BuildQueue::addTask(std::variant<BWAPI::UnitType, BWAPI::UpgradeType> toBui
     if (indexTask >= 0) {
         buildtask = m_buildQueue[indexTask];
         buildtask->setPriority(priority);
+        buildtask->unique = true;
         // TODO: update pos
 
         m_buildQueue.erase(m_buildQueue.begin() + indexTask);
     }
-    if (std::holds_alternative<BWAPI::UnitType>(toBuild))     buildtask = new BuildTask(m_manager, std::get<BWAPI::UnitType>(toBuild), priority, position);
-    if (std::holds_alternative<BWAPI::UpgradeType>(toBuild))  buildtask = new BuildTask(m_manager, std::get<BWAPI::UpgradeType>(toBuild), priority, position);
+    else if (std::holds_alternative<BWAPI::UnitType>(toBuild)) {
+        buildtask = new BuildTask(m_manager, std::get<BWAPI::UnitType>(toBuild), priority, position);
+        buildtask->unique = unique;
+    }
+    else if (std::holds_alternative<BWAPI::UpgradeType>(toBuild)) {
+        buildtask = new BuildTask(m_manager, std::get<BWAPI::UpgradeType>(toBuild), priority, position);
+        buildtask->unique = unique;
+    }
+    else {
+        std::cout << "error" << std::endl;
+    }
     
 
     if (m_buildQueue.size() == 0 || priority <= m_buildQueue[m_buildQueue.size() - 1]->getPriority()) {
@@ -123,4 +133,21 @@ void BuildQueue::computeNeed() {
     }
 
     m_manager->setRessourceAim(std::ceil(needCristal), std::ceil(needGas));
+}
+
+
+int BuildQueue::getPriorityOfGas() {
+    for (auto& buildTask : m_buildQueue) {
+        auto object = buildTask->getObject();
+        // TODO: This is super ugly, fix that
+        if (std::holds_alternative<BWAPI::UnitType>(object)) {
+            int p = std::get<BWAPI::UnitType>(object).gasPrice();
+            if (p > 0) return buildTask->getPriority();
+        }
+        if (std::holds_alternative<BWAPI::UpgradeType>(object)) {
+            int p = std::get<BWAPI::UpgradeType>(object).gasPrice();
+            if (p > 0) return buildTask->getPriority();
+        }
+    }
+    return 0;
 }

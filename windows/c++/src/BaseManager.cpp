@@ -81,11 +81,6 @@ void BaseManager::newWorker(int importance) {
     queue.addTask(workerType, importance);
 }
 
-void BaseManager::constructRefinery(int importance) {
-    BWAPI::UnitType refineryType = BWAPI::Broodwar->self()->getRace().getRefinery();
-    queue.addTask(refineryType, importance);
-}
-
 
 
 void BaseManager::transmit_expansion() {
@@ -138,4 +133,12 @@ void  BaseManager::setRessourceAim(int cristalAim, int gasAim) {
 void BaseManager::setRefineryState(BuildingState state) {
     // TODO :change for several bases
     workerManager.setRefineryState(state);
+}
+
+
+void BaseManager::constructRefinery(int additionalPriority) {
+    int priority = queue.getPriorityOfGas() + additionalPriority;
+    auto refineryType = BWAPI::Broodwar->self()->getRace().getRefinery();
+    queue.addTask(refineryType, priority, BWAPI::Broodwar->self()->getStartLocation(), false);
+    setRefineryState(BuildingState::CONSTRUCTING);
 }

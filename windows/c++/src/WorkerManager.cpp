@@ -68,9 +68,9 @@ void WorkerManager::computeRepartition() {
 	if ((nbWorkersGasWanted > 0) && (refineryState != BuildingState::CONSTRUCTED)) {
 		// Need refinery
 		nbWorkersCristalWanted = nbWorkersTotal;
+		if (refineryState == BuildingState::NOT_BUILT)
+			base->constructRefinery(nbWorkersGasWanted);
 		nbWorkersGasWanted = 0;
-		//if(refineryState == BuildingState::NOT_BUILT)
-		//	base->constructRefinery(nbWorkersGasWanted);
 	}
 
 	float timeForCristal = timeForCristalPerWorker / nbWorkersCristalWanted;
