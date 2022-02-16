@@ -28,6 +28,7 @@ void GlobalManager::initiate() {
 	
 	//base.constructRefinery(300);
 
+
 	//base.setBuildOrder(buildorder);
 }
 
