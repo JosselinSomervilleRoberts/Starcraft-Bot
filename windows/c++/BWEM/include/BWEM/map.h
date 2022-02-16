@@ -7,9 +7,7 @@
 //
 //////////////////////////////////////////////////////////////////////////
 
-
-#ifndef BWEM_MAP_H
-#define BWEM_MAP_H
+#pragma once
 
 #include <BWAPI.h>
 #include <vector>
@@ -62,7 +60,7 @@ public:
 
 	// This has to be called before any other function is called.
 	// A good place to do this is in ExampleAIModule::onStart()
-	virtual void						Initialize() = 0;
+	virtual void						Initialize(BWAPI::Game *game) = 0;
 
 	// Will return true once Initialize() has been called.
 	bool								Initialized() const			{ return m_size != 0; }
@@ -212,6 +210,8 @@ public:
 	// Returns the union of the geometry of all the ChokePoints. Cf. ChokePoint::Geometry()
 	virtual const std::vector<std::pair<std::pair<Area::id, Area::id>, BWAPI::WalkPosition>> & RawFrontier() const = 0;
 
+  void Draw(BWAPI::Game *game) const;
+
 	virtual								~Map() = default;
 
 protected:
@@ -305,7 +305,3 @@ bool seaSide(BWAPI::WalkPosition p, const Map * pMap);
 
 
 } // namespace BWEM
-
-
-#endif
-

@@ -2,17 +2,16 @@
 
 #include <BWAPI.h>
 #include <string>
-#include "Tools.h"
 
 
 
-    class Manager;
+    class GlobalManager;
 
     class BuildTask {
     public:
         enum class State {
             initialize,
-            acquireResources,
+            reserveResources,
             acquireWorker,
             moveToPosition,
             startBuild,
@@ -25,10 +24,9 @@
         // of resources for tasks with the same priority is "greedy". If a task is able to allocate all
         // its resources, it will do so. For tasks with different priorities, the lesser tasks will
         // always have to wait for the higher tasks to allocate their resources.
-        enum class Priority : int { low = -100, normal = 0, high = 100, buildorder = 200 };
 
     public:
-        BuildTask(Manager& manager, BWAPI::UnitType toBuild, Priority priority = Priority::normal,
+        BuildTask(GlobalManager* manager, BWAPI::UnitType toBuild, int priority = 0,
             BWAPI::TilePosition position = BWAPI::Broodwar->self()->getStartLocation(),
             bool                exactPosition = false);
 
@@ -39,13 +37,13 @@
         bool onUnitDestroyed(const BWAPI::Unit& unit);
 
         State       getState() const { return m_state; }
-        Priority    getPriority() const { return m_priority; }
+        int    getPriority() const { return m_priority; }
         std::string toString() const;
 
     private:
-        Manager* m_manager;
+        GlobalManager* m_manager;
         BWAPI::UnitType     m_toBuild;
-        Priority            m_priority;
+        int            m_priority;
         BWAPI::TilePosition m_position;
         bool                m_exactPosition;
 
@@ -56,3 +54,4 @@
         BWAPI::Unit         m_buildingUnit = nullptr;
     };
 
+// namespace

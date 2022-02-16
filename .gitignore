@@ -29,3 +29,5 @@ windows/starcraft/*.mpq
 *.map
 *.pdb
 *.ilk
+*.exe
+*.obj

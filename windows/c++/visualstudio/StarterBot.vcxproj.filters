@@ -19,9 +19,10 @@
       <Filter>Triggers</Filter>
     </ClCompile>
     <ClCompile Include="..\src\BuildTask.cpp" />
-    <ClCompile Include="..\src\Manager.cpp" />
     <ClCompile Include="..\src\WorkerManager.cpp" />
     <ClCompile Include="..\src\BaseManager.cpp" />
+    <ClCompile Include="..\src\GlobalManager.cpp" />
+    <ClCompile Include="..\src\BuildQueue.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\BuildOrder\BOs\BOTest.h" />
@@ -42,10 +43,11 @@
       <Filter>Triggers</Filter>
     </ClInclude>
     <ClInclude Include="..\src\BuildTask.h" />
-    <ClInclude Include="..\src\Manager.h" />
     <ClInclude Include="..\src\utils.h" />
     <ClInclude Include="..\src\WorkerManager.h" />
     <ClInclude Include="..\src\BaseManager.h" />
+    <ClInclude Include="..\src\GlobalManager.h" />
+    <ClInclude Include="..\src\BuildQueue.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="BuildOrder">

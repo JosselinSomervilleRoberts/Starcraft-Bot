@@ -39,7 +39,7 @@
         // Interface for BuildTask
         int  getAvailableMinerals() const;
         int  getAvailableGas() const;
-        bool acquireResources(int minerals, int gas, BuildTask::Priority priority);
+        bool acquireResources(int minerals, int gas, int priority);
         void releaseResources(int minerals, int gas);
         BWAPI::Unit acquireWorker(const BWAPI::UnitType& workerType,
             const BWAPI::Position& nearPosition);

@@ -6,7 +6,7 @@
 #include "Manager.h"
 
 
-StarterBot::StarterBot(): bo(BOTest()), m_manager(*this) {}
+StarterBot::StarterBot(): manager() {}
 
 // Called when the bot starts!
 void StarterBot::onStart()
@@ -20,7 +20,9 @@ void StarterBot::onStart()
 
     // Call MapTools OnStart
     m_mapTools.onStart();
+    manager.initiate();
 
+    /*
     std::cout << Tools::GetNbUnits() << std::endl;
 
     using namespace BWAPI::UnitTypes;
@@ -39,7 +41,7 @@ void StarterBot::onStart()
     for (const auto& unit : buildorder)
         m_manager.addBuildTask({ m_manager, unit, (BuildTask::Priority)priority-- });
 
-    Tools::GetUnitOfType(BWAPI::Broodwar->self()->getRace().getCenter())->train(BWAPI::Broodwar->self()->getRace().getWorker());
+    Tools::GetUnitOfType(BWAPI::Broodwar->self()->getRace().getCenter())->train(BWAPI::Broodwar->self()->getRace().getWorker());*/
 }
 
 // Called whenever the game ends and tells you if you won or not
@@ -51,43 +53,9 @@ void StarterBot::onEnd(bool isWinner)
 // Called on each frame of the game
 void StarterBot::onFrame()
 {
-    // Update manager
-    m_manager.update();
-    // Update our MapTools information
+    manager.update();
     m_mapTools.onFrame();
-
-    // Send our idle workers to mine minerals so they don't just stand there
-    //sendIdleWorkersToMinerals();
-    //followBuildOrder();
-    //buildAdditionalSupply();
-
-    // Train more workers so we can gather more income
-    //trainAdditionalWorkers();
-
-    // Build more supply if we are going to run out soon
-    //buildAdditionalSupply();
-
-    // Draw unit health bars, which brood war unfortunately does not do
     Tools::DrawUnitHealthBars();
-
-    // Draw some relevent information to the screen to help us debug the bot
-    //drawDebugInformation();
-
-    /*
-    if (BWAPI::Broodwar->self()->supplyUsed() >= 22) {
-        const BWAPI::Unitset& myUnits = BWAPI::Broodwar->self()->getUnits();
-        BWAPI::Unit unitSelected;
-        for (auto& unit : myUnits)
-        {
-            // Check the unit type, if it is an idle worker, then we want to send it somewhere
-            if (unit->getType().isWorker())
-            {
-                unitSelected = unit;
-            }
-        }
-        BWAPI::Position pos = unitSelected->getPosition() + BWAPI::Position(0, 50);
-        unitSelected->move(pos);
-    }*/
 }
 
 // Send our idle workers to mine minerals so they don't just stand there
@@ -110,12 +78,6 @@ void StarterBot::sendIdleWorkersToMinerals()
     }
 }
 
-void StarterBot::followBuildOrder() {
-    if (this->bo.onGoing()) {
-        bool stepCompleted = this->bo.getCurrentStep().doAction();
-        if (stepCompleted) { this->bo.nextStep(); }
-    }
-}
 
 // Train more workers so we can gather more income
 void StarterBot::trainAdditionalWorkers()
@@ -165,7 +127,7 @@ void StarterBot::drawDebugInformation()
 // Called whenever a unit is destroyed, with a pointer to the unit
 void StarterBot::onUnitDestroy(BWAPI::Unit unit)
 {
-	
+    manager.onUnitDestroy(unit);
 }
 
 // Called whenever a unit is morphed, with a pointer to the unit
@@ -188,14 +150,14 @@ void StarterBot::onSendText(std::string text)
 // Units are created in buildings like barracks before they are visible, 
 // so this will trigger when you issue the build command for most units
 void StarterBot::onUnitCreate(BWAPI::Unit unit)
-{ 
-	
+{
+    manager.onUnitCreate(unit);
 }
 
 // Called whenever a unit finished construction, with a pointer to the unit
 void StarterBot::onUnitComplete(BWAPI::Unit unit)
 {
-	
+    manager.onUnitComplete(unit);
 }
 
 // Called whenever a unit appears, with a pointer to the destroyed unit

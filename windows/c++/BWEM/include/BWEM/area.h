@@ -7,15 +7,13 @@
 //
 //////////////////////////////////////////////////////////////////////////
 
-
-#ifndef BWEM_AREA_H
-#define BWEM_AREA_H
+#pragma once
 
 #include <BWAPI.h>
+#include "base.h"
 #include "bwapiExt.h"
 #include "utils.h"
 #include "defs.h"
-
 
 namespace BWEM {
 
@@ -27,8 +25,6 @@ class ChokePoint;
 class Map;
 
 namespace detail { class Graph; }
-
-
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 //                                                                                          //
@@ -179,12 +175,4 @@ private:
 	std::vector<Base>				m_Bases;
 };
 
-
-
-
-
 } // namespace BWEM
-
-
-#endif
-

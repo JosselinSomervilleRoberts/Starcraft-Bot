@@ -7,9 +7,7 @@
 //
 //////////////////////////////////////////////////////////////////////////
 
-
-#ifndef BWEM_GRID_MAP_H
-#define BWEM_GRID_MAP_H
+#pragma once
 
 #include <BWAPI.h>
 #include <vector>
@@ -111,7 +109,3 @@ GridMap<T, N>::GridMap(const Map * pMap)
 
 
 }} // namespace BWEM::utils
-
-
-#endif
-

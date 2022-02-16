@@ -1,8 +1,7 @@
 #pragma once
 
 #include "MapTools.h"
-#include "BuildOrder/BuildOrder.h"
-#include "Manager.h"
+#include "GlobalManager.h"
 #include <BWAPI.h>
 
 class StarterBot
@@ -32,13 +31,11 @@ public:
 	void onUnitHide(BWAPI::Unit unit);
 	void onUnitRenegade(BWAPI::Unit unit);
 
-	void followBuildOrder();
 
 	// Getter for members.
 	// Manager& manager() { return m_manager; };
 	// const Manager& manager() const { return m_manager; };
 
 private:
-	BuildOrder bo;
-	Manager m_manager;
+	GlobalManager manager;
 };

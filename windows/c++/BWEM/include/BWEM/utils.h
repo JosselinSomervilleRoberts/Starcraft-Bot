@@ -7,12 +7,9 @@
 //
 //////////////////////////////////////////////////////////////////////////
 
+#pragma once
 
-
-
-#ifndef BWEM_UTILS_H
-#define BWEM_UTILS_H
-
+#include <math.h>
 
 #include <string>
 #include <vector>
@@ -20,28 +17,21 @@
 #include <cstdint>
 #include <limits>
 #include <fstream>
-#include "defs.h"
+#include <sstream>
 
+#include "defs.h"
 
 namespace BWEM {
 
-
 namespace utils {
-
-
 
 //extern std::ofstream Log;
 
-
-
-
 template <class T> void unused(const T &) {}
-
-
 
 inline int queenWiseNorm(int dx, int dy)
 {
-	return std::max(abs(dx), abs(dy));
+	return ::std::max(abs(dx), abs(dy));
 }
 
 
@@ -96,7 +86,7 @@ bool from_string(const std::string & s, T & dest)
 }
 
 
-bool canWrite(const std::string & fileName);
+bool canWrite(const ::std::string & fileName);
 
 // http://stackoverflow.com/questions/17224256/function-checking-if-an-integer-type-can-fit-a-value-of-possibly-different-inte
 template <typename T, typename U>
@@ -260,19 +250,4 @@ private:
 	mutable int			m_data = 0;
 };
 
-
-
-
-
 }} // namespace BWEM::utils
-
-
-
-
-
-
-
-
-
-#endif
-

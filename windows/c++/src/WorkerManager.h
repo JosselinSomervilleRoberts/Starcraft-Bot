@@ -7,12 +7,21 @@
 
 #include "Tools.h"
 
+class BaseManager;
+
+enum class BuildingState {
+    NOT_BUILT,
+    CONSTRUCTING,
+    CONSTRUCTED,
+};
+
 class WorkerManager {
 
     public:
-        WorkerManager();
+        WorkerManager(BaseManager* base_);
 
         void findAvailableWorkers(int nbWanted);
+        BWAPI::Unit getAvailableWorker();
         void addWorker(BWAPI::Unit worker);
         void update();
 
@@ -26,10 +35,14 @@ class WorkerManager {
         void setCristalAim(int cristal) { cristalAim = cristal; };
         void setGasAim(int gas) { gasAim = gas; };
 
+
+        BuildingState refineryState = BuildingState::NOT_BUILT;
+
     private:
+        BaseManager* base;
         std::vector<BWAPI::Unit> workers;
         std::vector<BWAPI::Unit> workersCristal;
-        std::vector<BWAPI::Unit> workersGas;
+        std::vector<BWAPI::Unit> workersGas; 
         std::vector<BWAPI::Unit> workersAvailable;
         int nbWorkersTotal = 0;
         int nbWorkersCristalWanted = 0;
@@ -40,5 +53,4 @@ class WorkerManager {
         int cristalNeed = 0;
         int gasNeed = 0;
 
-        bool hasRefinery = false;
 };
