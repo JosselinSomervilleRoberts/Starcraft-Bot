@@ -35,10 +35,10 @@ class WorkerManager {
         void setCristalAim(int cristal) { cristalAim = cristal; };
         void setGasAim(int gas) { gasAim = gas; };
 
-
-        BuildingState refineryState = BuildingState::NOT_BUILT;
+        void setRefineryState(BuildingState state);
 
     private:
+        BuildingState refineryState = BuildingState::NOT_BUILT;
         BaseManager* base;
         std::vector<BWAPI::Unit> workers;
         std::vector<BWAPI::Unit> workersCristal;

@@ -41,9 +41,11 @@
         std::string getName() const;
         std::string toString() const;
 
+
+        BWAPI::UnitType     m_toBuild;
+
     private:
         GlobalManager* m_manager;
-        BWAPI::UnitType     m_toBuild;
         int            m_priority;
         BWAPI::TilePosition m_position;
         bool                m_exactPosition;
