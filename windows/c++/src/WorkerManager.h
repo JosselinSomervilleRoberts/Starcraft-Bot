@@ -30,6 +30,7 @@ class WorkerManager {
 
         void computeNeed();
         void computeRepartition();
+        void checkRepartition();
 
         void setAim(int cristal, int gas) { cristalAim = cristal; gasAim = gas; };
         void setCristalAim(int cristal) { cristalAim = cristal; };

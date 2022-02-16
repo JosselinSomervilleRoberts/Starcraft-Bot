@@ -34,6 +34,31 @@ void WorkerManager::addWorker(BWAPI::Unit worker) {
 }
 
 
+void WorkerManager::checkRepartition() {
+	for (auto worker : workers) {
+		if (worker->isGatheringGas()) {
+			auto indexWorker = std::find(workersCristal.begin(), workersCristal.end(), worker);
+			if (indexWorker != workersCristal.end()) workersCristal.erase(indexWorker);
+
+			indexWorker = std::find(workersAvailable.begin(), workersAvailable.end(), worker);
+			if (indexWorker != workersAvailable.end()) workersAvailable.erase(indexWorker);
+
+			indexWorker = std::find(workersGas.begin(), workersGas.end(), worker);
+			if (indexWorker == workersGas.end()) workersGas.push_back(worker);
+		}
+		else if (worker->isGatheringMinerals()) {
+			auto indexWorker = std::find(workersGas.begin(), workersGas.end(), worker);
+			if (indexWorker != workersGas.end()) workersGas.erase(indexWorker);
+
+			indexWorker = std::find(workersAvailable.begin(), workersAvailable.end(), worker);
+			if (indexWorker != workersAvailable.end()) workersAvailable.erase(indexWorker);
+
+			indexWorker = std::find(workersCristal.begin(), workersCristal.end(), worker);
+			if (indexWorker == workersCristal.end()) workersCristal.push_back(worker);
+		}
+	}
+}
+
 void WorkerManager::computeRepartition() {
 	float timeForCristalPerWorker = cristalNeed / CRISTAL_PER_MINUTE;
 	float timeForGasPerWorker     = gasNeed / GAS_PER_MINUTE;
@@ -71,6 +96,8 @@ void WorkerManager::computeRepartition() {
 
 
 void WorkerManager::update() {
+	checkRepartition();
+
 	// We check if we need to change the repartition
 	int diffGas = (int)(nbWorkersGasWanted - workersGas.size());
 	int diffCristal = (int)(nbWorkersCristalWanted - workersCristal.size());
