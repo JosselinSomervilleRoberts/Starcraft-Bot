@@ -30,6 +30,8 @@ public:
     void initializeQueue(std::vector<BWAPI::UnitType> unitQueue, std::vector<int> priorityQueue);
     void initialize(BWAPI::Unit commandCenter);
 
+    void setRessourceAim(int cristalAim, int gasAim);
+    void setRefineryState(BuildingState state);
 
 private:
     WorkerManager workerManager;

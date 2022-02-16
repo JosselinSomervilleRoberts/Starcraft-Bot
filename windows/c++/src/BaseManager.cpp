@@ -5,15 +5,6 @@ BaseManager::BaseManager(GlobalManager* manager_) : workerManager(this), queue(m
     const BWAPI::UnitType commandCenterType = BWAPI::Broodwar->self()->getRace().getCenter();
     const BWAPI::Unit commandCenter = Tools::GetUnitOfType(commandCenterType);
     initialize(commandCenter);
-
-    using namespace BWAPI::UnitTypes;
-
-    const auto workerType = BWAPI::Broodwar->self()->getRace().getWorker();
-    const auto supplyProviderType = BWAPI::Broodwar->self()->getRace().getSupplyProvider();
-    const auto refineryType = BWAPI::Broodwar->self()->getRace().getRefinery();
-    std::vector<BWAPI::UnitType> build_vect = { workerType, workerType, supplyProviderType, refineryType };
-    std::vector<int> priority_vect = { 3, 0, 2, 1 };
-    initializeQueue(build_vect, priority_vect);
 }
 
 
@@ -93,7 +84,6 @@ void BaseManager::newWorker(int importance) {
 void BaseManager::constructRefinery(int importance) {
     BWAPI::UnitType refineryType = BWAPI::Broodwar->self()->getRace().getRefinery();
     queue.addTask(refineryType, importance);
-    workerManager.refineryState = BuildingState::CONSTRUCTING;
 }
 
 
@@ -133,11 +123,19 @@ void BaseManager::unitCompleted(BWAPI::Unit unit) {
 
     if (type.isBuilding()) {
         buildings.push_back(unit);
-
-        BWAPI::UnitType refineryType = BWAPI::Broodwar->self()->getRace().getRefinery();
-        if(type == refineryType)
-            workerManager.refineryState = BuildingState::CONSTRUCTED;
     }
 
     queue.unitCompleted(unit);
+}
+
+
+void  BaseManager::setRessourceAim(int cristalAim, int gasAim) {
+    // TODO :change for several bases
+    workerManager.setAim(cristalAim, gasAim);
+    workerManager.computeNeed();
+}
+
+void BaseManager::setRefineryState(BuildingState state) {
+    // TODO :change for several bases
+    workerManager.setRefineryState(state);
 }

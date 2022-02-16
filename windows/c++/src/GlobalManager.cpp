@@ -21,7 +21,13 @@ void GlobalManager::initiate() {
 
 	BaseManager base(this);
 
-	bases.push_back(base);
+	bases.push_back(base); // ICI Ca fait une copie c'ets pas ouf
+	using namespace BWAPI::UnitTypes;
+
+	const auto roboticsType = Protoss_Dragoon;
+	std::vector<BWAPI::UnitType> build_vect = { workerType, workerType, workerType, workerType, workerType, supplyProviderType, refineryType, roboticsType };
+	std::vector<int> priority_vect = { 3, 3, 3, 3, 0, 2, 1, -2 };
+	bases[0].initializeQueue(build_vect, priority_vect);
 	
 	
 	//base.constructRefinery(300);
@@ -114,4 +120,15 @@ void GlobalManager::onUnitComplete(BWAPI::Unit unit) {
 void GlobalManager::releaseWorker(BWAPI::Unit worker) {
 	// TODO : clean that shit
 	onUnitComplete(worker);
+}
+
+
+void  GlobalManager::setRessourceAim(int cristalAim, int gasAim) {
+	// TODO :change for several bases
+	bases[0].setRessourceAim(cristalAim, gasAim);
+}
+
+void GlobalManager::setRefineryState(BuildingState state) {
+	// TODO :change for several bases
+	bases[0].setRefineryState(state);
 }

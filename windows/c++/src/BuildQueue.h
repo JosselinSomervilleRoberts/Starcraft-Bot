@@ -21,6 +21,7 @@
         std::string toString() const;
 
         void unitCompleted(BWAPI::Unit unit);
+        void computeNeed();
 
     private:
         std::vector<BuildTask*> m_buildQueue;

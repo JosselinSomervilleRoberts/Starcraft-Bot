@@ -18,7 +18,8 @@ void BuildTask::update() {
     if (BWAPI::Broodwar->getFrameCount() % BWAPI::Broodwar->getLatencyFrames() != 0)
         return;
 
-    std::cout << "Build task update " << this->toString() << std::endl;
+    //std::cout << "Build task update " << this->toString() << std::endl;
+    const auto refineryType = BWAPI::Broodwar->self()->getRace().getRefinery();
 
     switch (m_state) {
     case State::initialize:
@@ -42,6 +43,7 @@ void BuildTask::update() {
         break;
 
     case State::moveToPosition: {
+        if (m_toBuild == refineryType) m_manager->setRefineryState(BuildingState::CONSTRUCTING);
         if (!m_allocatedBuildPosition) {
             m_buildPosition =
                 m_exactPosition ? m_position : BWAPI::Broodwar->getBuildLocation(m_toBuild, m_position);
@@ -91,11 +93,11 @@ void BuildTask::update() {
         }
         break;
     case State::building:
-        assert(m_buildingUnit != nullptr);
-        if (m_buildingUnit->isCompleted()) {
-            //m_manager->releaseWorker(m_worker);
-            m_state = State::finalize; // go to next state
+        if (m_toBuild == refineryType) m_manager->setRefineryState(BuildingState::CONSTRUCTED);
+        if (m_toBuild.isBuilding()) {
+            m_manager->releaseWorker(m_worker);
         }
+        m_state = State::finalize; // go to next state
         break;
     case State::finalize:
         // At this state, this build task can be removed from the queue.
@@ -130,6 +132,10 @@ bool BuildTask::onUnitDestroyed(const BWAPI::Unit& unit) {
     }
     return false;
 
+
+    const auto refineryType = BWAPI::Broodwar->self()->getRace().getRefinery();
+    if (m_toBuild == refineryType) m_manager->setRefineryState(BuildingState::NOT_BUILT);
+
 }
 std::string BuildTask::getName() const {
     return m_toBuild.getName();
@@ -138,23 +144,23 @@ std::string BuildTask::getName() const {
 std::string BuildTask::toString() const {
     switch (m_state) {
     case State::initialize:
-        return m_toBuild.getName() + ": Initialization";
+        return "Initialization";
     case State::reserveResources:
-        return m_toBuild.getName() + ": Reserving resources...";
+        return "Reserving resources...";
     case State::acquireWorker:
-        return m_toBuild.getName() + ": Acquiring worker...";
+        return "Acquiring worker...";
     case State::moveToPosition:
-        return m_toBuild.getName() + ": Moving to position...";
+        return "Moving to position...";
     case State::startBuild:
     case State::waitForUnit:
-        return m_toBuild.getName() + ": Start building...";
+        return "Start building...";
     case State::building: {
         const int progress =
             100 - (100 * m_buildingUnit->getRemainingBuildTime() / m_toBuild.buildTime());
         return m_toBuild.getName() + " (" + std::to_string(progress) + " %)";
     }
     case State::finalize:
-        return m_toBuild.getName() + ": Finalization";
+        return "Finalization";
     default:
         throw std::logic_error("Unknown BuildTask::State!");
     }

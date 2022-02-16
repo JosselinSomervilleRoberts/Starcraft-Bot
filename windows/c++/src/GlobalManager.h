@@ -27,6 +27,8 @@ public:
 
     BWAPI::Unit acquireWorker();
     void releaseWorker(BWAPI::Unit worker);
+    void setRessourceAim(int cristalAim, int gasAim);
+    void setRefineryState(BuildingState state);
 
 
     void onUnitCreate(BWAPI::Unit unit);
