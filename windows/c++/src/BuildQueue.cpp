@@ -17,9 +17,31 @@ BuildQueue::BuildQueue(GlobalManager* manager)
 
 
 
-void BuildQueue::addTask(UnitType toBuild, int priority, TilePosition position) {
-    std::cout << "Add Task : toBuild " << toBuild << " - " << m_buildQueue.size() << std::endl;
-    BuildTask* buildtask = new BuildTask(m_manager, toBuild, priority, position);
+void BuildQueue::addTask(std::variant<BWAPI::UnitType, BWAPI::UpgradeType> toBuild, int priority, TilePosition position, bool unique) {
+    //std::cout << "Add Task : toBuild " << toBuild << " - " << m_buildQueue.size() << std::endl;
+    BuildTask* buildtask;
+
+    // First check if there is not a unique task that already exists with the same object
+    int indexTask = -1;
+    for (int i = 0; i < m_buildQueue.size(); i++) {
+        auto taskObject = m_buildQueue[i]->getObject();
+        if (taskObject == toBuild) { // Same unit or upgrade
+            if (m_buildQueue[i]->unique || unique) {
+                indexTask = i;
+                i = m_buildQueue.size();
+            }
+        }
+    }
+
+    if (indexTask >= 0) {
+        buildtask = m_buildQueue[indexTask];
+        buildtask->setPriority(priority);
+        // TODO: update pos
+
+        m_buildQueue.erase(m_buildQueue.begin() + indexTask);
+    }
+    if (std::holds_alternative<BWAPI::UnitType>(toBuild))     buildtask = new BuildTask(m_manager, std::get<BWAPI::UnitType>(toBuild), priority, position);
+    if (std::holds_alternative<BWAPI::UpgradeType>(toBuild))  buildtask = new BuildTask(m_manager, std::get<BWAPI::UpgradeType>(toBuild), priority, position);
     
 
     if (m_buildQueue.size() == 0 || priority <= m_buildQueue[m_buildQueue.size() - 1]->getPriority()) {
@@ -56,10 +78,10 @@ void BuildQueue::update() {
 
     
     for (int i = 0; i < std::min((size_t)(5), m_buildQueue.size()); i++) {
-        std::string s = std::to_string(1 + i) + std::string(" - " + m_buildQueue[i]->getName());
-        BWAPI::Broodwar->drawTextScreen(30, 15 + 10*i, s.c_str());
+        BWAPI::Broodwar->drawTextScreen(28, 15 + 10 * i, std::to_string(m_buildQueue[i]->getPriority()).c_str());
+        BWAPI::Broodwar->drawTextScreen(40, 15 + 10*i, ("- " + m_buildQueue[i]->getName()).c_str());
         BWAPI::Broodwar->drawTextScreen(155, 15 + 10 * i, ("M : " + std::to_string(std::visit([](const auto& field) { return field.mineralPrice(); }, m_buildQueue[i]->getObject()))).c_str());
-        BWAPI::Broodwar->drawTextScreen(195, 15 + 10 * i, ("G : " + std::to_string(std::visit([](const auto& field) { return field.mineralPrice(); }, m_buildQueue[i]->getObject()))).c_str());
+        BWAPI::Broodwar->drawTextScreen(195, 15 + 10 * i, ("G : " + std::to_string(std::visit([](const auto& field) { return field.gasPrice(); }, m_buildQueue[i]->getObject()))).c_str());
         BWAPI::Broodwar->drawTextScreen(235, 15 + 10 * i, m_buildQueue[i]->toString().c_str());
     }
 }

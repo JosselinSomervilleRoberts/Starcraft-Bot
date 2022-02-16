@@ -31,19 +31,21 @@
             BWAPI::TilePosition position = BWAPI::Broodwar->self()->getStartLocation(),
             bool                exactPosition = false);
         BuildTask(GlobalManager* manager, BWAPI::UpgradeType toUpgrade, int priority, BWAPI::TilePosition position,
-            bool exactPosition);
+            bool exactPosition = false);
         // Called every KBot::onFrame().
         void update();
 
         bool onUnitCreatedOrMorphed(const BWAPI::Unit& unit);
         bool onUnitDestroyed(const BWAPI::Unit& unit);
 
-
+        void setPriority(int prio) { m_priority = prio; };
         State getState() const { return m_state; }
         int getPriority() const { return m_priority; }
         std::string getName() const;
         std::string toString() const;
         std::variant<BWAPI::UnitType, BWAPI::UpgradeType> getObject();
+
+        bool unique = false;
         
     private:
         GlobalManager* m_manager;
