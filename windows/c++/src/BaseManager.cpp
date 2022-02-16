@@ -76,9 +76,8 @@ void BaseManager::constructCommandCenter(BWAPI::Unit worker) {
 
 
 void BaseManager::newWorker(int importance) {
-    std::cout << "addTask new worker" << std::endl;
-    BWAPI::UnitType workerType = BWAPI::Broodwar->self()->getRace().getWorker();
-    queue.addTask(workerType, importance);
+    auto workerType = BWAPI::UnitTypes::Protoss_Probe;
+    queue.addTask(workerType, importance, BWAPI::Broodwar->self()->getStartLocation(), false);
 }
 
 
@@ -105,7 +104,8 @@ void BaseManager::unitDestroyed(BWAPI::Unit unit) {
         // Here decide what we do
         // TODO : change to have more clever behaviour
         BWAPI::UnitType type = unit->getType();
-        queue.addTask(type, 100);
+        if(type.isBuilding())
+            queue.addTask(type, 100);
     }
 }
 
@@ -140,5 +140,4 @@ void BaseManager::constructRefinery(int additionalPriority) {
     int priority = queue.getPriorityOfGas() + additionalPriority;
     auto refineryType = BWAPI::Broodwar->self()->getRace().getRefinery();
     queue.addTask(refineryType, priority, BWAPI::Broodwar->self()->getStartLocation(), false);
-    setRefineryState(BuildingState::CONSTRUCTING);
 }

@@ -122,6 +122,10 @@ void BuildQueue::computeNeed() {
     float needGas = 0;
     float alpha = 0.7f;
     int totalPriority = 0;
+    int totalSupply = BWAPI::Broodwar->self()->supplyTotal();
+    bool addSupply = false;
+    float supply = BWAPI::Broodwar->self()->supplyUsed();
+
     for (int i = 0; i < std::min((size_t)(profondeur), m_buildQueue.size()); i++)
         totalPriority += m_buildQueue[i]->getPriority();
 
@@ -130,6 +134,15 @@ void BuildQueue::computeNeed() {
         float factor = std::pow(alpha, (1.0f + m_buildQueue[0]->getPriority()) / (1.0f + m_buildQueue[i]->getPriority()) - 1.0f);
         needCristal += factor * std::visit([](const auto& field) { return field.mineralPrice(); }, task->getObject());
         needGas     += factor * std::visit([](const auto& field) { return field.gasPrice(); }, task->getObject());
+        /*
+        if (std::holds_alternative<BWAPI::UnitType>(task->getObject())) {
+            supply += factor * std::get<BWAPI::UnitType>(task->getObject()).supplyRequired();
+            if (supply > totalSupply && !(addSupply)) {
+                BWAPI::UnitType supplyType = BWAPI::Broodwar->self()->getRace().getSupplyProvider();
+                //addTask(supplyType, task->getPriority() + 1, BWAPI::Broodwar->self()->getStartLocation(), true);
+                addSupply = true;
+            }
+        }*/
     }
 
     m_manager->setRessourceAim(std::ceil(needCristal), std::ceil(needGas));

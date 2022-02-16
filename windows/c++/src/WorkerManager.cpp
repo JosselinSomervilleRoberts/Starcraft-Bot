@@ -87,9 +87,10 @@ void WorkerManager::computeRepartition() {
 			// Need to expand for more workers
 			base->transmit_expansion();
 		}
-		else if(nbWorkersTotal > 0) {
+		else if(nbWorkersTotal > 5) {
 			// We can ask for a new worker in this base
-			//base->newWorker();
+			int importance = 1;// (int)(std::round(3 * (std::max(timeForCristal, timeForGas) - TIME_MAX_MINUTE) / (float)(TIME_MAX_MINUTE)));
+			//base->newWorker(importance);
 		}
 	}
 }
