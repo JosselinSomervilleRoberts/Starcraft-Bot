@@ -36,8 +36,9 @@
         bool onUnitCreatedOrMorphed(const BWAPI::Unit& unit);
         bool onUnitDestroyed(const BWAPI::Unit& unit);
 
-        State       getState() const { return m_state; }
-        int    getPriority() const { return m_priority; }
+        State getState() const { return m_state; }
+        int getPriority() const { return m_priority; }
+        std::string getName() const;
         std::string toString() const;
 
     private:

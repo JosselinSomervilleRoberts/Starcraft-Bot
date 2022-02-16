@@ -56,8 +56,8 @@ void PlayGame()
         {
             switch (e.getType())
             {
-                case BWAPI::EventType::MatchStart:   { bot.onStart();                       break; }
-                case BWAPI::EventType::MatchFrame:   { bot.onFrame();                       break; }
+                case BWAPI::EventType::MatchStart:   { bot.onStart();          break; }
+                case BWAPI::EventType::MatchFrame:   { bot.onFrame();                 break; }
                 case BWAPI::EventType::MatchEnd:     { bot.onEnd(e.isWinner());             break; }
                 case BWAPI::EventType::UnitShow:     { bot.onUnitShow(e.getUnit());         break; }
                 case BWAPI::EventType::UnitHide:     { bot.onUnitHide(e.getUnit());         break; }
