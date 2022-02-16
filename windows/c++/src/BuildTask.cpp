@@ -18,6 +18,8 @@ void BuildTask::update() {
     if (BWAPI::Broodwar->getFrameCount() % BWAPI::Broodwar->getLatencyFrames() != 0)
         return;
 
+    std::cout << "Build task update " << this->toString() << std::endl;
+
     switch (m_state) {
     case State::initialize:
         // TODO: Make checks and stuff...
@@ -91,7 +93,7 @@ void BuildTask::update() {
     case State::building:
         assert(m_buildingUnit != nullptr);
         if (m_buildingUnit->isCompleted()) {
-            m_manager->releaseWorker(m_worker);
+            //m_manager->releaseWorker(m_worker);
             m_state = State::finalize; // go to next state
         }
         break;

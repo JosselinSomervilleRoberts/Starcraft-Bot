@@ -27,7 +27,8 @@ public:
     void unitCreated(BWAPI::Unit unit);
     void unitDestroyed(BWAPI::Unit unit);
     void unitCompleted(BWAPI::Unit unit);
-    void BaseManager::Initialize(std::vector<BWAPI::UnitType> unitQueue, std::vector<int> priorityQueue);
+    void initializeQueue(std::vector<BWAPI::UnitType> unitQueue, std::vector<int> priorityQueue);
+    void initialize(BWAPI::Unit commandCenter);
 
 
 private:
