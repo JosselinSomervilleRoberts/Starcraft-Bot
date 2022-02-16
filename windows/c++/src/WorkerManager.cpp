@@ -42,8 +42,8 @@ void WorkerManager::computeRepartition() {
 	if ((nbWorkersGasWanted > 0) && (refineryState != BuildingState::CONSTRUCTED)) {
 		// Need refinery
 		nbWorkersCristalWanted = nbWorkersTotal;
-		if(refineryState == BuildingState::NOT_BUILT)
-			base->constructRefinery(nbWorkersGasWanted);
+		//if(refineryState == BuildingState::NOT_BUILT)
+		//	base->constructRefinery(nbWorkersGasWanted);
 	}
 
 	float timeForCristal = timeForCristalPerWorker / nbWorkersCristalWanted;
@@ -62,7 +62,7 @@ void WorkerManager::computeRepartition() {
 		}
 		else if(nbWorkersTotal > 0) {
 			// We can ask for a new worker in this base
-			base->newWorker();
+			//base->newWorker();
 		}
 	}
 }

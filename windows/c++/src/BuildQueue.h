@@ -17,7 +17,7 @@
         BuildTask* getTask(int Position);
         // Called every KBot::onFrame().
         void update();
-
+        void clearAll();
         std::string toString() const;
 
     private:

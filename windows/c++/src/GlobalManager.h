@@ -7,6 +7,7 @@
 #include "Tools.h"
 
 
+
 class GlobalManager {
 
 public:

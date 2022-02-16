@@ -127,6 +127,10 @@ bool BuildTask::onUnitDestroyed(const BWAPI::Unit& unit) {
         return true;
     }
     return false;
+
+}
+std::string BuildTask::getName() const {
+    return m_toBuild.getName();
 }
 
 std::string BuildTask::toString() const {

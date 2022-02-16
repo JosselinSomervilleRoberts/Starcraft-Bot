@@ -21,16 +21,16 @@ void BuildQueue::addTask(UnitType toBuild, int priority, TilePosition position) 
     BuildTask* buildtask = new BuildTask(m_manager, toBuild, priority, position);
     
 
-    if (m_buildQueue.size() == 0) {
+    if (m_buildQueue.size() == 0 || priority <= m_buildQueue[m_buildQueue.size() - 1]->getPriority()) {
         m_buildQueue.push_back(buildtask);
-        return;
     }
-    
-    auto Pos = m_buildQueue.begin();
-    for (int i = 0; i < m_buildQueue.size(); i++) {
-        if (m_buildQueue[i]->getPriority() <= priority) {
-            m_buildQueue.insert(Pos+i, buildtask); // Insert at the right position
-            i = m_buildQueue.size(); // To end the for loop
+    else {
+        auto Pos = m_buildQueue.begin();
+        for (int i = 0; i < m_buildQueue.size(); i++) {
+            if (m_buildQueue[i]->getPriority() <= priority) {
+                m_buildQueue.insert(Pos + i, buildtask); // Insert at the right position
+                i = m_buildQueue.size(); // To end the for loop
+            }
         }
     }
 
@@ -44,5 +44,16 @@ BuildTask* BuildQueue::getTask(int i) {
 void BuildQueue::update() {
     for (auto& buildTask : m_buildQueue)
         buildTask->update();
+}
+void BuildQueue::clearAll() {
+    for (auto& item : m_buildQueue)
+        delete[] item;
+    m_buildQueue.clear();
+}
+std::string BuildQueue::toString() const {
+    std::string building_list = "";
+    for (auto building : m_buildQueue)
+        building_list += building->getName() + " ";
+    return "BuildQueue: " + building_list;
 }
 
