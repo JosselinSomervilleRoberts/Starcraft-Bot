@@ -12,6 +12,7 @@ using namespace BWAPI;
 
 BuildQueue::BuildQueue(GlobalManager* manager)
     : m_manager(manager) {
+    std::cout << "COnstructor buildQueue" << std::endl;
 }
 
 
@@ -44,6 +45,13 @@ BuildTask* BuildQueue::getTask(int i) {
 void BuildQueue::update() {
     for (auto& buildTask : m_buildQueue)
         buildTask->update();
+
+    for (int i = 0; i < m_buildQueue.size(); i++) {
+        if (m_buildQueue[i]->getState() == BuildTask::State::finalize) {
+            m_buildQueue.erase(m_buildQueue.begin() + i);
+            i--;
+        }
+    }
 }
 void BuildQueue::clearAll() {
     for (auto& item : m_buildQueue)
@@ -57,3 +65,10 @@ std::string BuildQueue::toString() const {
     return "BuildQueue: " + building_list;
 }
 
+
+
+void BuildQueue::unitCompleted(BWAPI::Unit unit) {
+    for (int i = 0; i < m_buildQueue.size(); i++) {
+        m_buildQueue[i]->onUnitCreatedOrMorphed(unit);
+    }
+}

@@ -132,37 +132,59 @@ void WorkerManager::update() {
 
 
 void WorkerManager::findAvailableWorkers(int nbWanted) {
-	int nbFound = 0;
-	std::cout << "find worker" << std::endl;
+	int nbFound = workersAvailable.size();
 
-	for (auto worker : workers) {
+	std::cout << "debut findWorker " << nbWanted << std::endl;
+
+	/*for (auto worker : workers) {
 		if (nbFound >= nbWanted)
 			return;
 
 		// If not already available
-		if (!(std::find(workersAvailable.begin(), workersAvailable.end(), worker) != workersAvailable.end())) {
-			if (!(worker->isCarryingGas() || worker->isCarryingMinerals() || worker->isConstructing() || worker->isGatheringGas() || worker->isGatheringMinerals())) {
+		if (true) { //std::find(workersAvailable.begin(), workersAvailable.end(), worker) == workersAvailable.end()) { 
+			if (!(worker->isCarryingGas() || worker->isCarryingMinerals() || worker->isConstructing())) {
 				workersAvailable.push_back(worker);
-				std::remove(workersCristal.begin(), workersCristal.end(), worker);
-				std::remove(workersGas.begin(), workersGas.end(), worker);
+				//std::remove(workersCristal.begin(), workersCristal.end(), worker);
+				//std::remove(workersGas.begin(), workersGas.end(), worker);
 				nbFound++;
 			}
 		}
+	}*/
+
+	int i = 0;
+	while((i < workers.size()) && (nbFound < nbWanted)) {
+		BWAPI::Unit worker = workers[i];
+		if (std::find(workersAvailable.begin(), workersAvailable.end(), worker) == workersAvailable.end()) {
+			workersAvailable.push_back(worker);
+			std::remove(workersCristal.begin(), workersCristal.end(), worker);
+			std::remove(workersGas.begin(), workersGas.end(), worker);
+			nbFound++;
+		}
+		i++;
 	}
+
+	std::cout << "find worker " << workersAvailable.size() << std::endl;
 }
 
 
 
 BWAPI::Unit WorkerManager::getAvailableWorker() {
+	std::cout << "hola 0" << std::endl;
 	if (workersAvailable.size() > 0) {
 		BWAPI::Unit worker = workersAvailable[0];
-		std::remove(workers.begin(), workersCristal.end(), worker);
+		std::cout << "hola 1" << std::endl;
+		std::remove(workers.begin(), workers.end(), worker);
+		std::cout << "hola 2" << std::endl;
 		std::remove(workersGas.begin(), workersGas.end(), worker);
+		std::cout << "hola 3" << std::endl;
 		std::remove(workersCristal.begin(), workersCristal.end(), worker);
-		std::remove(workersAvailable.begin(), workersGas.end(), worker);
+		std::cout << "hola 4" << std::endl;
+		std::remove(workersAvailable.begin(), workersAvailable.end(), worker);
+		std::cout << "hola 5" << std::endl;
 		nbWorkersTotal--;
 		return worker;
 	}
+	std::cout << "hola 6" << std::endl;
 
 	return nullptr;
 }

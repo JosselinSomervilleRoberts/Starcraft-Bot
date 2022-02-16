@@ -4,11 +4,32 @@
 BaseManager::BaseManager(GlobalManager* manager_) : workerManager(this), queue(manager_), manager(manager_) {
     const BWAPI::UnitType commandCenterType = BWAPI::Broodwar->self()->getRace().getCenter();
     const BWAPI::Unit commandCenter = Tools::GetUnitOfType(commandCenterType);
-    BaseManager(manager_, commandCenter);
+    initialize(commandCenter);
+
+    using namespace BWAPI::UnitTypes;
+
+    const auto workerType = BWAPI::Broodwar->self()->getRace().getWorker();
+    const auto supplyProviderType = BWAPI::Broodwar->self()->getRace().getSupplyProvider();
+    const auto refineryType = BWAPI::Broodwar->self()->getRace().getRefinery();
+    std::vector<BWAPI::UnitType> build_vect = { workerType, workerType, supplyProviderType, refineryType };
+    std::vector<int> priority_vect = { 3, 0, 2, 1 };
+    initializeQueue(build_vect, priority_vect);
 }
 
 
 BaseManager::BaseManager(GlobalManager* manager_, BWAPI::Unit commandCenter) : workerManager(this), queue(manager_), manager(manager_) {
+    initialize(commandCenter);
+}
+
+
+
+BaseManager::BaseManager(GlobalManager* manager_, int baseNumber_, BWAPI::Unit worker) : workerManager(this), queue(manager_), manager(manager_) {
+    baseNumber = baseNumber_;
+    this->constructCommandCenter(worker);
+    
+}
+
+void BaseManager::initialize(BWAPI::Unit commandCenter) {
     baseNumber = 0;
     this->buildings.push_back(commandCenter);
     std::cout << "CONSTRUCTOR" << std::endl;
@@ -20,27 +41,24 @@ BaseManager::BaseManager(GlobalManager* manager_, BWAPI::Unit commandCenter) : w
         if (unit->getType().isWorker() && unit->isIdle())
             workerManager.addWorker(unit);
     }
-    
 }
 
-
-BaseManager::BaseManager(GlobalManager* manager_, int baseNumber_, BWAPI::Unit worker) : workerManager(this), queue(manager_), manager(manager_) {
-    baseNumber = baseNumber_;
-    this->constructCommandCenter(worker);
-    
-}
-
-void BaseManager::Initialize(std::vector<BWAPI::UnitType> unitQueue, std::vector<int> priorityQueue) {
+void BaseManager::initializeQueue(std::vector<BWAPI::UnitType> unitQueue, std::vector<int> priorityQueue) {
     queue.clearAll();
-    for (int i = 0;i < unitQueue.size(); i++)
+    for (int i = 0; i < unitQueue.size(); i++) {
+        std::cout << "initialize " << i << std::endl;
         queue.addTask(unitQueue[i], priorityQueue[i]);
+    }
+
+    std::cout << "QUEUE after Init" << queue.toString() << std::endl;
 }
 void BaseManager::update() {
     
 
     workerManager.update();
+    //std::cout << "QUEUE before update" << queue.toString() << std::endl;
     queue.update();
-    std::cout << queue.toString() << std::endl;
+    //std::cout << "QUEUE after update" << queue.toString() << std::endl;
 
 
     // TO TEST
@@ -120,4 +138,6 @@ void BaseManager::unitCompleted(BWAPI::Unit unit) {
         if(type == refineryType)
             workerManager.refineryState = BuildingState::CONSTRUCTED;
     }
+
+    queue.unitCompleted(unit);
 }

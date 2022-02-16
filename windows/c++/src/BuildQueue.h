@@ -20,6 +20,8 @@
         void clearAll();
         std::string toString() const;
 
+        void unitCompleted(BWAPI::Unit unit);
+
     private:
         std::vector<BuildTask*> m_buildQueue;
         GlobalManager* m_manager;
