@@ -77,7 +77,7 @@ void BaseManager::constructCommandCenter(BWAPI::Unit worker) {
 
 void BaseManager::newWorker(int importance) {
     auto workerType = BWAPI::UnitTypes::Protoss_Probe;
-    queue.addTask(workerType, importance, BWAPI::Broodwar->self()->getStartLocation(), false);
+    queue.addTask(workerType, importance, BWAPI::Broodwar->self()->getStartLocation(), true);
 }
 
 
