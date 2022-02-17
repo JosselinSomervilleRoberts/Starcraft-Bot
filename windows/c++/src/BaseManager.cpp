@@ -44,21 +44,8 @@ void BaseManager::initializeQueue(std::vector<BWAPI::UnitType> unitQueue, std::v
     std::cout << "QUEUE after Init" << queue.toString() << std::endl;
 }
 void BaseManager::update() {
-    
-
-    workerManager.update();
-    //std::cout << "QUEUE before update" << queue.toString() << std::endl;
     queue.update();
-    //std::cout << "QUEUE after update" << queue.toString() << std::endl;
-
-
-    // TO TEST
-    if (manager->getAvailableMinerals() > 300) {
-        //this->newWorker(200);
-        //BWAPI::UnitType workerType = BWAPI::Broodwar->self()->getRace().getWorker();
-        //queue.addTask(workerType, 200);
-        //std::cout << queue.toString() << std::endl;
-    }
+    workerManager.update();
 }
 
 void BaseManager::setBuildOrder(std::vector<BWAPI::Unit> buildOrder) {
@@ -76,8 +63,14 @@ void BaseManager::constructCommandCenter(BWAPI::Unit worker) {
 
 
 void BaseManager::newWorker(int importance) {
-    auto workerType = BWAPI::UnitTypes::Protoss_Probe;
+    auto workerType = BWAPI::Broodwar->self()->getRace().getWorker();
+    auto supplyType = BWAPI::Broodwar->self()->getRace().getSupplyProvider();
+
     queue.addTask(workerType, importance, BWAPI::Broodwar->self()->getStartLocation(), true);
+    if (BWAPI::Broodwar->self()->supplyUsed() + 1 >= BWAPI::Broodwar->self()->supplyTotal()) {
+        queue.addTask(supplyType, importance + 1, BWAPI::Broodwar->self()->getStartLocation(), true);
+
+    }
 }
 
 

@@ -21,7 +21,7 @@
         std::string toString() const;
 
         void unitCompleted(BWAPI::Unit unit);
-        void computeNeed();
+        void computeNeed(bool once = false);
 
         int getPriorityOfGas();
 

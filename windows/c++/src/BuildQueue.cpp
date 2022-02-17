@@ -70,9 +70,14 @@ void BuildQueue::addTask(std::variant<BWAPI::UnitType, BWAPI::UpgradeType> toBui
         }
     }
 
-    // Only recompute need if we added something new
-    if (indexTask < 0)
-        computeNeed();
+    // Only recompute need if we did not add a supplyDepot
+    if (std::holds_alternative<BWAPI::UpgradeType>(toBuild)) {
+        if (std::get<BWAPI::UnitType>(toBuild) == BWAPI::Broodwar->self()->getRace().getSupplyProvider()) {
+            computeNeed(true);
+            return;
+        }
+    }
+    computeNeed();
 }
 
 BuildTask* BuildQueue::getTask(int i) {
@@ -82,8 +87,9 @@ BuildTask* BuildQueue::getTask(int i) {
 
 void BuildQueue::update() {
     computeNeed();
-    for (auto& buildTask : m_buildQueue)
-        buildTask->update();
+    for (int i = 0; i < m_buildQueue.size(); i++) {
+        m_buildQueue[i]->update();
+    }
 
     for (int i = 0; i < m_buildQueue.size(); i++) {
         if (m_buildQueue[i]->getState() == BuildTask::State::finalize) {
@@ -122,7 +128,7 @@ void BuildQueue::unitCompleted(BWAPI::Unit unit) {
 }
 
 
-void BuildQueue::computeNeed() {
+void BuildQueue::computeNeed(bool once) {
     int profondeur = 5;
     float needCristal = 0;
     float needGas = 0;
@@ -146,7 +152,7 @@ void BuildQueue::computeNeed() {
             
             if ((supply >= totalSupply-1) && !(addSupply) && (std::get<BWAPI::UnitType>(task->getObject()).supplyProvided() == 0)) {
                 BWAPI::UnitType supplyType = BWAPI::Broodwar->self()->getRace().getSupplyProvider();
-                addTask(supplyType, std::min(100, task->getPriority() + 1), BWAPI::Broodwar->self()->getStartLocation(), true);
+                if(!once) addTask(supplyType, std::min(100, task->getPriority() + 1), BWAPI::Broodwar->self()->getStartLocation(), true);
                 addSupply = true;
             }
         }
