@@ -38,6 +38,7 @@ void BuildQueue::addTask(std::variant<BWAPI::UnitType, BWAPI::UpgradeType> toBui
         buildtask->setPriority(priority);
         buildtask->unique = true;
         // TODO: update pos
+        std::cout << "HEEEEEEEEEEY" << std::endl;
 
         m_buildQueue.erase(m_buildQueue.begin() + indexTask);
     }

@@ -196,7 +196,8 @@ void WorkerManager::update() {
 	BWAPI::Broodwar->drawTextScreen(503-3, 35, "W: %d", workersGas.size());
 	BWAPI::Broodwar->drawTextScreen(435 - 1, 45, "D: %d", nbWorkersCristalWanted);
 	BWAPI::Broodwar->drawTextScreen(503 - 1, 45, "D: %d", nbWorkersGasWanted);
-	if(refineryState == BuildingState::NOT_BUILT) BWAPI::Broodwar->drawTextScreen(503 - 1, 55, "NOT_BUILT");
+	if(refineryState == BuildingState::NOT_BUILT) BWAPI::Broodwar->drawTextScreen(503 - 1, 55, "NOT BUILT");
+	else if (refineryState == BuildingState::WAITING_CONSTRUCTION) BWAPI::Broodwar->drawTextScreen(503 - 1, 55, "IN QUEUE");
 	else if (refineryState == BuildingState::CONSTRUCTING) BWAPI::Broodwar->drawTextScreen(503 - 1, 55, "CONSTRUCTING");
 	else if (refineryState == BuildingState::CONSTRUCTED) BWAPI::Broodwar->drawTextScreen(503 - 1, 55, "CONSTRUCTED");
 

@@ -139,5 +139,6 @@ void BaseManager::setRefineryState(BuildingState state) {
 void BaseManager::constructRefinery(int additionalPriority) {
     int priority = queue.getPriorityOfGas() + additionalPriority;
     auto refineryType = BWAPI::Broodwar->self()->getRace().getRefinery();
-    queue.addTask(refineryType, priority, BWAPI::Broodwar->self()->getStartLocation(), false);
+    queue.addTask(refineryType, priority, BWAPI::Broodwar->self()->getStartLocation(), true);
+    setRefineryState(BuildingState::WAITING_CONSTRUCTION);
 }
