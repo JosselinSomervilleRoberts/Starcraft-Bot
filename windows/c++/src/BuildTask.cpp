@@ -179,8 +179,11 @@ std::string BuildTask::toString() const {
 }
 
 std::variant<BWAPI::UnitType, BWAPI::UpgradeType> BuildTask::getObject() {
-    BWAPI::UnitType test = BWAPI::UnitType();
-    if(m_toBuild.getID() != BWAPI::UnitTypes::Enum::None)
+    
+    if (m_toBuild.getID() != BWAPI::UnitTypes::Enum::None) {
+        std::cout << m_toBuild.getName()<< std::endl;
         return m_toBuild;
+    }
+    
     return m_toUpgrade;
 }

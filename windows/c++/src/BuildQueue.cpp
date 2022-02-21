@@ -150,16 +150,12 @@ void BuildQueue::computeNeed() {
 
 
 int BuildQueue::getPriorityOfGas() {
-    for (auto& buildTask : m_buildQueue) {
-        auto object = buildTask->getObject();
-        // TODO: This is super ugly, fix that
-        if (std::holds_alternative<BWAPI::UnitType>(object)) {
-            int p = std::get<BWAPI::UnitType>(object).gasPrice();
-            if (p > 0) return buildTask->getPriority();
-        }
-        if (std::holds_alternative<BWAPI::UpgradeType>(object)) {
-            int p = std::get<BWAPI::UpgradeType>(object).gasPrice();
-            if (p > 0) return buildTask->getPriority();
+    for (int i = 0; i < m_buildQueue.size(); i++) {
+        auto buildTask = m_buildQueue[i];
+        std::visit([](const auto& field) { std::cout << field << std::endl; }, buildTask->getObject());
+        if (std::visit([](const auto& field) { return field.gasPrice(); }, buildTask->getObject()) > 0) {
+            std::cout << buildTask->getName() << std::endl;
+            return buildTask->getPriority();
         }
     }
     return 0;
