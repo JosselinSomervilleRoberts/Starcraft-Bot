@@ -11,6 +11,7 @@ class BaseManager;
 
 enum class BuildingState {
     NOT_BUILT,
+    WAITING_CONSTRUCTION,
     CONSTRUCTING,
     CONSTRUCTED,
 };

@@ -31,3 +31,4 @@ windows/starcraft/*.mpq
 *.ilk
 *.exe
 *.obj
+windows/c++/src/BaseManager.cpp

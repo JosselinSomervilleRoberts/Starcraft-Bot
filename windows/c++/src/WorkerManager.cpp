@@ -7,7 +7,7 @@
 #define CRISTAL_NEED_MIN 50
 #define CRISTAL_PER_MINUTE 68.1
 #define GAS_PER_MINUTE 103.0
-#define TIME_MAX_MINUTE 0.4
+#define TIME_MAX_MINUTE 0.2
 #define NB_WORKERS_MAX_PER_BASE 16
 #define NB_WORKERS_MAX_PER_GAS 3
 
@@ -87,10 +87,10 @@ void WorkerManager::computeRepartition() {
 			// Need to expand for more workers
 			base->transmit_expansion();
 		}
-		else if(nbWorkersTotal > 5) {
+		else if(nbWorkersTotal > 4) {
 			// We can ask for a new worker in this base
-			int importance = 1;// (int)(std::round(3 * (std::max(timeForCristal, timeForGas) - TIME_MAX_MINUTE) / (float)(TIME_MAX_MINUTE)));
-			//base->newWorker(importance);
+			int importance = std::min(90, (int)(std::round(3 * (std::max(timeForCristal, timeForGas) - TIME_MAX_MINUTE) / (float)(TIME_MAX_MINUTE))));
+			base->newWorker(importance);
 		}
 	}
 }
@@ -196,7 +196,8 @@ void WorkerManager::update() {
 	BWAPI::Broodwar->drawTextScreen(503-3, 35, "W: %d", workersGas.size());
 	BWAPI::Broodwar->drawTextScreen(435 - 1, 45, "D: %d", nbWorkersCristalWanted);
 	BWAPI::Broodwar->drawTextScreen(503 - 1, 45, "D: %d", nbWorkersGasWanted);
-	if(refineryState == BuildingState::NOT_BUILT) BWAPI::Broodwar->drawTextScreen(503 - 1, 55, "NOT_BUILT");
+	if(refineryState == BuildingState::NOT_BUILT) BWAPI::Broodwar->drawTextScreen(503 - 1, 55, "NOT BUILT");
+	else if (refineryState == BuildingState::WAITING_CONSTRUCTION) BWAPI::Broodwar->drawTextScreen(503 - 1, 55, "IN QUEUE");
 	else if (refineryState == BuildingState::CONSTRUCTING) BWAPI::Broodwar->drawTextScreen(503 - 1, 55, "CONSTRUCTING");
 	else if (refineryState == BuildingState::CONSTRUCTED) BWAPI::Broodwar->drawTextScreen(503 - 1, 55, "CONSTRUCTED");
 

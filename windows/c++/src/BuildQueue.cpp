@@ -35,9 +35,12 @@ void BuildQueue::addTask(std::variant<BWAPI::UnitType, BWAPI::UpgradeType> toBui
 
     if (indexTask >= 0) {
         buildtask = m_buildQueue[indexTask];
+        if (buildtask->getPriority() >= priority) return;
+
         buildtask->setPriority(priority);
         buildtask->unique = true;
         // TODO: update pos
+        std::cout << "HEEEEEEEEEEY" << std::endl;
 
         m_buildQueue.erase(m_buildQueue.begin() + indexTask);
     }
@@ -50,7 +53,7 @@ void BuildQueue::addTask(std::variant<BWAPI::UnitType, BWAPI::UpgradeType> toBui
         buildtask->unique = unique;
     }
     else {
-        std::cout << "error" << std::endl;
+        std::cout << "Error BuildQueue task object not valid" << std::endl;
     }
     
 
@@ -66,6 +69,14 @@ void BuildQueue::addTask(std::variant<BWAPI::UnitType, BWAPI::UpgradeType> toBui
             }
         }
     }
+
+    // Only recompute need if we did not add a supplyDepot
+    if (std::holds_alternative<BWAPI::UpgradeType>(toBuild)) {
+        if (std::get<BWAPI::UnitType>(toBuild) == BWAPI::Broodwar->self()->getRace().getSupplyProvider()) {
+            computeNeed(true);
+            return;
+        }
+    }
     computeNeed();
 }
 
@@ -76,8 +87,9 @@ BuildTask* BuildQueue::getTask(int i) {
 
 void BuildQueue::update() {
     computeNeed();
-    for (auto& buildTask : m_buildQueue)
-        buildTask->update();
+    for (int i = 0; i < m_buildQueue.size(); i++) {
+        m_buildQueue[i]->update();
+    }
 
     for (int i = 0; i < m_buildQueue.size(); i++) {
         if (m_buildQueue[i]->getState() == BuildTask::State::finalize) {
@@ -116,7 +128,7 @@ void BuildQueue::unitCompleted(BWAPI::Unit unit) {
 }
 
 
-void BuildQueue::computeNeed() {
+void BuildQueue::computeNeed(bool once) {
     int profondeur = 5;
     float needCristal = 0;
     float needGas = 0;
@@ -134,15 +146,16 @@ void BuildQueue::computeNeed() {
         float factor = std::pow(alpha, (1.0f + m_buildQueue[0]->getPriority()) / (1.0f + m_buildQueue[i]->getPriority()) - 1.0f);
         needCristal += factor * std::visit([](const auto& field) { return field.mineralPrice(); }, task->getObject());
         needGas     += factor * std::visit([](const auto& field) { return field.gasPrice(); }, task->getObject());
-        /*
+        
         if (std::holds_alternative<BWAPI::UnitType>(task->getObject())) {
             supply += factor * std::get<BWAPI::UnitType>(task->getObject()).supplyRequired();
-            if (supply > totalSupply && !(addSupply)) {
+            
+            if ((supply >= totalSupply-1) && !(addSupply) && (std::get<BWAPI::UnitType>(task->getObject()).supplyProvided() == 0)) {
                 BWAPI::UnitType supplyType = BWAPI::Broodwar->self()->getRace().getSupplyProvider();
-                //addTask(supplyType, task->getPriority() + 1, BWAPI::Broodwar->self()->getStartLocation(), true);
+                if(!once) addTask(supplyType, std::min(100, task->getPriority() + 1), BWAPI::Broodwar->self()->getStartLocation(), true);
                 addSupply = true;
             }
-        }*/
+        }
     }
 
     m_manager->setRessourceAim(std::ceil(needCristal), std::ceil(needGas));
