@@ -13,7 +13,7 @@
     public:
         
         BuildQueue(GlobalManager* manager);
-        void addTask(std::variant<BWAPI::UnitType, BWAPI::UpgradeType> toBuild, int priority = 0, BWAPI::TilePosition position = BWAPI::Broodwar->self()->getStartLocation(), bool unique = false);
+        void addTask(std::variant<BWAPI::UnitType, BWAPI::UpgradeType, BWAPI::TechType> toBuild, int priority = 0, BWAPI::TilePosition position = BWAPI::Broodwar->self()->getStartLocation(), bool unique = false);
         BuildTask* getTask(int Position);
         // Called every KBot::onFrame().
         void update();

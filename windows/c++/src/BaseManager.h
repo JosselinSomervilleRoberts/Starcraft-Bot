@@ -26,7 +26,7 @@ public:
     void unitCreated(BWAPI::Unit unit);
     void unitDestroyed(BWAPI::Unit unit);
     void unitCompleted(BWAPI::Unit unit);
-    void initializeQueue(std::vector<std::variant<BWAPI::UnitType, BWAPI::UpgradeType>> unitQueue, std::vector<int> priorityQueue);
+    void initializeQueue(std::vector<std::variant<BWAPI::UnitType, BWAPI::UpgradeType, BWAPI::TechType>> unitQueue, std::vector<int> priorityQueue);
     void initialize(BWAPI::Unit commandCenter);
 
     void setRessourceAim(int cristalAim, int gasAim);

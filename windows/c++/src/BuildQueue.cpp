@@ -17,7 +17,7 @@ BuildQueue::BuildQueue(GlobalManager* manager)
 
 
 
-void BuildQueue::addTask(std::variant<BWAPI::UnitType, BWAPI::UpgradeType> toBuild, int priority, TilePosition position, bool unique) {
+void BuildQueue::addTask(std::variant<BWAPI::UnitType, BWAPI::UpgradeType, BWAPI::TechType> toBuild, int priority, TilePosition position, bool unique) {
     //std::cout << "Add Task : toBuild " << toBuild << " - " << m_buildQueue.size() << std::endl;
     BuildTask* buildtask;
 
@@ -51,7 +51,11 @@ void BuildQueue::addTask(std::variant<BWAPI::UnitType, BWAPI::UpgradeType> toBui
         buildtask = new BuildTask(m_manager, std::get<BWAPI::UpgradeType>(toBuild), priority, position);
         buildtask->unique = unique;
     }
-    else {
+    else if (std::holds_alternative<BWAPI::TechType>(toBuild)) {
+        buildtask = new BuildTask(m_manager, std::get<BWAPI::TechType>(toBuild), priority, position);
+        buildtask->unique = unique;
+    }
+    else{
         std::cout << "Error BuildQueue task object not valid" << std::endl;
     }
     
@@ -72,6 +76,12 @@ void BuildQueue::addTask(std::variant<BWAPI::UnitType, BWAPI::UpgradeType> toBui
     // Only recompute need if we did not add a supplyDepot
     if (std::holds_alternative<BWAPI::UpgradeType>(toBuild)) {
         if (std::get<BWAPI::UpgradeType>(toBuild) == BWAPI::Broodwar->self()->getRace().getSupplyProvider()) {
+            computeNeed(true);
+            return;
+        }
+    }
+    else if(std::holds_alternative<BWAPI::TechType>(toBuild)) {
+        if (std::get<BWAPI::TechType>(toBuild) == BWAPI::Broodwar->self()->getRace().getSupplyProvider()) {
             computeNeed(true);
             return;
         }

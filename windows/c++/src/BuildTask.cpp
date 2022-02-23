@@ -15,6 +15,10 @@ BuildTask::BuildTask(GlobalManager* manager, BWAPI::UpgradeType toUpgrade, int p
     bool exactPosition)
     : m_manager(manager), m_toUpgrade(std::move(toUpgrade)), m_priority(priority),
     m_position(std::move(position)), m_exactPosition(exactPosition) {}
+BuildTask::BuildTask(GlobalManager* manager, BWAPI::TechType techUpgrade, int priority, BWAPI::TilePosition position,
+    bool exactPosition)
+    : m_manager(manager), m_techUpgrade(std::move(techUpgrade)), m_priority(priority),
+    m_position(std::move(position)), m_exactPosition(exactPosition) {}
 
 void BuildTask::update() {
     // ----- Prevent spamming -----------------------------------------------
@@ -124,7 +128,7 @@ void BuildTask::update() {
             throw std::logic_error("Unknown BuildTask::State!");
         }
     }
-    else { // If it is an upgrade
+    else if(m_toUpgrade.getID() != BWAPI::UpgradeTypes::Enum::None){ // If it is an upgrade
         switch (m_state) {
         case State::initialize:
             // TODO: Make checks and stuff...
@@ -140,7 +144,7 @@ void BuildTask::update() {
                 const BWAPI::Unit upgradeBuilding = Tools::GetUnitOfType(m_toUpgrade.whatUpgrades());
                 if (upgradeBuilding && !upgradeBuilding->isResearching() && !upgradeBuilding->isUpgrading()) {
                     if (upgradeBuilding->upgrade(m_toUpgrade)) {
-                        m_manager->releaseRessources(m_toBuild.mineralPrice(), m_toBuild.gasPrice());
+                        m_manager->releaseRessources(m_toUpgrade.mineralPrice(), m_toUpgrade.gasPrice());
                         m_state = State::finalize;
                     }
                 }
@@ -178,6 +182,58 @@ void BuildTask::update() {
             break;
         default:
             throw std::logic_error("Unknown BuildTask::State!");
+        }
+    }
+    else { // If it is an upgrade
+        switch (m_state) {
+            case State::initialize:
+                // TODO: Make checks and stuff...
+                m_state = State::reserveResources; // go to next state
+                break;
+            case State::reserveResources:
+                if (m_manager->reserveRessources(m_techUpgrade.mineralPrice(), m_techUpgrade.gasPrice()))
+                    m_state = State::startBuild; // go to next state
+                break;
+
+            case State::startBuild:
+                if (true) {
+                    const BWAPI::Unit upgradeBuilding = Tools::GetUnitOfType(m_techUpgrade.whatResearches());
+                    if (upgradeBuilding && !upgradeBuilding->isResearching() && !upgradeBuilding->isUpgrading()) {
+                        if (upgradeBuilding->research(m_techUpgrade)) {
+                            m_manager->releaseRessources(m_techUpgrade.mineralPrice(), m_techUpgrade.gasPrice());
+                            m_state = State::finalize;
+                        }
+                    }
+                    // Train unit
+                    /* auto units = BWAPI::PlayerInterface::getUnits();
+                    for (auto unit : units) {
+                        if (unit.canUpgrade(m_toUpgrade))
+                            unit->upgrade(m_toUpgrade);
+
+                    }*/
+
+                }
+                else {
+                    /*auto units = BWAPI::PlayerInterface::getUnits();
+                    for (auto unit : units) {
+                        if(unit.canUpgrade(m_toUpgrade))
+
+                    }*/
+                }
+                break;
+            case State::waitForUnit:
+                if (m_buildingUnit != nullptr) {
+                    m_state = State::building; // go to next state
+                }
+                break;
+            case State::building:                
+                m_state = State::finalize; // go to next state
+                break;
+            case State::finalize:
+                // At this state, this build task can be removed from the queue.
+                break;
+            default:
+                throw std::logic_error("Unknown BuildTask::State!");
         }
     }
 }
@@ -244,11 +300,14 @@ std::string BuildTask::toString() const {
     }
 }
 
-std::variant<BWAPI::UnitType, BWAPI::UpgradeType> BuildTask::getObject() {
+std::variant<BWAPI::UnitType, BWAPI::UpgradeType, BWAPI::TechType> BuildTask::getObject() {
     
     if (m_toBuild.getID() != BWAPI::UnitTypes::Enum::None) {
         return m_toBuild;
     }
-    
-    return m_toUpgrade;
+    else if (m_toBuild.getID() != BWAPI::UpgradeTypes::Enum::None) {
+        return m_toUpgrade;
+    }
+    return m_techUpgrade;
 }
+

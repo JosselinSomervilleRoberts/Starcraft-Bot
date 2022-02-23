@@ -32,6 +32,8 @@
             bool                exactPosition = false);
         BuildTask(GlobalManager* manager, BWAPI::UpgradeType toUpgrade, int priority, BWAPI::TilePosition position,
             bool exactPosition = false);
+        BuildTask::BuildTask(GlobalManager* manager, BWAPI::TechType techUpgrade, int priority, BWAPI::TilePosition position,
+            bool exactPosition = false);
         // Called every KBot::onFrame().
         void update();
 
@@ -43,7 +45,7 @@
         int getPriority() const { return m_priority; }
         std::string getName() const;
         std::string toString() const;
-        std::variant<BWAPI::UnitType, BWAPI::UpgradeType> getObject();
+        std::variant<BWAPI::UnitType, BWAPI::UpgradeType, BWAPI::TechType> getObject();
 
         bool unique = false;
         
@@ -54,6 +56,7 @@
         bool                m_exactPosition;
         BWAPI::UnitType  m_toBuild = BWAPI::UnitType();
         BWAPI::UpgradeType m_toUpgrade = BWAPI::UpgradeType();
+        BWAPI::TechType m_techUpgrade = BWAPI::TechType();
         State               m_state = State::initialize;
         BWAPI::Unit         m_worker = nullptr;
         bool                m_allocatedBuildPosition = false;
