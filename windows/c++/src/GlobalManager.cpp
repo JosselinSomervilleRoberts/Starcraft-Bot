@@ -20,13 +20,15 @@ void GlobalManager::initiate() {
 	
 
 	BaseManager* base = new BaseManager(this);
-
+	const auto upgrade_1 = BWAPI::UpgradeTypes::Protoss_Ground_Weapons;
+	std::cout << "What Upgrades : "<< upgrade_1.whatUpgrades() << std::endl;
 	bases.push_back(base); // ICI Ca fait une copie c'ets pas ouf
 	using namespace BWAPI::UnitTypes;
-
+	const auto forge = Protoss_Forge;
+	
 	const auto roboticsType = Protoss_Dragoon;
-	std::vector<BWAPI::UnitType> build_vect = { workerType, workerType, workerType, workerType, workerType, supplyProviderType, roboticsType };
-	std::vector<int> priority_vect = { 3, 3, 3, 3, 1, 2, 0 };
+	std::vector<std::variant<BWAPI::UnitType, BWAPI::UpgradeType>> build_vect = { workerType, workerType, workerType, workerType, workerType, supplyProviderType, forge, upgrade_1, roboticsType };
+	std::vector<int> priority_vect = { 4, 4, 4, 4, 2, 3, 1, 0, 0 };
 	bases[0]->initializeQueue(build_vect, priority_vect);
 	
 	

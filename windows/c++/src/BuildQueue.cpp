@@ -40,7 +40,6 @@ void BuildQueue::addTask(std::variant<BWAPI::UnitType, BWAPI::UpgradeType> toBui
         buildtask->setPriority(priority);
         buildtask->unique = true;
         // TODO: update pos
-        std::cout << "HEEEEEEEEEEY" << std::endl;
 
         m_buildQueue.erase(m_buildQueue.begin() + indexTask);
     }
@@ -72,7 +71,7 @@ void BuildQueue::addTask(std::variant<BWAPI::UnitType, BWAPI::UpgradeType> toBui
 
     // Only recompute need if we did not add a supplyDepot
     if (std::holds_alternative<BWAPI::UpgradeType>(toBuild)) {
-        if (std::get<BWAPI::UnitType>(toBuild) == BWAPI::Broodwar->self()->getRace().getSupplyProvider()) {
+        if (std::get<BWAPI::UpgradeType>(toBuild) == BWAPI::Broodwar->self()->getRace().getSupplyProvider()) {
             computeNeed(true);
             return;
         }
@@ -93,6 +92,9 @@ void BuildQueue::update() {
 
     for (int i = 0; i < m_buildQueue.size(); i++) {
         if (m_buildQueue[i]->getState() == BuildTask::State::finalize) {
+            /*if (std::holds_alternative<BWAPI::UnitType>(m_buildQueue[i]->getObject()) && std::get<BWAPI::UnitType>(m_buildQueue[i]->getObject()).isBuilding()) {
+                // TODO: Ajouter à la liste des buildings qui servira aux upgrades
+            }*/
             m_buildQueue.erase(m_buildQueue.begin() + i);
             i--;
         }
