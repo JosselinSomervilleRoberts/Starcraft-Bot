@@ -21,14 +21,19 @@ void GlobalManager::initiate() {
 
 	BaseManager* base = new BaseManager(this);
 	const auto upgrade_1 = BWAPI::UpgradeTypes::Protoss_Ground_Weapons;
-	std::cout << "What Upgrades : "<< upgrade_1.whatUpgrades() << std::endl;
+	const auto upgrade_2 = BWAPI::UpgradeTypes::Protoss_Air_Weapons;
+
 	bases.push_back(base); // ICI Ca fait une copie c'ets pas ouf
 	using namespace BWAPI::UnitTypes;
 	const auto forge = Protoss_Forge;
+	const auto pylon = Protoss_Pylon;
+	const auto gateway = Protoss_Gateway;
+	const auto cybercore = Protoss_Cybernetics_Core;
+	const auto zealots = Protoss_Zealot;
 	
 	const auto roboticsType = Protoss_Dragoon;
-	std::vector<std::variant<BWAPI::UnitType, BWAPI::UpgradeType, BWAPI::TechType>> build_vect = { workerType, workerType, workerType, workerType, workerType, supplyProviderType, forge, upgrade_1, roboticsType };
-	std::vector<int> priority_vect = { 4, 4, 4, 4, 2, 3, 1, 0, 0 };
+	std::vector<std::variant<BWAPI::UnitType, BWAPI::UpgradeType, BWAPI::TechType>> build_vect = { workerType, workerType, workerType, workerType, workerType, pylon,  supplyProviderType, forge, upgrade_1, gateway, zealots, zealots, pylon, zealots, zealots, zealots, cybercore, upgrade_2, roboticsType, roboticsType, roboticsType, pylon, zealots, roboticsType, zealots };
+	std::vector<int> priority_vect = { 10, 10, 10, 10, 10, 8, 9, 7, 6, 6, 5,5,5,5,5,5, 4, 3, 0, 0,0, 0,0,0,0 };
 	bases[0]->initializeQueue(build_vect, priority_vect);
 	
 	

@@ -28,6 +28,7 @@ void BuildTask::update() {
 
     //std::cout << "Build task update " << this->toString() << std::endl;
     const auto refineryType = BWAPI::Broodwar->self()->getRace().getRefinery();
+    const auto pylonType = BWAPI::UnitTypes::Protoss_Pylon;
     if (m_toBuild.getID() != BWAPI::UnitTypes::Enum::None) {
 
         switch (m_state) {
@@ -44,16 +45,18 @@ void BuildTask::update() {
                 m_worker = m_manager->acquireWorker();// m_toBuild.whatBuilds().first);// , Position(m_position));
                 if (m_worker != nullptr) {
                     // Go to next state
-                    m_state = State::moveToPosition;
+                    if (!m_toBuild.requiresPsi() || Tools::GetUnitOfType(pylonType))
+                        m_state = State::moveToPosition;
                 }
             }
             else
                 m_state = State::startBuild;
             break;
 
-        case State::moveToPosition: {
+        case State::moveToPosition: 
             m_manager->releaseRessources(m_toBuild.mineralPrice(), m_toBuild.gasPrice());
             if (m_toBuild == refineryType) m_manager->setRefineryState(BuildingState::CONSTRUCTING);
+            
             if (!m_allocatedBuildPosition) {
                 m_buildPosition =
                     m_exactPosition ? m_position : BWAPI::Broodwar->getBuildLocation(m_toBuild, m_position);                
@@ -77,10 +80,9 @@ void BuildTask::update() {
                     m_worker->move(movePosition);
                 if (m_worker->getDistance(movePosition) < 100) // TODO!
                     m_state = State::startBuild;               // go to next state
-            
             }
             break;
-        }
+        
         case State::startBuild:
             if (m_toBuild.isBuilding()) {
                 // Construct building
@@ -95,7 +97,9 @@ void BuildTask::update() {
             }
             else if (true) {
                 // Train unit
-                if (Tools::GetDepot()->train(m_toBuild)) {
+                const BWAPI::Unit trainBuilding = Tools::GetUnitOfType(m_toBuild.whatBuilds().first);
+                
+                if (trainBuilding && trainBuilding->train(m_toBuild)) {
                     m_manager->releaseRessources(m_toBuild.mineralPrice(), m_toBuild.gasPrice());
                     m_state = State::waitForUnit; // go to next state
                 }
