@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "WorkerManager.h"
+#include "ArmyManager.h"
 #include "BuildQueue.h"
 
 class GlobalManager;
@@ -35,6 +36,7 @@ public:
 
 private:
     WorkerManager workerManager;
+    ArmyManager armyManager;
     int baseNumber;
     std::vector<BWAPI::Unit> buildings;
     BuildQueue queue;

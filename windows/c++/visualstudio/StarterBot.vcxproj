@@ -11,6 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\src\ArmyManager.h" />
     <ClInclude Include="..\src\BaseManager.h" />
     <ClInclude Include="..\src\BuildOrder\BOs\BOTest.h" />
     <ClInclude Include="..\src\BuildOrder\BuildOrder.h" />
@@ -28,6 +29,7 @@
     <ClInclude Include="..\src\WorkerManager.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\src\ArmyManager.cpp" />
     <ClCompile Include="..\src\BaseManager.cpp" />
     <ClCompile Include="..\src\BuildOrder\BOs\BOTest.cpp" />
     <ClCompile Include="..\src\BuildOrder\BuildOrder.cpp" />
