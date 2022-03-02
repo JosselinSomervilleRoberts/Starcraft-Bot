@@ -25,6 +25,7 @@ class WorkerManager {
         BWAPI::Unit getAvailableWorker();
         void addWorker(BWAPI::Unit worker);
         void update();
+        void onUnitDestroyed(BWAPI::Unit worker);
 
         void setGasWorker(BWAPI::Unit worker);
         void setCristalWorker(BWAPI::Unit worker);

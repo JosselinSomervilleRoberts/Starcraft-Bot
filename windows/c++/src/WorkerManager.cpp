@@ -308,3 +308,9 @@ void WorkerManager::setRefineryState(BuildingState state) {
 	refineryState = state;
 	computeRepartition();
 }
+
+void WorkerManager::onUnitDestroyed(BWAPI::Unit worker) {
+	std::remove(workers.begin(), workers.end(), worker);
+	std::remove(workersAvailable.begin(), workersAvailable.end(), worker);
+	nbWorkersTotal--;
+}

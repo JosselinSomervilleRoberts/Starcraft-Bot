@@ -107,9 +107,16 @@ BWAPI::Unit ArmyManager::getAvailableSoldier() {
 
 void ArmyManager::onAttack(BWAPI::Unit threat) {
 	ennemies.push_back(threat);
+	auto soldier = getAvailableSoldier();
+	if(soldier)
+		attack(soldier, threat);
 
 }
 void ArmyManager::attack(BWAPI::Unit soldier, BWAPI::Unit threat) {
-	soldier->attack(threat);
-
+	soldier->attack(threat->getPosition());
+}
+void ArmyManager::onUnitDestroyed(BWAPI::Unit unit) {
+	std::remove(soldiers.begin(), soldiers.end(), unit);
+	std::remove(soldiersAvailable.begin(), soldiersAvailable.end(), unit);
+	nbSoldiersTotal--;
 }

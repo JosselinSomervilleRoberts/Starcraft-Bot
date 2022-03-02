@@ -19,7 +19,7 @@ public:
     BWAPI::Unit getAvailableSoldier();
     void addSoldier(BWAPI::Unit soldier);
     void update();
-
+    void onUnitDestroyed(BWAPI::Unit unit);
     void computeRepartition();
     void checkRepartition();
     void onAttack(BWAPI::Unit threat);

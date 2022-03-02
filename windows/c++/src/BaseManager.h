@@ -6,6 +6,8 @@
 #include "WorkerManager.h"
 #include "ArmyManager.h"
 #include "BuildQueue.h"
+#include "Tools.h"
+
 
 class GlobalManager;
 
@@ -38,6 +40,7 @@ private:
     WorkerManager workerManager;
     ArmyManager armyManager;
     int baseNumber;
+    BWAPI::Position basePosition = Tools::GetDepot()->getPosition();
     std::vector<BWAPI::Unit> buildings;
     BuildQueue queue;
     GlobalManager* manager;

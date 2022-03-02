@@ -5,6 +5,7 @@ BaseManager::BaseManager(GlobalManager* manager_) : workerManager(this), armyMan
     const BWAPI::UnitType commandCenterType = BWAPI::Broodwar->self()->getRace().getCenter();
     const BWAPI::Unit commandCenter = Tools::GetUnitOfType(commandCenterType);
     initialize(commandCenter);
+   
 }
 
 
@@ -45,8 +46,15 @@ void BaseManager::initializeQueue(std::vector<std::variant<BWAPI::UnitType, BWAP
 }
 void BaseManager::update() {
     queue.update();
+    
+    for (auto enemy : BWAPI::Broodwar->enemy()->getUnits()) {
+        if (enemy->getPosition().getDistance(basePosition) < 1000)
+            armyManager.onAttack(enemy);
+
+    }
     workerManager.update();
     armyManager.update();
+
 }
 
 void BaseManager::setBuildOrder(std::vector<BWAPI::Unit> buildOrder) {
@@ -101,6 +109,13 @@ void BaseManager::unitDestroyed(BWAPI::Unit unit) {
         if (type.isBuilding())
             queue.addTask(type, 100);
     }
+    else if (unit->getType() == BWAPI::Broodwar->self()->getRace().getWorker()) {
+        queue.addTask(unit->getType(), 50);
+        workerManager.onUnitDestroyed(unit);
+    }
+    else {
+        armyManager.onUnitDestroyed(unit);
+    }
 }
 
 void BaseManager::unitCompleted(BWAPI::Unit unit) {
@@ -109,7 +124,8 @@ void BaseManager::unitCompleted(BWAPI::Unit unit) {
     BWAPI::UnitType workerType = BWAPI::Broodwar->self()->getRace().getWorker();
     if (type == workerType)
         workerManager.addWorker(unit);
-
+    else if (unit->canAttack())
+        armyManager.addSoldier(unit);
     if (type.isBuilding()) {
         buildings.push_back(unit);
     }
