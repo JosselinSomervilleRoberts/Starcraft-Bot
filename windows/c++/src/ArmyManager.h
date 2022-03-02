@@ -23,7 +23,9 @@ public:
     ArmyManager(BaseManager* base_);
 
     void findAvailableSoldiers(int nbWanted);
+
     BWAPI::Unit getAvailableSoldier();
+
     void addSoldier(BWAPI::Unit soldier);
     void update();
     void onUnitDestroyed(BWAPI::Unit unit);
@@ -32,6 +34,9 @@ public:
     void onAttack(BWAPI::Unit threat);
     void attack(BWAPI::Unit soldier, BWAPI::Unit threat);
     void attack(std::vector<BWAPI::Unit> soldier, BWAPI::Unit threat);
+    void attack(std::vector<BWAPI::Unit> soldiers, BWAPI::Position position);
+    void noAttack();
+
     std::vector<BWAPI::Unit> attackSoldiers;
     std::vector<BWAPI::Unit> defenseSoldiers;
     std::vector<BWAPI::Unit> patrolSoldiers;
@@ -44,6 +49,7 @@ private:
     std::vector<BWAPI::Unit> ennemies;
 
     Mode               mode = Mode::defense;
+    Mode               state = Mode::normal;
     int nbSoldiersTotal = 0;
 
 };

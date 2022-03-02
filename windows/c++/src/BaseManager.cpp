@@ -46,12 +46,18 @@ void BaseManager::initializeQueue(std::vector<std::variant<BWAPI::UnitType, BWAP
 }
 void BaseManager::update() {
     queue.update();
-    
+    bool isEnemy = false;
     for (auto enemy : BWAPI::Broodwar->enemy()->getUnits()) {
-        if (enemy->getPosition().getDistance(basePosition) < 1000)
+        if (enemy->getPosition().getDistance(basePosition) < 1000) {
             armyManager.onAttack(enemy);
+            isEnemy = true;
+            break;
+        }
 
     }
+    if (!isEnemy)
+        armyManager.noAttack();
+
     workerManager.update();
     armyManager.update();
 
@@ -78,7 +84,7 @@ void BaseManager::newWorker(int importance) {
     queue.addTask(workerType, importance, BWAPI::Broodwar->self()->getStartLocation(), true);
     if (BWAPI::Broodwar->self()->supplyUsed() + 1 >= BWAPI::Broodwar->self()->supplyTotal()) {
         queue.addTask(supplyType, importance + 1, BWAPI::Broodwar->self()->getStartLocation(), true);
-
+        
     }
 }
 
@@ -116,6 +122,7 @@ void BaseManager::unitDestroyed(BWAPI::Unit unit) {
     }
     else {
         armyManager.onUnitDestroyed(unit);
+        queue.addTask(unit->getType(), 75);
     }
 }
 

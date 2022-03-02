@@ -60,16 +60,34 @@ void ArmyManager::computeRepartition() {
 
 void ArmyManager::update() {
 	checkRepartition();
-
+	computeRepartition();
 	// We check if we need to change the repartition
-	
+	BWAPI::Position enemyPos;
+	if (mode == Mode::attack && attackSoldiers.size()>4) {
+		if(BWAPI::Broodwar->self()->getStartLocation() != BWAPI::TilePosition(31, 7))
+			enemyPos = (BWAPI::Position)BWAPI::TilePosition(31, 7); // Conversion of Tile Position to position  BWAPI::Broodwar->enemy()->getStartLocation()
+		else
+			enemyPos = (BWAPI::Position)BWAPI::TilePosition(64, 118);
 
-	// Display available resources
-	
-	BWAPI::Broodwar->drawTextScreen(350, 15, "Tot: %d", soldiers.size());
-	BWAPI::Broodwar->drawTextScreen(350, 25, "Def: %d", defenseSoldiers.size());
-	BWAPI::Broodwar->drawTextScreen(350, 35, "Att: %d", attackSoldiers.size());
-	BWAPI::Broodwar->drawTextScreen(350, 45, "Ptr: %d", patrolSoldiers.size());
+		attack(attackSoldiers, enemyPos);
+	}
+	//else if (mode == Mode::normal) //TODO: envoie l'attaque, envoie la patrol, 
+
+
+
+
+
+	// Display soldiers organisation
+	if(mode==Mode::attack)
+		BWAPI::Broodwar->drawTextScreen(350, 15, "Att.", soldiers.size());
+	else if (mode == Mode::defense)
+		BWAPI::Broodwar->drawTextScreen(350, 15, "Def.", soldiers.size());
+	else
+		BWAPI::Broodwar->drawTextScreen(350, 15, "Norm", soldiers.size());
+	BWAPI::Broodwar->drawTextScreen(350, 25, "Tot: %d", soldiers.size());
+	BWAPI::Broodwar->drawTextScreen(350, 35, "Def: %d", defenseSoldiers.size());
+	BWAPI::Broodwar->drawTextScreen(350, 45, "Att: %d", attackSoldiers.size());
+	BWAPI::Broodwar->drawTextScreen(350, 55, "Ptr: %d", patrolSoldiers.size());
 }
 
 
@@ -130,8 +148,17 @@ BWAPI::Unit ArmyManager::getAvailableSoldier() {
 void ArmyManager::onAttack(BWAPI::Unit threat) {
 	ennemies.push_back(threat);
 	auto soldier = getAvailableSoldier();
+	state = Mode::attack; // we are under attack
+	mode = Mode::defense;
 	if(defenseSoldiers.size() > 0)
 		attack(defenseSoldiers, threat);
+}
+
+void ArmyManager::noAttack() {
+	if (state == Mode::attack) { // If we were under attack, then we won, let's go after them!
+		mode = Mode::attack;
+		state = Mode::normal;
+	}
 }
 void ArmyManager::attack(BWAPI::Unit soldier, BWAPI::Unit threat) {
 	soldier->attack(threat->getPosition());
@@ -140,11 +167,17 @@ void ArmyManager::attack(std::vector<BWAPI::Unit> soldiers, BWAPI::Unit threat) 
 	for(auto soldier : soldiers)
 		soldier->attack(threat->getPosition());
 }
+void ArmyManager::attack(std::vector<BWAPI::Unit> soldiers, BWAPI::Position position) {
+	for (auto soldier : soldiers)
+		soldier->attack(position);
+}
 void ArmyManager::onUnitDestroyed(BWAPI::Unit unit) {
 	std::remove(soldiers.begin(), soldiers.end(), unit);
 	std::remove(attackSoldiers.begin(), attackSoldiers.end(), unit);
 	std::remove(defenseSoldiers.begin(), defenseSoldiers.end(), unit);
 	std::remove(patrolSoldiers.begin(), patrolSoldiers.end(), unit);
+
+	/* TODO: When unit dies, we remove it, then compute the next best unit to create instead, to replace it, and then add it to the BuildQueue*/
 }
 void patrol(BWAPI::Position position, std::vector<BWAPI::Unit> soldiers) {
 	if (soldiers.size() > 0) {
