@@ -32,8 +32,8 @@ void GlobalManager::initiate() {
 	const auto zealots = Protoss_Zealot;
 	
 	const auto roboticsType = Protoss_Dragoon;
-	std::vector<std::variant<BWAPI::UnitType, BWAPI::UpgradeType, BWAPI::TechType>> build_vect = { workerType, workerType, workerType, workerType, workerType, pylon,  supplyProviderType, forge, upgrade_1, gateway, zealots, zealots, pylon, zealots, zealots, zealots, cybercore, upgrade_2, roboticsType, roboticsType, roboticsType, pylon, zealots, roboticsType, zealots };
-	std::vector<int> priority_vect = { 10, 10, 10, 10, 10, 8, 9, 7, 6, 6, 5,5,5,5,5,5, 4, 3, 0, 0,0, 0,0,0,0 };
+	std::vector<std::variant<BWAPI::UnitType, BWAPI::UpgradeType, BWAPI::TechType>> build_vect = { gateway, forge, upgrade_1, zealots, zealots, zealots, zealots, zealots, cybercore, upgrade_2, roboticsType, roboticsType, roboticsType, zealots, roboticsType, zealots };
+	std::vector<int> priority_vect = {16,15,14,13,12,11,10,9,8,7,6,5,4,3,2,1};
 	bases[0]->initializeQueue(build_vect, priority_vect);
 	
 	
