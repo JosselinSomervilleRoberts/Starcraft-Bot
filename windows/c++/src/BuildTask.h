@@ -33,7 +33,7 @@
         BuildTask(GlobalManager* manager, BWAPI::UpgradeType toUpgrade, int priority, BWAPI::TilePosition position,
             bool exactPosition = false);
         // Called every KBot::onFrame().
-        void update();
+        void update(bool& enoughMinerals, bool& enoughGas);
 
         bool onUnitCreatedOrMorphed(const BWAPI::Unit& unit);
         bool onUnitDestroyed(const BWAPI::Unit& unit);

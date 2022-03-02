@@ -87,8 +87,11 @@ BuildTask* BuildQueue::getTask(int i) {
 
 void BuildQueue::update() {
     computeNeed();
+
+    bool enoughMinerals = true;
+    bool enoughGas = true;
     for (int i = 0; i < m_buildQueue.size(); i++) {
-        m_buildQueue[i]->update();
+        m_buildQueue[i]->update(enoughMinerals, enoughGas);
     }
 
     for (int i = 0; i < m_buildQueue.size(); i++) {

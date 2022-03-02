@@ -16,9 +16,9 @@ public:
     void initiate();
     void update();
 
-    bool reserveGas(int gas_);
-    bool reserveMinerals(int minerals_);
-    bool reserveRessources(int minerals_, int gas_);
+    bool reserveGas(int gas_, bool& enoughGas);
+    bool reserveMinerals(int minerals_, bool& enoughMinerals);
+    bool reserveRessources(int minerals_, int gas_, bool& enoughMinerals, bool& enoughGas);
     void releaseGas(int gas_);
     void releaseMinerals(int minerals_);
     void releaseRessources(int minerals_, int gas_);

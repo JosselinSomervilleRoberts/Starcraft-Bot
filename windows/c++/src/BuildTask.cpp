@@ -16,7 +16,7 @@ BuildTask::BuildTask(GlobalManager* manager, BWAPI::UpgradeType toUpgrade, int p
     : m_manager(manager), m_toUpgrade(std::move(toUpgrade)), m_priority(priority),
     m_position(std::move(position)), m_exactPosition(exactPosition) {}
 
-void BuildTask::update() {
+void BuildTask::update(bool& enoughMinerals, bool& enoughGas) {
     // ----- Prevent spamming -----------------------------------------------
     // Everything below is executed only occasionally and not on every frame.
     //if (BWAPI::Broodwar->getFrameCount() % BWAPI::Broodwar->getLatencyFrames() != 0)
@@ -31,7 +31,7 @@ void BuildTask::update() {
         m_state = State::reserveResources; // go to next state
         break;
     case State::reserveResources:
-        if (m_manager->reserveRessources(m_toBuild.mineralPrice(), m_toBuild.gasPrice()))
+        if (m_manager->reserveRessources(m_toBuild.mineralPrice(), m_toBuild.gasPrice(), enoughMinerals, enoughGas))
             m_state = State::acquireWorker; // go to next state
         break;
     case State::acquireWorker:
@@ -47,7 +47,6 @@ void BuildTask::update() {
         break;
 
     case State::moveToPosition: {
-        m_manager->releaseRessources(m_toBuild.mineralPrice(), m_toBuild.gasPrice());
         if (m_toBuild == refineryType) m_manager->setRefineryState(BuildingState::CONSTRUCTING);
         if (!m_allocatedBuildPosition) {
             m_buildPosition =
@@ -109,11 +108,13 @@ void BuildTask::update() {
     case State::building:
         if (m_toBuild == refineryType) m_manager->setRefineryState(BuildingState::CONSTRUCTED);
         if (m_toBuild.isBuilding()) {
+            m_manager->releaseRessources(m_toBuild.mineralPrice(), m_toBuild.gasPrice());
             m_manager->releaseWorker(m_worker);
         }
         m_state = State::finalize; // go to next state
         break;
     case State::finalize:
+        m_manager->releaseRessources(m_toBuild.mineralPrice(), m_toBuild.gasPrice());
         // At this state, this build task can be removed from the queue.
         break;
     default:
