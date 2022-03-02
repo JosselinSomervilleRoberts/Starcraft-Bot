@@ -13,6 +13,13 @@ class BaseManager;
 class ArmyManager {
 
 public:
+    enum class Mode {
+        defense, 
+        normal,
+        attack
+    };
+
+public:
     ArmyManager(BaseManager* base_);
 
     void findAvailableSoldiers(int nbWanted);
@@ -24,14 +31,19 @@ public:
     void checkRepartition();
     void onAttack(BWAPI::Unit threat);
     void attack(BWAPI::Unit soldier, BWAPI::Unit threat);
-
-
+    void attack(std::vector<BWAPI::Unit> soldier, BWAPI::Unit threat);
+    std::vector<BWAPI::Unit> attackSoldiers;
+    std::vector<BWAPI::Unit> defenseSoldiers;
+    std::vector<BWAPI::Unit> patrolSoldiers;
+    void patrol(BWAPI::Position position, std::vector<BWAPI::Unit> soldiers);
+    
 private:
     BaseManager* base;
     std::vector<BWAPI::Unit> soldiers;
-    std::vector<BWAPI::Unit> soldiersAvailable;
+    
     std::vector<BWAPI::Unit> ennemies;
 
+    Mode               mode = Mode::defense;
     int nbSoldiersTotal = 0;
 
 };
