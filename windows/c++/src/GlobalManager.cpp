@@ -47,32 +47,47 @@ void GlobalManager::update() {
 	for (int i = 0; i < bases.size(); i++) {
 		bases[i]->update();
 	}
+
+	BWAPI::Broodwar->drawTextScreen(435 - 1, 55, "R: %d", reservedMinerals);
+	BWAPI::Broodwar->drawTextScreen(503 - 1, 55, "R: %d", reservedGas);
 }
 
 
 
 
-bool GlobalManager::reserveGas(int gas_) {
+bool GlobalManager::reserveGas(int gas_, bool& enoughGas) {
+	if ((gas_ > 0) && !(enoughGas)) return false;
 	if (getAvailableGas() >= gas_) {
 		reservedGas += gas_;
 		return true;
 	}
-	return false;
-}
-
-bool GlobalManager::reserveMinerals(int minerals_) {
-	if (getAvailableMinerals() >= minerals_) {
-		reservedMinerals += minerals_;
-		return true;
+	else {
+		enoughGas = false;
 	}
 	return false;
 }
 
-bool GlobalManager::reserveRessources(int minerals_, int gas_) {
-	bool ok = reserveGas(gas_);
+bool GlobalManager::reserveMinerals(int minerals_, bool& enoughMinerals) {
+	if ((minerals_ > 0) && !(enoughMinerals)) return false;
+	if (getAvailableMinerals() >= minerals_) {
+		reservedMinerals += minerals_;
+		return true;
+	}
+	else {
+		enoughMinerals = false;
+	}
+	return false;
+}
+
+bool GlobalManager::reserveRessources(int minerals_, int gas_, bool& enoughMinerals, bool& enoughGas) {
+	bool copyEnoughGas = enoughGas;
+	bool ok = reserveGas(gas_, enoughGas);
 	if (ok) {
-		bool ok2 = reserveMinerals(minerals_);
-		if (!ok2) releaseGas(gas_);
+		bool ok2 = reserveMinerals(minerals_, enoughMinerals);
+		if (!ok2) {
+			releaseGas(gas_);
+			enoughGas = copyEnoughGas;
+		}
 		return ok2;
 	}
 	return false;

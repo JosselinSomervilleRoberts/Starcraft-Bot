@@ -20,7 +20,7 @@ BuildTask::BuildTask(GlobalManager* manager, BWAPI::TechType techUpgrade, int pr
     : m_manager(manager), m_techUpgrade(std::move(techUpgrade)), m_priority(priority),
     m_position(std::move(position)), m_exactPosition(exactPosition) {}
 
-void BuildTask::update() {
+void BuildTask::update(bool& enoughMinerals, bool& enoughGas) {
     // ----- Prevent spamming -----------------------------------------------
     // Everything below is executed only occasionally and not on every frame.
     //if (BWAPI::Broodwar->getFrameCount() % BWAPI::Broodwar->getLatencyFrames() != 0)
@@ -31,6 +31,7 @@ void BuildTask::update() {
     const auto pylonType = BWAPI::UnitTypes::Protoss_Pylon;
     if (m_toBuild.getID() != BWAPI::UnitTypes::Enum::None) {
 
+<<<<<<< HEAD
         switch (m_state) {
         case State::initialize:
             // TODO: Make checks and stuff...
@@ -101,6 +102,60 @@ void BuildTask::update() {
                 
                 if (trainBuilding && trainBuilding->train(m_toBuild)) {
                     m_manager->releaseRessources(m_toBuild.mineralPrice(), m_toBuild.gasPrice());
+=======
+    switch (m_state) {
+    case State::initialize:
+        // TODO: Make checks and stuff...
+        m_state = State::reserveResources; // go to next state
+        break;
+    case State::reserveResources:
+        if (m_manager->reserveRessources(m_toBuild.mineralPrice(), m_toBuild.gasPrice(), enoughMinerals, enoughGas))
+            m_state = State::acquireWorker; // go to next state
+        break;
+    case State::acquireWorker:
+        if (m_toBuild.isBuilding()) {
+            m_worker = m_manager->acquireWorker();// m_toBuild.whatBuilds().first);// , Position(m_position));
+            if (m_worker != nullptr) {
+                // Go to next state
+                m_state = State::moveToPosition;
+            }
+        }
+        else
+            m_state = State::startBuild;
+        break;
+
+    case State::moveToPosition: {
+        if (m_toBuild == refineryType) m_manager->setRefineryState(BuildingState::CONSTRUCTING);
+        if (!m_allocatedBuildPosition) {
+            m_buildPosition =
+                m_exactPosition ? m_position : BWAPI::Broodwar->getBuildLocation(m_toBuild, m_position);
+            m_allocatedBuildPosition = true;
+        }
+        assert(m_worker != nullptr);
+        const BWAPI::Position movePosition =
+            BWAPI::Position(m_buildPosition) + BWAPI::Position(m_toBuild.tileSize()) / 2;
+
+        // DEBUG
+        BWAPI::Broodwar->registerEvent([worker = m_worker, movePosition](BWAPI::Game*) {
+            BWAPI::Broodwar->drawLineMap(worker->getPosition(), movePosition, BWAPI::Colors::Purple);
+            BWAPI::Broodwar->drawTextMap(worker->getPosition(), "Distance: %d",
+                worker->getDistance(movePosition));
+            },
+            nullptr, BWAPI::Broodwar->getLatencyFrames());
+
+        if (m_worker->getOrder() != BWAPI::Orders::Move ||
+            m_worker->getOrderTargetPosition() != movePosition)
+            m_worker->move(movePosition);
+        if (m_worker->getDistance(movePosition) < 100) // TODO!
+            m_state = State::startBuild;               // go to next state
+        break;
+    }
+    case State::startBuild:
+        if (m_toBuild.isBuilding()) {
+            // Construct building
+            if (BWAPI::Broodwar->canBuildHere(m_buildPosition, m_toBuild, m_worker)) {
+                if (m_worker->build(m_toBuild, m_buildPosition))
+>>>>>>> origin/main
                     m_state = State::waitForUnit; // go to next state
                 }
             }
@@ -187,6 +242,7 @@ void BuildTask::update() {
         default:
             throw std::logic_error("Unknown BuildTask::State!");
         }
+<<<<<<< HEAD
     }
     else { // If it is an upgrade
         switch (m_state) {
@@ -239,6 +295,23 @@ void BuildTask::update() {
             default:
                 throw std::logic_error("Unknown BuildTask::State!");
         }
+=======
+        break;
+    case State::building:
+        if (m_toBuild == refineryType) m_manager->setRefineryState(BuildingState::CONSTRUCTED);
+        if (m_toBuild.isBuilding()) {
+            m_manager->releaseRessources(m_toBuild.mineralPrice(), m_toBuild.gasPrice());
+            m_manager->releaseWorker(m_worker);
+        }
+        m_state = State::finalize; // go to next state
+        break;
+    case State::finalize:
+        m_manager->releaseRessources(m_toBuild.mineralPrice(), m_toBuild.gasPrice());
+        // At this state, this build task can be removed from the queue.
+        break;
+    default:
+        throw std::logic_error("Unknown BuildTask::State!");
+>>>>>>> origin/main
     }
 }
 

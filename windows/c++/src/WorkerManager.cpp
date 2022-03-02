@@ -196,15 +196,14 @@ void WorkerManager::update() {
 	BWAPI::Broodwar->drawTextScreen(503-3, 35, "W: %d", workersGas.size());
 	BWAPI::Broodwar->drawTextScreen(435 - 1, 45, "D: %d", nbWorkersCristalWanted);
 	BWAPI::Broodwar->drawTextScreen(503 - 1, 45, "D: %d", nbWorkersGasWanted);
-	if(refineryState == BuildingState::NOT_BUILT) BWAPI::Broodwar->drawTextScreen(503 - 1, 55, "NOT BUILT");
-	else if (refineryState == BuildingState::WAITING_CONSTRUCTION) BWAPI::Broodwar->drawTextScreen(503 - 1, 55, "IN QUEUE");
-	else if (refineryState == BuildingState::CONSTRUCTING) BWAPI::Broodwar->drawTextScreen(503 - 1, 55, "CONSTRUCTING");
-	else if (refineryState == BuildingState::CONSTRUCTED) BWAPI::Broodwar->drawTextScreen(503 - 1, 55, "CONSTRUCTED");
+	if(refineryState == BuildingState::NOT_BUILT) BWAPI::Broodwar->drawTextScreen(503 - 1, 65, "NOT BUILT");
+	else if (refineryState == BuildingState::WAITING_CONSTRUCTION) BWAPI::Broodwar->drawTextScreen(503 - 1, 65, "IN QUEUE");
+	else if (refineryState == BuildingState::CONSTRUCTING) BWAPI::Broodwar->drawTextScreen(503 - 1, 65, "CONSTRUCTING");
+	else if (refineryState == BuildingState::CONSTRUCTED) BWAPI::Broodwar->drawTextScreen(503 - 1, 65, "CONSTRUCTED");
 
 
-	BWAPI::Broodwar->drawTextScreen(350, 15, "Tot: %d", workers.size());
-	BWAPI::Broodwar->drawTextScreen(350, 25, "Ava: %d", workersAvailable.size());
-	BWAPI::Broodwar->drawTextScreen(350, 35, "Tot: %d", nbWorkersTotal);
+	BWAPI::Broodwar->drawTextScreen(571, 15, "Tot: %d", workers.size());
+	BWAPI::Broodwar->drawTextScreen(571, 25, "Ava: %d", workersAvailable.size());
 }
 
 
