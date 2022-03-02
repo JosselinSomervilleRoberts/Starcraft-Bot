@@ -136,9 +136,15 @@ std::string BuildQueue::toString() const {
 
 
 
+void BuildQueue::unitCreated(BWAPI::Unit unit) {
+    for (int i = 0; i < m_buildQueue.size(); i++) {
+        m_buildQueue[i]->onUnitCreated(unit);
+    }
+}
+
 void BuildQueue::unitCompleted(BWAPI::Unit unit) {
     for (int i = 0; i < m_buildQueue.size(); i++) {
-        m_buildQueue[i]->onUnitCreatedOrMorphed(unit);
+        m_buildQueue[i]->onUnitCompleted(unit);
     }
 }
 

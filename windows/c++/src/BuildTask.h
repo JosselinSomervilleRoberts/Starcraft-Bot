@@ -37,7 +37,8 @@
         // Called every KBot::onFrame().
         void update(bool& enoughMinerals, bool& enoughGas);
 
-        bool onUnitCreatedOrMorphed(const BWAPI::Unit& unit);
+        bool onUnitCreated(const BWAPI::Unit& unit);
+        void onUnitCompleted(const BWAPI::Unit& unit);
         bool onUnitDestroyed(const BWAPI::Unit& unit);
 
         void setPriority(int prio) { m_priority = prio; };
