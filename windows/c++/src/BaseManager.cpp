@@ -97,6 +97,7 @@ BWAPI::Unit BaseManager::acquireWorker() {
 
 
 void BaseManager::unitCreated(BWAPI::Unit unit) {
+    queue.unitCreated(unit);
 }
 
 void BaseManager::unitDestroyed(BWAPI::Unit unit) {

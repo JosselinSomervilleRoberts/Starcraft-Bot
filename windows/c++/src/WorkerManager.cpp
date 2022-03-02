@@ -220,7 +220,7 @@ void WorkerManager::findAvailableWorkers(int nbWanted) {
 
 		// If not already available
 		if (std::find(workersAvailable.begin(), workersAvailable.end(), worker) == workersAvailable.end()) { 
-			if (!(worker->isCarryingGas() || worker->isCarryingMinerals() || worker->isConstructing())) { // TODO: check if gathering
+			if (!(worker->isGatheringGas() || worker->isGatheringMinerals() || worker->isCarryingGas() || worker->isCarryingMinerals() || worker->isConstructing())) { // TODO: check if gathering
 				workersAvailable.push_back(worker);
 
 				auto indexWorker = std::find(workersCristal.begin(), workersCristal.end(), worker);

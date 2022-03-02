@@ -125,6 +125,7 @@ BWAPI::Unit GlobalManager::acquireWorker() {
 
 void GlobalManager::onUnitCreate(BWAPI::Unit unit) {
 	// TODO :change for several bases
+	std::cout << "Create " << unit->getType() << std::endl;
 	bases[0]->unitCreated(unit);
 }
 
@@ -135,6 +136,7 @@ void GlobalManager::onUnitDestroy(BWAPI::Unit unit) {
 
 void GlobalManager::onUnitComplete(BWAPI::Unit unit) {
 	// TODO :change for several bases
+	std::cout << "Complete " << unit->getType() << std::endl;
 	bases[0]->unitCompleted(unit);
 }
 
