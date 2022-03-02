@@ -54,7 +54,6 @@ void ArmyManager::update() {
 void ArmyManager::findAvailableSoldiers(int nbWanted) {
 	int nbFound = soldiersAvailable.size();
 
-	std::cout << "debut findWorker " << nbWanted << std::endl;
 
 	int i = 0;
 	while ((i < soldiers.size()) && (nbFound < nbWanted)) {
@@ -66,7 +65,6 @@ void ArmyManager::findAvailableSoldiers(int nbWanted) {
 		if (std::find(soldiersAvailable.begin(), soldiersAvailable.end(), soldier) == soldiersAvailable.end()) {
 			if (!(soldier->isAttacking() || soldier->isPatrolling())) { // TODO: check if gathering
 				soldiersAvailable.push_back(soldier);
-
 				nbFound++;
 			}
 		}
@@ -85,7 +83,6 @@ void ArmyManager::findAvailableSoldiers(int nbWanted) {
 		i++;
 	}*/
 
-	std::cout << "find worker " << soldiersAvailable.size() << std::endl;
 }
 
 
@@ -100,14 +97,6 @@ BWAPI::Unit ArmyManager::getAvailableSoldier() {
 
 		indexSoldier = std::find(soldiersAvailable.begin(), soldiersAvailable.end(), soldier);
 		if (indexSoldier != soldiersAvailable.end()) soldiersAvailable.erase(indexSoldier);
-		/*
-		std::cout << "hola 2" << std::endl;
-		.erase(std::remove(workersGas.begin(), workersGas.end(), worker);
-		std::cout << "hola 3" << std::endl;
-		workersCristal.erase(std::remove(workersCristal.begin(), workersCristal.end(), worker), workersCristal.end());
-		std::cout << "hola 4" << std::endl;
-		workersAvailable.erase(std::remove(workersAvailable.begin(), workersAvailable.end(), worker), workersAvailable.end());
-		std::cout << "hola 5" << std::endl;*/
 		nbSoldiersTotal--;
 		return soldier;
 	}
@@ -116,3 +105,11 @@ BWAPI::Unit ArmyManager::getAvailableSoldier() {
 	return nullptr;
 }
 
+void ArmyManager::onAttack(BWAPI::Unit threat) {
+	ennemies.push_back(threat);
+
+}
+void ArmyManager::attack(BWAPI::Unit soldier, BWAPI::Unit threat) {
+	soldier->attack(threat);
+
+}

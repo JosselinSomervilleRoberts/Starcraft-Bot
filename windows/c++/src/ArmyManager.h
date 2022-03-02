@@ -22,12 +22,16 @@ public:
 
     void computeRepartition();
     void checkRepartition();
+    void onAttack(BWAPI::Unit threat);
+    void attack(BWAPI::Unit soldier, BWAPI::Unit threat);
 
 
 private:
     BaseManager* base;
     std::vector<BWAPI::Unit> soldiers;
     std::vector<BWAPI::Unit> soldiersAvailable;
+    std::vector<BWAPI::Unit> ennemies;
+
     int nbSoldiersTotal = 0;
 
 };
