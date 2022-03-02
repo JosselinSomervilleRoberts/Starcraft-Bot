@@ -12,7 +12,7 @@ StarterBot::StarterBot(): manager() {}
 void StarterBot::onStart()
 {
     // Set our BWAPI options here    
-	BWAPI::Broodwar->setLocalSpeed(15);
+	BWAPI::Broodwar->setLocalSpeed(0);
     BWAPI::Broodwar->setFrameSkip(0);
     
     // Enable the flag that tells BWAPI top let users enter input while bot plays
