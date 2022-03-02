@@ -10,6 +10,7 @@
 #define TIME_MAX_MINUTE 0.2
 #define NB_WORKERS_MAX_PER_BASE 16
 #define NB_WORKERS_MAX_PER_GAS 3
+#define NB_WORKERS_MIN_WANTED 11
 
 
 
@@ -87,7 +88,12 @@ void WorkerManager::computeRepartition() {
 			// Need to expand for more workers
 			base->transmit_expansion();
 		}
-		else if(nbWorkersTotal > 4) {
+		else if ((nbWorkersTotal >= 4) && (nbWorkersTotal < NB_WORKERS_MIN_WANTED)) {
+			// We can ask for a new worker in this base
+			int importance = 50;// std::min(90, (int)(std::round(3 * (std::max(timeForCristal, timeForGas) - TIME_MAX_MINUTE) / (float)(TIME_MAX_MINUTE))));
+			base->newWorker(importance);
+		}
+		else if(nbWorkersTotal >= 4) {
 			// We can ask for a new worker in this base
 			int importance = std::min(90, (int)(std::round(3 * (std::max(timeForCristal, timeForGas) - TIME_MAX_MINUTE) / (float)(TIME_MAX_MINUTE))));
 			base->newWorker(importance);
