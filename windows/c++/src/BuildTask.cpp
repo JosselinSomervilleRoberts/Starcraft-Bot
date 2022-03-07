@@ -93,10 +93,14 @@ void BuildTask::update(bool& enoughMinerals, bool& enoughGas) {
                 m_state = State::reserveResources; // go to next state
                 break;
 
-            case State::reserveResources:
-                if (m_manager->reserveRessources(m_toBuild.mineralPrice(), m_toBuild.gasPrice(), enoughMinerals, enoughGas))
-                    m_state = State::acquireWorker; // go to next state
-                break;
+            case State::reserveResources: {
+                auto requirement = m_toBuild.whatBuilds();
+                if (Tools::CountUnitsOfType(requirement.first, BWAPI::Broodwar->self()->getUnits()) >= requirement.second) { // Can build
+                    if (m_manager->reserveRessources(m_toBuild.mineralPrice(), m_toBuild.gasPrice(), enoughMinerals, enoughGas)) {
+                        m_state = State::acquireWorker; // go to next state
+                    }
+                }
+            } break;
 
             case State::acquireWorker: {
                     m_worker = m_manager->acquireWorker();// m_toBuild.whatBuilds().first);// , Position(m_position));
