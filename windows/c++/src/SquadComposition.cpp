@@ -9,8 +9,8 @@ SquadComposition::SquadComposition(BuildQueue* queue_) : queue(queue_) {
 
 	Requirement req1 = { Protoss_Gateway, 1 };
 	Requirement req2 = { Protoss_Cybernetics_Core, 1 };
-	//Requirement req3 = { BWAPI::UpgradeTypes::Singularity_Charge, 1 };
-	requirements = { req1, req2 };// , req3};
+	Requirement req3 = { BWAPI::UpgradeTypes::Singularity_Charge, 1 };
+	requirements = { req1, req2, req3};
 	squadTypes = { Protoss_Dragoon, Protoss_Observer };
 	squadProportions = { 0.6f, 0.4f };
 }
@@ -18,7 +18,7 @@ SquadComposition::SquadComposition(BuildQueue* queue_) : queue(queue_) {
 
 void SquadComposition::updateRequirements() {
 	for (int i = 0; i < requirements.size(); i++) {
-		Requirement req = requirements[i];
+		Requirement& req = requirements[i];
 
 
 		if (std::holds_alternative<BWAPI::UnitType>(req.toBuild)) { // It's a Unit 
@@ -38,9 +38,7 @@ void SquadComposition::updateRequirements() {
 		}
 
 		req.satisfied = (req.quantity_current >= req.quantity);
-		std::cout << "Req " << (1 + i) << ": " << req.satisfied << std::endl;
 	}
-	std::cout << std::endl;
 }
 
 bool SquadComposition::checkRequirements() {
@@ -70,7 +68,9 @@ void SquadComposition::fixMissingRequirements(int priority) {
 				BWAPI::UnitType unitTypeToBuild = std::get<BWAPI::UnitType>(req.toBuild);
 
 				// We add the Build to the queue
-				queue->addTask(unitTypeToBuild, priority, true);
+				int imax = req.quantity - queue->countUnitTypeInTotal(unitTypeToBuild);
+				for(int i=0; i<imax; i++)
+					queue->addTask(unitTypeToBuild, priority, true);
 			}
 
 			else if (std::holds_alternative<BWAPI::UpgradeType>(req.toBuild)) { // It's an Upgrade 
@@ -95,6 +95,7 @@ void SquadComposition::fixMissingRequirements(int priority) {
 
 				// We add the Upgrade to the queue
 				queue->addTask(techTypeToBuild, priority, true);
+				std::cout << "ADD TECH" << std::endl;
 			}
 		}
 	}

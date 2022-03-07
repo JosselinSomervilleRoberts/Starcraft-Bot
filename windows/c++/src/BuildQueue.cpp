@@ -179,6 +179,23 @@ void BuildQueue::unitCompleted(BWAPI::Unit unit) {
     }
 }
 
+int BuildQueue::countUnitTypeInQueue(BWAPI::UnitType type) {
+    int count = 0;
+    for (int i = 0; i < m_buildQueue.size(); i++) {
+        auto object = m_buildQueue[i]->getObject();
+        if (std::holds_alternative<BWAPI::UnitType>(object)) {
+            if (std::get<BWAPI::UnitType>(object) == type) count++;
+        }
+    }
+    return count;
+}
+
+int BuildQueue::countUnitTypeInTotal(BWAPI::UnitType type) {
+    int count = countUnitTypeInQueue(type);
+    count += Tools::CountUnitsOfType(type, BWAPI::Broodwar->self()->getUnits());
+    return count;
+}
+
 
 void BuildQueue::computeNeed(bool once) {
     int profondeur = 5;

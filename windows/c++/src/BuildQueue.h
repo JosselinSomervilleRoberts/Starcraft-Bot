@@ -31,6 +31,9 @@
 
         int getPriorityOfGas();
 
+        int countUnitTypeInQueue(BWAPI::UnitType type);
+        int countUnitTypeInTotal(BWAPI::UnitType type);
+
     private:
         std::vector<BuildTask*> m_buildQueue;
         GlobalManager* m_manager;
