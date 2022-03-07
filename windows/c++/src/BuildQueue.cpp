@@ -16,6 +16,17 @@ BuildQueue::BuildQueue(GlobalManager* manager)
 }
 
 
+void BuildQueue::addTask(BWAPI::UnitType toBuild, int priority , bool unique) {
+    addTask(toBuild, priority, BWAPI::Broodwar->self()->getStartLocation(), unique);
+}
+
+void BuildQueue::addTask(BWAPI::UpgradeType toBuild, int priority, bool unique) {
+    addTask(toBuild, priority, BWAPI::Broodwar->self()->getStartLocation(), unique);
+}
+
+void BuildQueue::addTask(BWAPI::TechType toBuild, int priority, bool unique) {
+    addTask(toBuild, priority, BWAPI::Broodwar->self()->getStartLocation(), unique);
+}
 
 void BuildQueue::addTask(std::variant<BWAPI::UnitType, BWAPI::UpgradeType, BWAPI::TechType> toBuild, int priority, TilePosition position, bool unique) {
     //std::cout << "Add Task : toBuild " << toBuild << " - " << m_buildQueue.size() << std::endl;
@@ -98,6 +109,20 @@ BuildTask* BuildQueue::getTask(int i) {
 }
 
 
+/*
+ * Erase First Occurrence of given  substring from main string.
+ */
+void eraseSubStr(std::string& mainStr, const std::string& toErase)
+{
+    // Search for the substring in string
+    size_t pos = mainStr.find(toErase);
+    if (pos != std::string::npos)
+    {
+        // If found then erase it from string
+        mainStr.erase(pos, toErase.length());
+    }
+}
+
 void BuildQueue::update() {
     computeNeed();
 
@@ -120,7 +145,9 @@ void BuildQueue::update() {
     
     for (int i = 0; i < std::min((size_t)(5), m_buildQueue.size()); i++) {
         BWAPI::Broodwar->drawTextScreen(28, 15 + 10 * i, std::to_string(m_buildQueue[i]->getPriority()).c_str());
-        BWAPI::Broodwar->drawTextScreen(40, 15 + 10*i, ("- " + m_buildQueue[i]->getName()).c_str());
+        std::string name = m_buildQueue[i]->getName();
+        eraseSubStr(name, "Protoss_");
+        BWAPI::Broodwar->drawTextScreen(40, 15 + 10*i, ("- " + name).c_str());
         BWAPI::Broodwar->drawTextScreen(155, 15 + 10 * i, ("M : " + std::to_string(std::visit([](const auto& field) { return field.mineralPrice(); }, m_buildQueue[i]->getObject()))).c_str());
         BWAPI::Broodwar->drawTextScreen(195, 15 + 10 * i, ("G : " + std::to_string(std::visit([](const auto& field) { return field.gasPrice(); }, m_buildQueue[i]->getObject()))).c_str());
         BWAPI::Broodwar->drawTextScreen(235, 15 + 10 * i, m_buildQueue[i]->toString().c_str());

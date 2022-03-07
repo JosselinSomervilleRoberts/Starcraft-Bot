@@ -216,8 +216,6 @@ void WorkerManager::update() {
 void WorkerManager::findAvailableWorkers(int nbWanted) {
 	int nbFound = workersAvailable.size();
 
-	std::cout << "debut findWorker " << nbWanted << std::endl;
-
 	int i = 0;
 	while ((i < workers.size()) && (nbFound < nbWanted)) {
 		BWAPI::Unit worker = workers[i];
@@ -251,17 +249,13 @@ void WorkerManager::findAvailableWorkers(int nbWanted) {
 		}
 		i++;
 	}*/
-
-	std::cout << "find worker " << workersAvailable.size() << std::endl;
 }
 
 
 
 BWAPI::Unit WorkerManager::getAvailableWorker() {
-	std::cout << "hola 0" << std::endl;
 	if (workersAvailable.size() > 0) {
 		BWAPI::Unit worker = workersAvailable[0];
-		std::cout << "hola 1" << std::endl;
 		auto indexWorker = std::find(workers.begin(), workers.end(), worker);
 		if(indexWorker != workers.end()) workers.erase(indexWorker);
 
@@ -284,7 +278,6 @@ BWAPI::Unit WorkerManager::getAvailableWorker() {
 		nbWorkersTotal--;
 		return worker;
 	}
-	std::cout << "hola 6" << std::endl;
 
 	return nullptr;
 }

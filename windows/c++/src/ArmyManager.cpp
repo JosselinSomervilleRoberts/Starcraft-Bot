@@ -5,7 +5,7 @@
 
 
 
-ArmyManager::ArmyManager(BaseManager* base_) : base(base_) {
+ArmyManager::ArmyManager(BaseManager* base_) : base(base_), compo(base_->getQueue()) {
 }
 
 
@@ -68,6 +68,7 @@ void ArmyManager::computeRepartition() {
 
 
 void ArmyManager::update() {
+	compo.fixMissingRequirements(10);
 	checkRepartition();
 	computeRepartition();
 	// We check if we need to change the repartition
@@ -159,10 +160,8 @@ void ArmyManager::findAvailableSoldiers(int nbWanted) {
 
 
 BWAPI::Unit ArmyManager::getAvailableSoldier() {
-	std::cout << "hola 0" << std::endl;
 	if (defenseSoldiers.size() > 0) {
 		BWAPI::Unit soldier = defenseSoldiers[0];
-		std::cout << "hola 1" << std::endl;
 		auto indexSoldier = std::find(soldiers.begin(), soldiers.end(), soldier);
 		if (indexSoldier != soldiers.end()) soldiers.erase(indexSoldier);
 
@@ -171,7 +170,6 @@ BWAPI::Unit ArmyManager::getAvailableSoldier() {
 		nbSoldiersTotal--;
 		return soldier;
 	}
-	std::cout << "hola 6" << std::endl;
 
 	return nullptr;
 }

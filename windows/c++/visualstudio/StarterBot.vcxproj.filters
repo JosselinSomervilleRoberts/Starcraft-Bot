@@ -24,6 +24,7 @@
     <ClCompile Include="..\src\GlobalManager.cpp" />
     <ClCompile Include="..\src\BuildQueue.cpp" />
     <ClCompile Include="..\src\ArmyManager.cpp" />
+    <ClCompile Include="..\src\SquadComposition.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\BuildOrder\BOs\BOTest.h" />
@@ -50,6 +51,7 @@
     <ClInclude Include="..\src\GlobalManager.h" />
     <ClInclude Include="..\src\BuildQueue.h" />
     <ClInclude Include="..\src\ArmyManager.h" />
+    <ClInclude Include="..\src\SquadComposition.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="BuildOrder">

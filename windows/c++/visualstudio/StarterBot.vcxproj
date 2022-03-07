@@ -21,6 +21,7 @@
     <ClInclude Include="..\src\GlobalManager.h" />
     <ClInclude Include="..\src\Grid.hpp" />
     <ClInclude Include="..\src\MapTools.h" />
+    <ClInclude Include="..\src\SquadComposition.h" />
     <ClInclude Include="..\src\StarterBot.h" />
     <ClInclude Include="..\src\Tools.h" />
     <ClInclude Include="..\src\Triggers\Trigger.h" />
@@ -39,6 +40,7 @@
     <ClCompile Include="..\src\GlobalManager.cpp" />
     <ClCompile Include="..\src\main.cpp" />
     <ClCompile Include="..\src\MapTools.cpp" />
+    <ClCompile Include="..\src\SquadComposition.cpp" />
     <ClCompile Include="..\src\StarterBot.cpp" />
     <ClCompile Include="..\src\Tools.cpp" />
     <ClCompile Include="..\src\Triggers\Trigger.cpp" />

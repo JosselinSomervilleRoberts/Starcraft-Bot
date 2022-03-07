@@ -6,6 +6,7 @@
 #include <algorithm>    // std::sort, std::stable_sort
 
 #include "Tools.h"
+#include "SquadComposition.h"
 
 class BaseManager;
 
@@ -43,6 +44,7 @@ public:
     void patrol(BWAPI::Position position, std::vector<BWAPI::Unit> soldiers);
     
 private:
+    SquadComposition compo;
     BaseManager* base;
     std::vector<BWAPI::Unit> soldiers;
     

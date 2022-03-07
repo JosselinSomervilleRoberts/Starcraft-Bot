@@ -36,6 +36,8 @@ public:
     void setRefineryState(BuildingState state);
     void constructRefinery(int additionalPriority);
 
+    BuildQueue* getQueue() { return &this->queue; };
+
 private:
     WorkerManager workerManager;
     ArmyManager armyManager;
