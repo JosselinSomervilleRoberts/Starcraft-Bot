@@ -51,6 +51,22 @@ BWAPI::Unit Tools::GetUnitOfType(BWAPI::UnitType type)
     return nullptr;
 }
 
+
+std::vector<BWAPI::Unit> Tools::GetUnitsOfType(BWAPI::UnitType type) {
+    std::vector<BWAPI::Unit> units;
+
+    // For each unit that we own
+    for (auto& unit : BWAPI::Broodwar->self()->getUnits())
+    {
+        // if the unit is of the correct type, and it actually has been constructed, return it
+        if (unit->getType() == type && unit->isCompleted() && !unit->isConstructing())
+            units.push_back(unit);
+    }
+
+    // If we didn't find a valid unit to return, make sure we return nullptr
+    return units;
+}
+
 BWAPI::Unit Tools::GetDepot()
 {
     const BWAPI::UnitType depot = BWAPI::Broodwar->self()->getRace().getResourceDepot();

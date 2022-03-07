@@ -7,7 +7,7 @@
 SquadComposition::SquadComposition(BuildQueue* queue_) : queue(queue_) {
 	using namespace BWAPI::UnitTypes;
 
-	Requirement req1 = { Protoss_Gateway, 1 };
+	Requirement req1 = { Protoss_Gateway, 2 };
 	Requirement req2 = { Protoss_Cybernetics_Core, 1 };
 	Requirement req3 = { BWAPI::UpgradeTypes::Singularity_Charge, 1 };
 	requirements = { req1, req2, req3};

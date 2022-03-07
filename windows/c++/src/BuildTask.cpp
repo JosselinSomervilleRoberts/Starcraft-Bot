@@ -48,7 +48,17 @@ void BuildTask::update(bool& enoughMinerals, bool& enoughGas) {
         
             case State::startBuild: {
                 // Train unit
-                const BWAPI::Unit trainBuilding = Tools::GetUnitOfType(m_toBuild.whatBuilds().first);
+                BWAPI::Unit trainBuilding = nullptr;
+                std::vector<BWAPI::Unit> trainBuildings = Tools::GetUnitsOfType(m_toBuild.whatBuilds().first);
+
+                for (int i = 0; i < trainBuildings.size(); i++) {
+                    BWAPI::Unit building = trainBuildings[i];
+
+                    if (!(building->isResearching()) && !(building->isConstructing()) && !(building->isTraining())) {
+                        trainBuilding = building;
+                        i = trainBuildings.size();
+                    }
+                }
 
                 if (trainBuilding && trainBuilding->train(m_toBuild)) {
                     m_manager->releaseRessources(m_toBuild.mineralPrice(), m_toBuild.gasPrice());
