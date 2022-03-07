@@ -48,9 +48,12 @@
         std::string toString() const;
         std::variant<BWAPI::UnitType, BWAPI::UpgradeType, BWAPI::TechType> getObject();
 
+        void setComplete() { m_state = State::finalize; };
+
         bool unique = false;
         
     private:
+        int progress = 0;
         GlobalManager* m_manager;
         int            m_priority;
         BWAPI::TilePosition m_position;

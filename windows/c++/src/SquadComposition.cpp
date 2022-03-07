@@ -9,8 +9,8 @@ SquadComposition::SquadComposition(BuildQueue* queue_) : queue(queue_) {
 
 	Requirement req1 = { Protoss_Gateway, 1 };
 	Requirement req2 = { Protoss_Cybernetics_Core, 1 };
-	Requirement req3 = { BWAPI::UpgradeTypes::Singularity_Charge, 1 };
-	requirements = { req1, req2, req3 };
+	//Requirement req3 = { BWAPI::UpgradeTypes::Singularity_Charge, 1 };
+	requirements = { req1, req2 };// , req3};
 	squadTypes = { Protoss_Dragoon, Protoss_Observer };
 	squadProportions = { 0.6f, 0.4f };
 }

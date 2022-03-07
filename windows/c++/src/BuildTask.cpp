@@ -148,6 +148,7 @@ void BuildTask::update(bool& enoughMinerals, bool& enoughGas) {
                 break;
 
             case State::building:
+                progress = 100 - (100 * m_buildingUnit->getRemainingBuildTime() / m_toBuild.buildTime());
                 break;
 
             case State::finalize:
@@ -177,25 +178,21 @@ void BuildTask::update(bool& enoughMinerals, bool& enoughGas) {
 
             const BWAPI::Unit upgradeBuilding = Tools::GetUnitOfType(m_toUpgrade.whatUpgrades());
             if (upgradeBuilding && !upgradeBuilding->isResearching() && !upgradeBuilding->isUpgrading()) {
-                if (upgradeBuilding->upgrade(m_toUpgrade)) {
-                    m_manager->releaseRessources(m_toUpgrade.mineralPrice(), m_toUpgrade.gasPrice());
-                    m_state = State::finalize;
-                }
+                upgradeBuilding->upgrade(m_toUpgrade); // TODO: fix the check
+                 m_manager->releaseRessources(m_toUpgrade.mineralPrice(), m_toUpgrade.gasPrice());
+                 m_buildingUnit = upgradeBuilding;
+                 m_state = State::building;
             }
             break;
         }
              
-        case State::waitForUnit:
-            if (m_buildingUnit != nullptr) {
-                m_state = State::building; // go to next state
-            }
-            break;
         case State::building:
-            
-            m_state = State::finalize; // go to next state
+            progress = 100 - (100 * m_buildingUnit->getRemainingUpgradeTime() / m_toUpgrade.upgradeTime());
+            if (BWAPI::Broodwar->self()->getUpgradeLevel(m_toUpgrade) > 0)
+                m_state = State::finalize;
             break;
+
         case State::finalize:
-            // At this state, this build task can be removed from the queue.
             break;
         default:
             throw std::logic_error("Unknown BuildTask::State!");
@@ -219,24 +216,21 @@ void BuildTask::update(bool& enoughMinerals, bool& enoughGas) {
             {
             const BWAPI::Unit upgradeBuilding = Tools::GetUnitOfType(m_techUpgrade.whatResearches());
             if (upgradeBuilding && !upgradeBuilding->isResearching() && !upgradeBuilding->isUpgrading()) {
-                if (upgradeBuilding->research(m_techUpgrade)) {
-                    m_manager->releaseRessources(m_techUpgrade.mineralPrice(), m_techUpgrade.gasPrice());
-                    m_state = State::finalize;
-                }
+                upgradeBuilding->research(m_techUpgrade); // TODO: fix the check
+                m_manager->releaseRessources(m_techUpgrade.mineralPrice(), m_techUpgrade.gasPrice());
+                m_buildingUnit = upgradeBuilding;
+                m_state = State::building;
             }
 
             break;
             }
-               
-            case State::waitForUnit:
-                if (m_buildingUnit != nullptr) {
-                    m_state = State::building; // go to next state
-                }
+         
+            case State::building:
+                progress = 100 - (100 * m_buildingUnit->getRemainingResearchTime() / m_techUpgrade.researchTime());
+                if (BWAPI::Broodwar->self()->hasResearched(m_techUpgrade))
+                    m_state = State::finalize;
                 break;
 
-            case State::building:                
-                m_state = State::finalize; // go to next state
-                break;
             case State::finalize:
                 // At this state, this build task can be removed from the queue.
                 break;
@@ -311,8 +305,7 @@ std::string BuildTask::toString() const {
     case State::waitForUnit:
         return "Start building...";
     case State::building: {
-        const int progress = 100 - (100 * m_buildingUnit->getRemainingBuildTime() / m_toBuild.buildTime());
-        return m_toBuild.getName() + " (" + std::to_string(progress) + ")";
+        return "Building (" + std::to_string(progress) + ")";
     }
     case State::finalize:
         return "Finalization";
