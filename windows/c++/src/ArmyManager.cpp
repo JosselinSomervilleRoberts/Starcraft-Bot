@@ -1,7 +1,8 @@
 #include "ArmyManager.h"
 #include "BaseManager.h"
+#include "GlobalManager.h"
 
-
+#define UNITS_IN_QUEUE_MAX 5
 
 
 
@@ -15,6 +16,7 @@ void ArmyManager::addSoldier(BWAPI::Unit soldier) {
 	if (!(std::find(soldiers.begin(), soldiers.end(), soldier) != soldiers.end())) {
 		soldiers.push_back(soldier);
 		nbSoldiersTotal += 1;
+		nbUnitsInQueue--;
 		this->computeRepartition();
 	}
 }
@@ -69,6 +71,17 @@ void ArmyManager::computeRepartition() {
 
 void ArmyManager::update() {
 	compo.fixMissingRequirements(10);
+	if (base->getManager()->getAvailableMinerals() > 350) {
+		if (nbUnitsInQueue < UNITS_IN_QUEUE_MAX * compo.getMultiplier())
+		{
+			bool trainSolider = compo.trainUnit(soldiers);
+			if (trainSolider) nbUnitsInQueue++;
+		}
+	}
+	if (base->getManager()->getAvailableMinerals() > 500 *pow(2, compo.getMultiplier())) {
+		compo.scaleUp();
+	}
+
 	checkRepartition();
 	computeRepartition();
 	// We check if we need to change the repartition

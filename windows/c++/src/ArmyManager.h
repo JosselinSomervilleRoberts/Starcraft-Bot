@@ -44,6 +44,7 @@ public:
     void patrol(BWAPI::Position position, std::vector<BWAPI::Unit> soldiers);
     
 private:
+    int nbUnitsInQueue = 0;
     SquadComposition compo;
     BaseManager* base;
     std::vector<BWAPI::Unit> soldiers;

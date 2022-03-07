@@ -37,6 +37,7 @@ public:
     void constructRefinery(int additionalPriority);
 
     BuildQueue* getQueue() { return &this->queue; };
+    GlobalManager* getManager() { return manager; };
 
 private:
     WorkerManager workerManager;

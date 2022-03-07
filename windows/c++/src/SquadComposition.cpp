@@ -10,20 +10,24 @@ SquadComposition::SquadComposition(BuildQueue* queue_) : queue(queue_) {
 	Requirement req1 = { Protoss_Gateway, 2 };
 	Requirement req2 = { Protoss_Cybernetics_Core, 1 };
 	Requirement req3 = { BWAPI::UpgradeTypes::Singularity_Charge, 1 };
-	requirements = { req1, req2, req3};
-	squadTypes = { Protoss_Dragoon, Protoss_Observer };
-	squadProportions = { 0.6f, 0.4f };
+	Requirement req4 = { Protoss_Robotics_Facility, 1 };
+	Requirement req5 = { Protoss_Observatory, 1 };
+	requirements = { req1, req2, req3, req4, req5};
+	squadTypes = { Protoss_Observer, Protoss_Dragoon };
+	squadProportions = { 0.2f, 0.8f };
 }
 
 
 void SquadComposition::updateRequirements() {
 	for (int i = 0; i < requirements.size(); i++) {
 		Requirement& req = requirements[i];
+		int quantity = req.quantity;
 
 
 		if (std::holds_alternative<BWAPI::UnitType>(req.toBuild)) { // It's a Unit 
 			BWAPI::UnitType unitTypeToBuild = std::get<BWAPI::UnitType>(req.toBuild);
 			req.quantity_current = Tools::CountUnitsOfType(unitTypeToBuild, BWAPI::Broodwar->self()->getUnits());
+			quantity *= multiplier;
 		}
 
 		else if (std::holds_alternative<BWAPI::UpgradeType>(req.toBuild)) { // It's an Upgrade 
@@ -37,7 +41,7 @@ void SquadComposition::updateRequirements() {
 			else req.quantity_current = 0;
 		}
 
-		req.satisfied = (req.quantity_current >= req.quantity);
+		req.satisfied = (req.quantity_current >= quantity);
 	}
 }
 
@@ -52,7 +56,9 @@ bool SquadComposition::checkRequirements() {
 bool SquadComposition::checkMinimalRequirements() {
 	updateRequirements();
 	for (int i = 0; i < requirements.size(); i++) {
-		if ((requirements[i].quantity_current < 1)) return false;
+		if (std::holds_alternative<BWAPI::UnitType>(requirements[i].toBuild)) {
+			if ((requirements[i].quantity_current < 1)) return false;
+		}
 	}
 	return true;
 }
@@ -68,7 +74,7 @@ void SquadComposition::fixMissingRequirements(int priority) {
 				BWAPI::UnitType unitTypeToBuild = std::get<BWAPI::UnitType>(req.toBuild);
 
 				// We add the Build to the queue
-				int imax = req.quantity - queue->countUnitTypeInTotal(unitTypeToBuild);
+				int imax = req.quantity * multiplier - queue->countUnitTypeInTotal(unitTypeToBuild);
 				for(int i=0; i<imax; i++)
 					queue->addTask(unitTypeToBuild, priority, true);
 			}
@@ -99,4 +105,65 @@ void SquadComposition::fixMissingRequirements(int priority) {
 			}
 		}
 	}
+}
+
+bool SquadComposition::trainUnit(std::vector<BWAPI::Unit>& squad_units, int priority) {
+	std::vector<float> proportions;
+	int n = squad_units.size();
+	proportions.resize(squadProportions.size());
+
+	for (int j = 0; j < squadProportions.size(); j++)
+		proportions[j] = 0;
+
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < squadProportions.size(); j++) {
+			if (squad_units[i]->getType() == squadProportions[j]) {
+				j = squadProportions.size(); // To end loop
+				proportions[j] += 1;
+			}
+		}
+	}
+
+	// Add what is in the build queue
+	for (int j = 0; j < squadProportions.size(); j++) {
+		int additional = queue->countUnitTypeInQueue(squadTypes[j]);
+		n += additional;
+		proportions[j] += additional;
+	}
+
+	// Compute the difference
+	for (int j = 0; j < squadProportions.size(); j++)
+		proportions[j] = proportions[j] / (float)(n) - squadProportions[j];
+
+	// Get the min to choose th unitType
+	// initialize original index locations
+	std::vector<size_t> idx(proportions.size());
+	iota(idx.begin(), idx.end(), 0);
+
+	// sort indexes based on comparing values in diffDist
+	// using std::stable_sort instead of std::sort
+	// to avoid unnecessary index re-orderings
+	// when v contains elements of equal values 
+	stable_sort(idx.begin(), idx.end(),
+		[&proportions](size_t i1, size_t i2) {return proportions[i1] < proportions[i2]; });
+
+	// Add the chosen unit to the queue
+	for (int j = 0; j < squadProportions.size(); j++) {
+		BWAPI::UnitType unitType = squadTypes[idx[j]];
+		auto requirement = unitType.whatBuilds();
+		if (Tools::CountUnitsOfType(requirement.first, BWAPI::Broodwar->self()->getUnits()) >= requirement.second) { // Can build
+			queue->addTask(unitType, priority);
+			return true;
+		}
+	}
+
+	return false;
+}
+
+void SquadComposition::scaleUp() {
+	multiplier += 1;
+}
+
+void SquadComposition::scaleDown() {
+	multiplier = std::max(1, multiplier - 1);
 }
