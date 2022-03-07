@@ -33,5 +33,4 @@ private:
     std::vector<BWAPI::Unit> ennemies;
 
     int nbSoldiersTotal = 0;
-
 };
