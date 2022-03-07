@@ -32,7 +32,8 @@ void BuildQueue::addTask(std::variant<BWAPI::UnitType, BWAPI::UpgradeType, BWAPI
             }
         }
     }
-
+    //TODO: when we add an unit, we check its requiredTech and requiredUnits and then check if they are already done and finally add them to queue (as unique)
+    
     if (indexTask >= 0) {
         buildtask = m_buildQueue[indexTask];
         if (buildtask->getPriority() >= priority) return;
@@ -44,6 +45,9 @@ void BuildQueue::addTask(std::variant<BWAPI::UnitType, BWAPI::UpgradeType, BWAPI
         m_buildQueue.erase(m_buildQueue.begin() + indexTask);
     }
     else if (std::holds_alternative<BWAPI::UnitType>(toBuild)) {
+        /*for (auto unit : std::get<BWAPI::UnitType>(toBuild).requiredUnits()) {
+            std::cout << "UNIT REQUIRED : " << unit.first << std::endl;
+        }*/
         buildtask = new BuildTask(m_manager, std::get<BWAPI::UnitType>(toBuild), priority, position);
         buildtask->unique = unique;
     }

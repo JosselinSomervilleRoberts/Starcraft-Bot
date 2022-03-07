@@ -107,22 +107,26 @@ void BaseManager::unitCreated(BWAPI::Unit unit) {
 }
 
 void BaseManager::unitDestroyed(BWAPI::Unit unit) {
-    if (unit->getType().isBuilding()) {
-        std::remove(buildings.begin(), buildings.end(), unit);
+    // if it is one of our units
+    if (unit->getPlayer()->isAlly(BWAPI::Broodwar->self())) { 
+        if (unit->getType().isBuilding()) {
+            std::remove(buildings.begin(), buildings.end(), unit);
 
-        // Here decide what we do
-        // TODO : change to have more clever behaviour
-        BWAPI::UnitType type = unit->getType();
-        if (type.isBuilding())
-            queue.addTask(type, 100);
-    }
-    else if (unit->getType() == BWAPI::Broodwar->self()->getRace().getWorker()) {
-        queue.addTask(unit->getType(), 50);
-        workerManager.onUnitDestroyed(unit);
-    }
-    else {
-        armyManager.onUnitDestroyed(unit);
-        queue.addTask(unit->getType(), 75);
+            // Here decide what we do
+            // TODO : change to have more clever behaviour
+            BWAPI::UnitType type = unit->getType();
+            if (type.isBuilding())
+                queue.addTask(type, 100);
+        }
+        else if (unit->getType() == BWAPI::Broodwar->self()->getRace().getWorker()) {
+            queue.addTask(unit->getType(), 50);
+            workerManager.onUnitDestroyed(unit);
+        }
+        else{
+            armyManager.onUnitDestroyed(unit);
+
+            queue.addTask(unit->getType(), 75);
+        }
     }
 }
 

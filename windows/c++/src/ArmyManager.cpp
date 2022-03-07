@@ -38,18 +38,27 @@ void ArmyManager::computeRepartition() {
 	attackSoldiers.clear();
 	patrolSoldiers.clear();
 	if (mode == Mode::defense) {
-		for (auto soldier : soldiers) 
-			defenseSoldiers.push_back(soldier);
+		for (auto soldier : soldiers) {
+			if (soldier->getType() == BWAPI::UnitTypes::Protoss_Observer)
+				patrolSoldiers.push_back(soldier);
+			else
+				defenseSoldiers.push_back(soldier);
+		}
+			
 	}
 	else if (mode == Mode::attack) {
-		for (auto soldier : soldiers) 
-			attackSoldiers.push_back(soldier);
+		for (auto soldier : soldiers) {
+			if (soldier->getType() == BWAPI::UnitTypes::Protoss_Observer)
+				patrolSoldiers.push_back(soldier);
+			else
+				attackSoldiers.push_back(soldier);
+		}
 	}
 	else if (mode == Mode::normal) {
 		for (int i = 0; i < soldiers.size(); i++) {
-			if(i/soldiers.size() < 0.4)
+			if(i/soldiers.size() < 0.4 && soldiers[i]->getType() != BWAPI::UnitTypes::Protoss_Observer)
 				attackSoldiers.push_back(soldiers[i]);
-			else if(i / soldiers.size() < 0.6)
+			else if(soldiers[i]->getType() == BWAPI::UnitTypes::Protoss_Observer || i / soldiers.size() < 0.6)
 				patrolSoldiers.push_back(soldiers[i]);
 			else
 				defenseSoldiers.push_back(soldiers[i]);
@@ -63,13 +72,35 @@ void ArmyManager::update() {
 	computeRepartition();
 	// We check if we need to change the repartition
 	BWAPI::Position enemyPos;
-	if (mode == Mode::attack && attackSoldiers.size()>4) {
+	if (mode == Mode::attack && attackSoldiers.size()>3) {
 		if(BWAPI::Broodwar->self()->getStartLocation() != BWAPI::TilePosition(31, 7))
 			enemyPos = (BWAPI::Position)BWAPI::TilePosition(31, 7); // Conversion of Tile Position to position  BWAPI::Broodwar->enemy()->getStartLocation()
 		else
 			enemyPos = (BWAPI::Position)BWAPI::TilePosition(64, 118);
 
 		attack(attackSoldiers, enemyPos);
+		std::cout << "ATTACKING" << std::endl;
+	}
+	else if (mode == Mode::normal)
+	{
+		if (BWAPI::Broodwar->self()->getStartLocation() != BWAPI::TilePosition(31, 7)){
+			enemyPos = (BWAPI::Position)BWAPI::TilePosition(31, 7); // Conversion of Tile Position to position  BWAPI::Broodwar->enemy()->getStartLocation()
+		}
+		else{
+			enemyPos = (BWAPI::Position)BWAPI::TilePosition(64, 118);
+		}
+		//ATTACK
+		if(attackSoldiers.size() >3)
+			attack(attackSoldiers, enemyPos);
+		//PATROL
+		
+	}
+	if(state == Mode::attack)
+		attack(defenseSoldiers, (BWAPI::Position)BWAPI::Broodwar->self()->getStartLocation());
+	
+	if (patrolSoldiers.size() > 0) {
+		for (auto soldier : patrolSoldiers)
+			soldier->patrol((BWAPI::Position)BWAPI::TilePosition(32, 60));
 	}
 	//else if (mode == Mode::normal) //TODO: envoie l'attaque, envoie la patrol, 
 
@@ -172,10 +203,10 @@ void ArmyManager::attack(std::vector<BWAPI::Unit> soldiers, BWAPI::Position posi
 		soldier->attack(position);
 }
 void ArmyManager::onUnitDestroyed(BWAPI::Unit unit) {
-	std::remove(soldiers.begin(), soldiers.end(), unit);
-	std::remove(attackSoldiers.begin(), attackSoldiers.end(), unit);
+	soldiers.erase(std::remove(soldiers.begin(), soldiers.end(), unit), soldiers.end());;
+	/*std::remove(attackSoldiers.begin(), attackSoldiers.end(), unit);
 	std::remove(defenseSoldiers.begin(), defenseSoldiers.end(), unit);
-	std::remove(patrolSoldiers.begin(), patrolSoldiers.end(), unit);
+	std::remove(patrolSoldiers.begin(), patrolSoldiers.end(), unit);*/
 
 	/* TODO: When unit dies, we remove it, then compute the next best unit to create instead, to replace it, and then add it to the BuildQueue*/
 }
