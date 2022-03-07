@@ -46,12 +46,18 @@ void BaseManager::initializeQueue(std::vector<std::variant<BWAPI::UnitType, BWAP
 }
 void BaseManager::update() {
     queue.update();
-    
+    bool isEnemy = false;
     for (auto enemy : BWAPI::Broodwar->enemy()->getUnits()) {
-        if (enemy->getPosition().getDistance(basePosition) < 1000)
+        if (enemy->getPosition().getDistance(basePosition) < 1000) {
             armyManager.onAttack(enemy);
+            isEnemy = true;
+            break;
+        }
 
     }
+    if (!isEnemy)
+        armyManager.noAttack();
+
     workerManager.update();
     armyManager.update();
 
@@ -78,7 +84,7 @@ void BaseManager::newWorker(int importance) {
     queue.addTask(workerType, importance, BWAPI::Broodwar->self()->getStartLocation(), true);
     if (BWAPI::Broodwar->self()->supplyUsed() + 1 >= BWAPI::Broodwar->self()->supplyTotal()) {
         queue.addTask(supplyType, importance + 1, BWAPI::Broodwar->self()->getStartLocation(), true);
-
+        
     }
 }
 
@@ -101,21 +107,26 @@ void BaseManager::unitCreated(BWAPI::Unit unit) {
 }
 
 void BaseManager::unitDestroyed(BWAPI::Unit unit) {
-    if (unit->getType().isBuilding()) {
-        std::remove(buildings.begin(), buildings.end(), unit);
+    // if it is one of our units
+    if (unit->getPlayer()->isAlly(BWAPI::Broodwar->self())) { 
+        if (unit->getType().isBuilding()) {
+            std::remove(buildings.begin(), buildings.end(), unit);
 
-        // Here decide what we do
-        // TODO : change to have more clever behaviour
-        BWAPI::UnitType type = unit->getType();
-        if (type.isBuilding())
-            queue.addTask(type, 100);
-    }
-    else if (unit->getType() == BWAPI::Broodwar->self()->getRace().getWorker()) {
-        queue.addTask(unit->getType(), 50);
-        workerManager.onUnitDestroyed(unit);
-    }
-    else {
-        armyManager.onUnitDestroyed(unit);
+            // Here decide what we do
+            // TODO : change to have more clever behaviour
+            BWAPI::UnitType type = unit->getType();
+            if (type.isBuilding())
+                queue.addTask(type, 100);
+        }
+        else if (unit->getType() == BWAPI::Broodwar->self()->getRace().getWorker()) {
+            queue.addTask(unit->getType(), 50);
+            workerManager.onUnitDestroyed(unit);
+        }
+        else{
+            armyManager.onUnitDestroyed(unit);
+
+            queue.addTask(unit->getType(), 75);
+        }
     }
 }
 
