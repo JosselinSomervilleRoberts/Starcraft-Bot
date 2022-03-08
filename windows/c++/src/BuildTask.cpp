@@ -94,8 +94,18 @@ void BuildTask::update(bool& enoughMinerals, bool& enoughGas) {
                 break;
 
             case State::reserveResources: {
-                auto requirement = m_toBuild.whatBuilds();
-                if (Tools::CountUnitsOfType(requirement.first, BWAPI::Broodwar->self()->getUnits()) >= requirement.second) { // Can build
+                auto mapRequirements = m_toBuild.requiredUnits();
+                std::map<BWAPI::UnitType, int>::iterator it;
+                bool ready = true;
+                BWAPI::TechType techType = m_toBuild.requiredTech();
+                if ((techType != BWAPI::TechTypes::None) && !(BWAPI::Broodwar->self()->hasResearched(techType))) ready = false;
+
+                for (it = mapRequirements.begin(); it != mapRequirements.end(); it++)
+                {
+                    int count = Tools::CountUnitsOfTypeCompleted(it->first, BWAPI::Broodwar->self()->getUnits());
+                    if (count < it->second) ready = false;
+                }
+                if (ready) { // Can build
                     if (m_manager->reserveRessources(m_toBuild.mineralPrice(), m_toBuild.gasPrice(), enoughMinerals, enoughGas)) {
                         m_state = State::acquireWorker; // go to next state
                     }

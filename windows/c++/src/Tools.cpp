@@ -35,6 +35,20 @@ int Tools::CountUnitsOfType(BWAPI::UnitType type, const BWAPI::Unitset& units)
     return sum;
 }
 
+int Tools::CountUnitsOfTypeCompleted(BWAPI::UnitType type, const BWAPI::Unitset& units)
+{
+    int sum = 0;
+    for (auto& unit : units)
+    {
+        if ((unit->getType() == type) && (unit->isCompleted()) && !(unit->isBeingConstructed()))
+        {
+            sum++;
+        }
+    }
+
+    return sum;
+}
+
 BWAPI::Unit Tools::GetUnitOfType(BWAPI::UnitType type)
 {
     // For each unit that we own
