@@ -6,6 +6,8 @@
 #include <stdexcept>
 #include <type_traits>
 
+#define ADDITIONAL_PRIORITY_REQUIREMENTS 2
+
 
 
 using namespace BWAPI;
@@ -88,6 +90,49 @@ void BuildQueue::addTask(std::variant<BWAPI::UnitType, BWAPI::UpgradeType, BWAPI
         }
     }
 
+
+    // Check previous requirements
+    
+    auto object = buildtask->getObject();
+
+    if (std::holds_alternative<BWAPI::UnitType>(object)) {
+        BWAPI::UnitType unitType = std::get<BWAPI::UnitType>(object);
+        if (true) { //unitType.isBuilding()) {
+            BWAPI::TechType techType = unitType.requiredTech();
+            if ((techType != BWAPI::TechTypes::None) && !(BWAPI::Broodwar->self()->hasResearched(techType))) {
+                addTask(techType, priority + ADDITIONAL_PRIORITY_REQUIREMENTS, true);
+            }
+            auto mapRequirements = unitType.requiredUnits();
+            std::map<BWAPI::UnitType, int>::iterator it;
+
+            for (it = mapRequirements.begin(); it != mapRequirements.end(); it++)
+            {
+                int count = countUnitTypeInTotal(it->first);
+                if(count < it->second) addTask(it->first, priority + ADDITIONAL_PRIORITY_REQUIREMENTS, true);
+            }
+        }
+        if (!(unitType.isBuilding() )) {
+            auto requirement = unitType.whatBuilds();
+            if (Tools::CountUnitsOfType(requirement.first, BWAPI::Broodwar->self()->getUnits()) < requirement.second) 
+                addTask(requirement.first, priority + ADDITIONAL_PRIORITY_REQUIREMENTS, true);
+        }
+    }
+    
+    else if (std::holds_alternative<BWAPI::UpgradeType>(object)) {
+        BWAPI::UpgradeType upgradeType = std::get<BWAPI::UpgradeType>(object);
+        auto building = upgradeType.whatUpgrades();
+        if (Tools::CountUnitsOfType(building, BWAPI::Broodwar->self()->getUnits()) < 1)
+            addTask(building, priority + ADDITIONAL_PRIORITY_REQUIREMENTS, true);
+    }
+    
+    else if (std::holds_alternative<BWAPI::TechType>(object)) {
+        BWAPI::TechType techType = std::get<BWAPI::TechType>(object);
+        auto building = techType.whatResearches();
+        if (Tools::CountUnitsOfType(building, BWAPI::Broodwar->self()->getUnits()) < 1)
+            addTask(building, priority + ADDITIONAL_PRIORITY_REQUIREMENTS, true);
+    }
+
+
     // Only recompute need if we did not add a supplyDepot
     if (std::holds_alternative<BWAPI::UpgradeType>(toBuild)) {
         if (std::get<BWAPI::UpgradeType>(toBuild) == BWAPI::Broodwar->self()->getRace().getSupplyProvider()) {
@@ -95,7 +140,7 @@ void BuildQueue::addTask(std::variant<BWAPI::UnitType, BWAPI::UpgradeType, BWAPI
             return;
         }
     }
-    else if(std::holds_alternative<BWAPI::TechType>(toBuild)) {
+    else if (std::holds_alternative<BWAPI::TechType>(toBuild)) {
         if (std::get<BWAPI::TechType>(toBuild) == BWAPI::Broodwar->self()->getRace().getSupplyProvider()) {
             computeNeed(true);
             return;
@@ -219,9 +264,9 @@ void BuildQueue::computeNeed(bool once) {
         if (std::holds_alternative<BWAPI::UnitType>(task->getObject())) {
             supply += factor * std::get<BWAPI::UnitType>(task->getObject()).supplyRequired();
             
-            if ((supply >= totalSupply-1) && !(addSupply) && (std::get<BWAPI::UnitType>(task->getObject()).supplyProvided() == 0)) {
+            if ((supply >= totalSupply-3) && !(addSupply) && (std::get<BWAPI::UnitType>(task->getObject()).supplyProvided() == 0)) {
                 BWAPI::UnitType supplyType = BWAPI::Broodwar->self()->getRace().getSupplyProvider();
-                if(!once) addTask(supplyType, std::min(100, task->getPriority() + 1), BWAPI::Broodwar->self()->getStartLocation(), true);
+                if(!once) addTask(supplyType, std::min(100, task->getPriority() + ADDITIONAL_PRIORITY_REQUIREMENTS), BWAPI::Broodwar->self()->getStartLocation(), true);
                 addSupply = true;
             }
         }

@@ -7,14 +7,12 @@
 SquadComposition::SquadComposition(BuildQueue* queue_) : queue(queue_) {
 	using namespace BWAPI::UnitTypes;
 
-	Requirement req1 = { Protoss_Gateway, 2 };
-	Requirement req2 = { Protoss_Cybernetics_Core, 1 };
+	// Army 2
+	Requirement req2 = { Protoss_Gateway, 2 };
 	Requirement req3 = { BWAPI::UpgradeTypes::Singularity_Charge, 1 };
-	Requirement req4 = { Protoss_Robotics_Facility, 1 };
-	Requirement req5 = { Protoss_Observatory, 1 };
-	requirements = { req1, req2, req3, req4, req5};
-	squadTypes = { Protoss_Observer, Protoss_Dragoon };
-	squadProportions = { 0.2f, 0.8f };
+	requirements = { req2, req3};
+	squadTypes = { Protoss_Observer, Protoss_Dragoon, Protoss_Zealot};
+	squadProportions = { 0.1f, 0.5f, 0.4f };
 }
 
 
@@ -76,7 +74,7 @@ void SquadComposition::fixMissingRequirements(int priority) {
 				// We add the Build to the queue
 				int imax = req.quantity * multiplier - queue->countUnitTypeInTotal(unitTypeToBuild);
 				for(int i=0; i<imax; i++)
-					queue->addTask(unitTypeToBuild, priority, true);
+					queue->addTask(unitTypeToBuild, priority, false);
 			}
 
 			else if (std::holds_alternative<BWAPI::UpgradeType>(req.toBuild)) { // It's an Upgrade 
@@ -101,9 +99,12 @@ void SquadComposition::fixMissingRequirements(int priority) {
 
 				// We add the Upgrade to the queue
 				queue->addTask(techTypeToBuild, priority, true);
-				std::cout << "ADD TECH" << std::endl;
 			}
 		}
+	}
+
+	for (int i = 0; i < squadTypes.size(); i++) {
+		queue->addTask(squadTypes[i], priority, true);
 	}
 }
 
