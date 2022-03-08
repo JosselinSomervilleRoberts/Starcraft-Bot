@@ -73,7 +73,6 @@ void ArmyManager::computeRepartition() {
 				// If the soldier is already attacking, we let it in attack, else, we compute the repartition
 				if ((float)attackSoldiers.size() / (float)soldiers.size() < 0.45 && soldiers[i]->getType() != BWAPI::UnitTypes::Protoss_Observer) {
 					attackSoldiers.push_back(soldiers[i]);
-					std::cout << "ADD SOLDIER IN ATTACK, RATIO :  " << (float)attackSoldiers.size() / (float)soldiers.size() << " ATTACK " << attackSoldiers.size()  << " TOTAL " << soldiers.size() << std::endl;
 				}
 				else if (soldiers[i]->getType() == BWAPI::UnitTypes::Protoss_Observer || (float)patrolSoldiers.size() / (float)soldiers.size() < 0.55)
 					patrolSoldiers.push_back(soldiers[i]);
@@ -124,12 +123,12 @@ void ArmyManager::update() {
 		//PATROL
 		
 	}
-	if (mode == Mode::defense && defenseSoldiers.size() >= 15)
+	if (mode == Mode::defense && defenseSoldiers.size() >= 15 && state != Mode::attack)
 		mode = Mode::normal;
 
 
 	if (state == Mode::attack) {
-		attack(defenseSoldiers, (BWAPI::Position)BWAPI::Broodwar->self()->getStartLocation());
+		//attack(defenseSoldiers, (BWAPI::Position)BWAPI::Broodwar->self()->getStartLocation());
 	}
 	
 
