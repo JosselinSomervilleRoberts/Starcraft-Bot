@@ -39,18 +39,19 @@ void ArmyManager::computeRepartition() {
 	soldiers.clear();
 	auto workerType = BWAPI::Broodwar->self()->getRace().getWorker();
 	for (auto unit : BWAPI::Broodwar->self()->getUnits()) {
-		if (unit->canAttack()) {
+		if (unit->canAttack() || unit->getType() == BWAPI::UnitTypes::Protoss_Observer) {
 			if (unit->getType() != workerType) {
 				soldiers.push_back(unit);
 			}
 		}
 	}
+
 	defenseSoldiers.clear();
 	patrolSoldiers.clear();
 	if (mode == Mode::defense) {
 		attackSoldiers.clear();
 		for (auto soldier : soldiers) {
-			if (soldier->getType() == BWAPI::UnitTypes::Protoss_Observer)
+			if (soldier->getType() == BWAPI::UnitTypes::Protoss_Observer) 
 				patrolSoldiers.push_back(soldier);
 			else
 				defenseSoldiers.push_back(soldier);
@@ -67,6 +68,10 @@ void ArmyManager::computeRepartition() {
 		}
 	}
 	else if (mode == Mode::normal) {
+		for (auto soldier : attackSoldiers) { // Delete from list units that died
+			if(std::find(soldiers.begin(), soldiers.end(), soldier) == soldiers.end())
+				attackSoldiers.erase(std::remove(attackSoldiers.begin(), attackSoldiers.end(), soldier), attackSoldiers.end());
+		}
 		for (int i = 0; i < (soldiers.size()); i++) {
 			//We go through the soldiers list
 			if (std::find(attackSoldiers.begin(), attackSoldiers.end(), soldiers[i]) == attackSoldiers.end()) {
@@ -109,6 +114,7 @@ void ArmyManager::update() {
 		attack(attackSoldiers, enemyPos);
 		mode = Mode::normal;
 	}
+	
 	else if (mode == Mode::normal)
 	{
 		if (BWAPI::Broodwar->self()->getStartLocation() != BWAPI::TilePosition(31, 7)){
@@ -134,7 +140,7 @@ void ArmyManager::update() {
 
 	if (patrolSoldiers.size() > 0) {
 		for (auto soldier : patrolSoldiers)
-			soldier->patrol((BWAPI::Position)BWAPI::TilePosition(32, 60));
+			soldier->patrol((BWAPI::Position)BWAPI::TilePosition(30, 55));
 	}
 	//else if (mode == Mode::normal) //TODO: envoie l'attaque, envoie la patrol, 
 
