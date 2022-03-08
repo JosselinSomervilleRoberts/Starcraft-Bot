@@ -36,10 +36,19 @@ void ArmyManager::checkRepartition() {
 
 void ArmyManager::computeRepartition() {
 	/* TODO: compute repartition between patrol, attack, defense, first all in defense and few units in patrol then attackk*/
+	soldiers.clear();
+	auto workerType = BWAPI::Broodwar->self()->getRace().getWorker();
+	for (auto unit : BWAPI::Broodwar->self()->getUnits()) {
+		if (unit->canAttack()) {
+			if (unit->getType() != workerType) {
+				soldiers.push_back(unit);
+			}
+		}
+	}
 	defenseSoldiers.clear();
-	attackSoldiers.clear();
 	patrolSoldiers.clear();
 	if (mode == Mode::defense) {
+		attackSoldiers.clear();
 		for (auto soldier : soldiers) {
 			if (soldier->getType() == BWAPI::UnitTypes::Protoss_Observer)
 				patrolSoldiers.push_back(soldier);
@@ -49,6 +58,7 @@ void ArmyManager::computeRepartition() {
 			
 	}
 	else if (mode == Mode::attack) {
+		attackSoldiers.clear();
 		for (auto soldier : soldiers) {
 			if (soldier->getType() == BWAPI::UnitTypes::Protoss_Observer)
 				patrolSoldiers.push_back(soldier);
@@ -57,13 +67,19 @@ void ArmyManager::computeRepartition() {
 		}
 	}
 	else if (mode == Mode::normal) {
-		for (int i = 0; i < soldiers.size(); i++) {
-			if(i/soldiers.size() < 0.4 && soldiers[i]->getType() != BWAPI::UnitTypes::Protoss_Observer)
-				attackSoldiers.push_back(soldiers[i]);
-			else if(soldiers[i]->getType() == BWAPI::UnitTypes::Protoss_Observer || i / soldiers.size() < 0.6)
-				patrolSoldiers.push_back(soldiers[i]);
-			else
-				defenseSoldiers.push_back(soldiers[i]);
+		for (int i = 0; i < (soldiers.size()); i++) {
+			//We go through the soldiers list
+			if (std::find(attackSoldiers.begin(), attackSoldiers.end(), soldiers[i]) == attackSoldiers.end()) {
+				// If the soldier is already attacking, we let it in attack, else, we compute the repartition
+				if ((float)attackSoldiers.size() / (float)soldiers.size() < 0.45 && soldiers[i]->getType() != BWAPI::UnitTypes::Protoss_Observer) {
+					attackSoldiers.push_back(soldiers[i]);
+					std::cout << "ADD SOLDIER IN ATTACK, RATIO :  " << (float)attackSoldiers.size() / (float)soldiers.size() << " ATTACK " << attackSoldiers.size()  << " TOTAL " << soldiers.size() << std::endl;
+				}
+				else if (soldiers[i]->getType() == BWAPI::UnitTypes::Protoss_Observer || (float)patrolSoldiers.size() / (float)soldiers.size() < 0.55)
+					patrolSoldiers.push_back(soldiers[i]);
+				else
+					defenseSoldiers.push_back(soldiers[i]);
+			}
 		}
 	}
 }
@@ -81,19 +97,18 @@ void ArmyManager::update() {
 	if (base->getManager()->getAvailableMinerals() > 400 *pow(1.1, compo.getMultiplier() - 1)) {
 		compo.scaleUp();
 	}
-
 	checkRepartition();
 	computeRepartition();
 	// We check if we need to change the repartition
 	BWAPI::Position enemyPos;
-	if (mode == Mode::attack && attackSoldiers.size()>3) {
+	if (mode == Mode::attack && attackSoldiers.size()>10) {
 		if(BWAPI::Broodwar->self()->getStartLocation() != BWAPI::TilePosition(31, 7))
 			enemyPos = (BWAPI::Position)BWAPI::TilePosition(31, 7); // Conversion of Tile Position to position  BWAPI::Broodwar->enemy()->getStartLocation()
 		else
 			enemyPos = (BWAPI::Position)BWAPI::TilePosition(64, 118);
 
 		attack(attackSoldiers, enemyPos);
-		std::cout << "ATTACKING" << std::endl;
+		mode = Mode::normal;
 	}
 	else if (mode == Mode::normal)
 	{
@@ -104,14 +119,20 @@ void ArmyManager::update() {
 			enemyPos = (BWAPI::Position)BWAPI::TilePosition(64, 118);
 		}
 		//ATTACK
-		if(attackSoldiers.size() >3)
+		if(attackSoldiers.size() >5)
 			attack(attackSoldiers, enemyPos);
 		//PATROL
 		
 	}
-	if(state == Mode::attack)
+	if (mode == Mode::defense && defenseSoldiers.size() >= 15)
+		mode = Mode::normal;
+
+
+	if (state == Mode::attack) {
 		attack(defenseSoldiers, (BWAPI::Position)BWAPI::Broodwar->self()->getStartLocation());
+	}
 	
+
 	if (patrolSoldiers.size() > 0) {
 		for (auto soldier : patrolSoldiers)
 			soldier->patrol((BWAPI::Position)BWAPI::TilePosition(32, 60));
@@ -214,7 +235,7 @@ void ArmyManager::attack(std::vector<BWAPI::Unit> soldiers, BWAPI::Position posi
 		soldier->attack(position);
 }
 void ArmyManager::onUnitDestroyed(BWAPI::Unit unit) {
-	soldiers.erase(std::remove(soldiers.begin(), soldiers.end(), unit), soldiers.end());;
+	//soldiers.erase(std::remove(soldiers.begin(), soldiers.end(), unit), soldiers.end());;
 	/*std::remove(attackSoldiers.begin(), attackSoldiers.end(), unit);
 	std::remove(defenseSoldiers.begin(), defenseSoldiers.end(), unit);
 	std::remove(patrolSoldiers.begin(), patrolSoldiers.end(), unit);*/

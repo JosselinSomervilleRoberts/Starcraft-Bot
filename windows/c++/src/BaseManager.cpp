@@ -126,9 +126,10 @@ void BaseManager::unitDestroyed(BWAPI::Unit unit) {
 
             queue.addTask(unit->getType(), 75);
         }
-        else {
+        /*else {
             armyManager.onUnitDestroyed(unit);
-        }
+
+        }*/
     }
 }
 
