@@ -248,7 +248,8 @@ void BuildQueue::computeNeed(bool once) {
     float needGas = 0;
     float alpha = 0.7f;
     int totalPriority = 0;
-    int totalSupply = BWAPI::Broodwar->self()->supplyTotal();
+    BWAPI::UnitType supplyType = BWAPI::Broodwar->self()->getRace().getSupplyProvider();
+    int totalSupply = BWAPI::Broodwar->self()->supplyTotal() + countUnitTypeInQueue(supplyType) * supplyType.supplyProvided();
     bool addSupply = false;
     float supply = BWAPI::Broodwar->self()->supplyUsed();
 
@@ -264,9 +265,9 @@ void BuildQueue::computeNeed(bool once) {
         if (std::holds_alternative<BWAPI::UnitType>(task->getObject())) {
             supply += factor * std::get<BWAPI::UnitType>(task->getObject()).supplyRequired();
             
-            if ((supply >= totalSupply-3) && !(addSupply) && (std::get<BWAPI::UnitType>(task->getObject()).supplyProvided() == 0)) {
-                BWAPI::UnitType supplyType = BWAPI::Broodwar->self()->getRace().getSupplyProvider();
-                if(!once) addTask(supplyType, std::min(100, task->getPriority() + ADDITIONAL_PRIORITY_REQUIREMENTS), BWAPI::Broodwar->self()->getStartLocation(), true);
+            int marge = std::max(3, (int)(0.15f * totalSupply)); // Nb of supply available proportionnal to number of supply
+            if ((supply >= totalSupply - marge) && !(addSupply) && (std::get<BWAPI::UnitType>(task->getObject()).supplyProvided() == 0)) {
+                if(!once) addTask(supplyType, std::min(100, task->getPriority() + ADDITIONAL_PRIORITY_REQUIREMENTS), BWAPI::Broodwar->self()->getStartLocation(), false);
                 addSupply = true;
             }
         }
