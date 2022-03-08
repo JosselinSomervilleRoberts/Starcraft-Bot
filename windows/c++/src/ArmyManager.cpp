@@ -70,7 +70,7 @@ void ArmyManager::computeRepartition() {
 
 
 void ArmyManager::update() {
-	compo.fixMissingRequirements(10);
+	compo.fixMissingRequirements(15);
 	if (base->getManager()->getAvailableMinerals() > 150) {
 		if (nbUnitsInQueue < UNITS_IN_QUEUE_MAX * compo.getMultiplier())
 		{

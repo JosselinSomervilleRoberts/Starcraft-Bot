@@ -24,8 +24,8 @@ void SquadComposition::setComposition() {
 		Requirement req2 = { Protoss_Gateway, 2 };
 		Requirement req3 = { BWAPI::UpgradeTypes::Singularity_Charge, 1 };
 		requirements = { req2, req3 };
-		squadTypes = { Protoss_Observer, Protoss_Dragoon, Protoss_Zealot };
-		squadProportions = { 0.1f, 0.5f, 0.4f };
+		squadTypes = { Protoss_Zealot, Protoss_Observer, Protoss_Dragoon };
+		squadProportions = { 0.3f, 0.1f, 0.6f };
 	}
 }
 
@@ -147,8 +147,12 @@ bool SquadComposition::trainUnit(std::vector<BWAPI::Unit>& squad_units, int prio
 	}
 
 	// Compute the difference
-	for (int j = 0; j < squadProportions.size(); j++)
-		proportions[j] = proportions[j] / (float)(n) - squadProportions[j];
+	for (int j = 0; j < squadProportions.size(); j++) {
+		proportions[j] = proportions[j] / (float)(n)-squadProportions[j];
+
+		std::cout << proportions[j] << ", ";
+	}
+	std::cout << std::endl;
 
 	// Get the min to choose th unitType
 	// initialize original index locations
@@ -160,14 +164,14 @@ bool SquadComposition::trainUnit(std::vector<BWAPI::Unit>& squad_units, int prio
 	// to avoid unnecessary index re-orderings
 	// when v contains elements of equal values 
 	stable_sort(idx.begin(), idx.end(),
-		[&proportions](size_t i1, size_t i2) {return proportions[i1] < proportions[i2]; });
+		[&proportions](size_t i1, size_t i2) {return proportions[i1] > proportions[i2]; });
 
 	// Add the chosen unit to the queue
 	for (int j = 0; j < squadProportions.size(); j++) {
 		BWAPI::UnitType unitType = squadTypes[idx[j]];
 		auto requirement = unitType.whatBuilds();
 		if (Tools::CountUnitsOfType(requirement.first, BWAPI::Broodwar->self()->getUnits()) >= requirement.second) { // Can build
-			queue->addTask(unitType, priority);
+			queue->addTask(unitType, priority * (1 - proportions[j]));
 			return true;
 		}
 	}

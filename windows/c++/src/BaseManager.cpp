@@ -119,13 +119,15 @@ void BaseManager::unitDestroyed(BWAPI::Unit unit) {
                 queue.addTask(type, 100);
         }
         else if (unit->getType() == BWAPI::Broodwar->self()->getRace().getWorker()) {
-            queue.addTask(unit->getType(), 50);
+            //queue.addTask(unit->getType(), 50);
             workerManager.onUnitDestroyed(unit);
         }
-        else{
-            armyManager.onUnitDestroyed(unit);
+        else if(unit->getType().isBuilding()) {
 
             queue.addTask(unit->getType(), 75);
+        }
+        else {
+            armyManager.onUnitDestroyed(unit);
         }
     }
 }
