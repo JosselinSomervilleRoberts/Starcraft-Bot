@@ -71,14 +71,14 @@ void ArmyManager::computeRepartition() {
 
 void ArmyManager::update() {
 	compo.fixMissingRequirements(10);
-	if (base->getManager()->getAvailableMinerals() > 30) {
+	if (base->getManager()->getAvailableMinerals() > 150) {
 		if (nbUnitsInQueue < UNITS_IN_QUEUE_MAX * compo.getMultiplier())
 		{
 			bool trainSolider = compo.trainUnit(soldiers);
 			if (trainSolider) nbUnitsInQueue++;
 		}
 	}
-	if (base->getManager()->getAvailableMinerals() > 500 *pow(1.5, compo.getMultiplier() - 1)) {
+	if (base->getManager()->getAvailableMinerals() > 400 *pow(1.1, compo.getMultiplier() - 1)) {
 		compo.scaleUp();
 	}
 

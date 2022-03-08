@@ -265,7 +265,7 @@ void BuildQueue::computeNeed(bool once) {
         if (std::holds_alternative<BWAPI::UnitType>(task->getObject())) {
             supply += factor * std::get<BWAPI::UnitType>(task->getObject()).supplyRequired();
             
-            int marge = std::max(3, (int)(0.15f * totalSupply)); // Nb of supply available proportionnal to number of supply
+            int marge = std::min(12, std::max(3, (int)(0.12f * totalSupply))); // Nb of supply available proportionnal to number of supply
             if ((supply >= totalSupply - marge) && !(addSupply) && (std::get<BWAPI::UnitType>(task->getObject()).supplyProvided() == 0)) {
                 if(!once) addTask(supplyType, std::min(100, task->getPriority() + ADDITIONAL_PRIORITY_REQUIREMENTS), BWAPI::Broodwar->self()->getStartLocation(), false);
                 addSupply = true;

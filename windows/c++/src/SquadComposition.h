@@ -28,6 +28,7 @@ public:
     bool checkRequirements();
     bool checkMinimalRequirements();
     void fixMissingRequirements(int priority);
+    void setComposition();
 
     bool trainUnit(std::vector<BWAPI::Unit>& squad_units, int priority = 5);
     void scaleUp();
@@ -43,4 +44,5 @@ public:
     std::vector<BWAPI::UnitType> squadTypes;
     std::vector<float> squadProportions;
     int multiplier = 1;
+    int level = 1;
 };

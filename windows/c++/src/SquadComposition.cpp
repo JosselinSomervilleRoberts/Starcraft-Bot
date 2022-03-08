@@ -5,21 +5,28 @@
 
 
 SquadComposition::SquadComposition(BuildQueue* queue_) : queue(queue_) {
+	setComposition();
+}
+
+void SquadComposition::setComposition() {
 	using namespace BWAPI::UnitTypes;
 
 	// Army 1
-	Requirement req1 = { Protoss_Gateway, 1 };
-	requirements = { req1 };
-	squadTypes = { Protoss_Zealot };
-	squadProportions = { 1.0f };
+	if (level == 1) {
+		Requirement req1 = { Protoss_Gateway, 1 };
+		requirements = { req1 };
+		squadTypes = { Protoss_Zealot };
+		squadProportions = { 1.0f };
+	}
 
-	/*
 	// Army 2
-	Requirement req2 = { Protoss_Gateway, 2 };
-	Requirement req3 = { BWAPI::UpgradeTypes::Singularity_Charge, 1 };
-	requirements = { req2, req3};
-	squadTypes = { Protoss_Observer, Protoss_Dragoon, Protoss_Zealot};
-	squadProportions = { 0.1f, 0.5f, 0.4f };*/
+	else {
+		Requirement req2 = { Protoss_Gateway, 2 };
+		Requirement req3 = { BWAPI::UpgradeTypes::Singularity_Charge, 1 };
+		requirements = { req2, req3 };
+		squadTypes = { Protoss_Observer, Protoss_Dragoon, Protoss_Zealot };
+		squadProportions = { 0.1f, 0.5f, 0.4f };
+	}
 }
 
 
@@ -170,6 +177,12 @@ bool SquadComposition::trainUnit(std::vector<BWAPI::Unit>& squad_units, int prio
 
 void SquadComposition::scaleUp() {
 	multiplier += 1;
+
+	if (multiplier >= 3) {
+		multiplier = 1;
+		level++;
+		setComposition();
+	}
 }
 
 void SquadComposition::scaleDown() {
