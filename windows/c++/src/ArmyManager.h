@@ -4,6 +4,8 @@
 #include <vector>
 #include <numeric>      // std::iota
 #include <algorithm>    // std::sort, std::stable_sort
+#include <cstdlib>
+
 
 #include "Tools.h"
 #include "SquadComposition.h"

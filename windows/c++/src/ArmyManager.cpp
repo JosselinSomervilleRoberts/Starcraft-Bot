@@ -51,18 +51,15 @@ void ArmyManager::computeRepartition() {
 	if (mode == Mode::defense) {
 		attackSoldiers.clear();
 		for (auto soldier : soldiers) {
-			if (soldier->getType() == BWAPI::UnitTypes::Protoss_Observer) 
-				patrolSoldiers.push_back(soldier);
-			else
-				defenseSoldiers.push_back(soldier);
+			defenseSoldiers.push_back(soldier);
 		}
 			
 	}
 	else if (mode == Mode::attack) {
 		attackSoldiers.clear();
 		for (auto soldier : soldiers) {
-			if (soldier->getType() == BWAPI::UnitTypes::Protoss_Observer)
-				patrolSoldiers.push_back(soldier);
+			if (soldier->getType() == BWAPI::UnitTypes::Protoss_Observer && std::rand() <= RAND_MAX/2 )
+				defenseSoldiers.push_back(soldier);
 			else
 				attackSoldiers.push_back(soldier);
 		}
@@ -76,10 +73,10 @@ void ArmyManager::computeRepartition() {
 			//We go through the soldiers list
 			if (std::find(attackSoldiers.begin(), attackSoldiers.end(), soldiers[i]) == attackSoldiers.end()) {
 				// If the soldier is already attacking, we let it in attack, else, we compute the repartition
-				if ((float)attackSoldiers.size() / (float)soldiers.size() < 0.45 && soldiers[i]->getType() != BWAPI::UnitTypes::Protoss_Observer) {
+				if ((float)attackSoldiers.size() / (float)soldiers.size() < 0.45 && (soldiers[i]->getType() != BWAPI::UnitTypes::Protoss_Observer || std::rand() <= RAND_MAX / 2)) {
 					attackSoldiers.push_back(soldiers[i]);
 				}
-				else if (soldiers[i]->getType() == BWAPI::UnitTypes::Protoss_Observer || (float)patrolSoldiers.size() / (float)soldiers.size() < 0.55)
+				else if ((float)patrolSoldiers.size() / (float)soldiers.size() < 0.15 && soldiers[i]->getType() != BWAPI::UnitTypes::Protoss_Observer)
 					patrolSoldiers.push_back(soldiers[i]);
 				else
 					defenseSoldiers.push_back(soldiers[i]);
@@ -107,12 +104,12 @@ void ArmyManager::update() {
 	computeRepartition();
 	// We check if we need to change the repartition
 	BWAPI::Position enemyPos;
-	if (mode == Mode::attack && attackSoldiers.size()>10) {
+	if (mode == Mode::attack && attackSoldiers.size()>=20) {
 		if(BWAPI::Broodwar->self()->getStartLocation() != BWAPI::TilePosition(31, 7))
 			enemyPos = (BWAPI::Position)BWAPI::TilePosition(31, 7); // Conversion of Tile Position to position  BWAPI::Broodwar->enemy()->getStartLocation()
 		else
 			enemyPos = (BWAPI::Position)BWAPI::TilePosition(64, 118);
-
+		//2nd base 70,13 top,  25,105?
 		attack(attackSoldiers, enemyPos);
 		mode = Mode::normal;
 	}
@@ -126,8 +123,17 @@ void ArmyManager::update() {
 			enemyPos = (BWAPI::Position)BWAPI::TilePosition(64, 118);
 		}
 		//ATTACK
-		if(attackSoldiers.size() >5)
+		if (attackSoldiers.size() > 15) {
 			attack(attackSoldiers, enemyPos);
+			for (auto soldier : attackSoldiers) {
+				for (auto enemy : BWAPI::Broodwar->enemy()->getUnits()) {
+					if (enemy->getPosition().getDistance(soldier->getPosition()) < 100) {
+						attack(attackSoldiers, enemy);
+					}
+				}
+			}
+		}
+
 		//PATROL
 		
 	}
@@ -240,6 +246,7 @@ void ArmyManager::attack(std::vector<BWAPI::Unit> soldiers, BWAPI::Unit threat) 
 void ArmyManager::attack(std::vector<BWAPI::Unit> soldiers, BWAPI::Position position) {
 	for (auto soldier : soldiers)
 		soldier->attack(position);
+
 }
 void ArmyManager::onUnitDestroyed(BWAPI::Unit unit) {
 	//soldiers.erase(std::remove(soldiers.begin(), soldiers.end(), unit), soldiers.end());;
