@@ -51,6 +51,16 @@ void GlobalManager::update() {
 
 	BWAPI::Broodwar->drawTextScreen(435 - 1, 55, "R: %d", reservedMinerals);
 	BWAPI::Broodwar->drawTextScreen(503 - 1, 55, "R: %d", reservedGas);
+
+	
+	if (bases.size() < 2) {
+		auto w = bases[0]->acquireWorker();
+		if (w)
+		{
+			BaseManager* b = new BaseManager(this, 1, w);
+			bases.push_back(b);
+		}
+	}
 }
 
 
@@ -126,17 +136,37 @@ BWAPI::Unit GlobalManager::acquireWorker() {
 
 void GlobalManager::onUnitCreate(BWAPI::Unit unit) {
 	// TODO :change for several bases
-	bases[0]->unitCreated(unit);
+	int distMin = 100000;
+	int indexMin = 0;
+	for (int i = 0; i < bases.size(); i++) {
+		int dist = bases[i]->basePosition.getDistance(unit->getTilePosition());
+		if (dist < distMin) {
+			distMin = dist;
+			indexMin = i;
+		}
+	}
+	bases[indexMin]->unitCreated(unit);
 }
 
 void GlobalManager::onUnitDestroy(BWAPI::Unit unit) {
 	// TODO :change for several bases
-	bases[0]->unitDestroyed(unit);
+	for (int i = 0; i < bases.size(); i++) {
+		bases[i]->unitDestroyed(unit);
+	}
 }
 
 void GlobalManager::onUnitComplete(BWAPI::Unit unit) {
 	// TODO :change for several bases
-	bases[0]->unitCompleted(unit);
+	int distMin = 100000;
+	int indexMin = 0;
+	for (int i = 0; i < bases.size(); i++) {
+		int dist = bases[i]->basePosition.getDistance(unit->getTilePosition());
+		if (dist < distMin) {
+			distMin = dist;
+			indexMin = i;
+		}
+	}
+	bases[indexMin]->unitCompleted(unit);
 }
 
 
@@ -148,7 +178,8 @@ void GlobalManager::releaseWorker(BWAPI::Unit worker) {
 
 void  GlobalManager::setRessourceAim(int cristalAim, int gasAim) {
 	// TODO :change for several bases
-	bases[0]->setRessourceAim(cristalAim, gasAim);
+	for (int i = 0; i < bases.size(); i++)
+		bases[i]->setRessourceAim(cristalAim, gasAim);
 }
 
 void GlobalManager::setRefineryState(BuildingState state) {

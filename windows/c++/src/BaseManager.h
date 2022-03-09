@@ -39,11 +39,13 @@ public:
     BuildQueue* getQueue() { return &this->queue; };
     GlobalManager* getManager() { return manager; };
 
+    BWAPI::TilePosition basePosition = BWAPI::Broodwar->self()->getStartLocation();
+    int baseNumber;
+
+
 private:
     WorkerManager workerManager;
     ArmyManager armyManager;
-    int baseNumber;
-    BWAPI::Position basePosition = Tools::GetDepot()->getPosition();
     std::vector<BWAPI::Unit> buildings;
     BuildQueue queue;
     GlobalManager* manager;

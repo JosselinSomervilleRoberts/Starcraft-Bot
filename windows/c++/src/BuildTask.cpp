@@ -56,7 +56,7 @@ void BuildTask::update(bool& enoughMinerals, bool& enoughGas) {
 
                     if (!(building->isResearching()) && !(building->isConstructing()) && !(building->isTraining())) {
                         trainBuilding = building;
-                        i = trainBuildings.size();
+                        //i = trainBuildings.size();
                     }
                 }
 

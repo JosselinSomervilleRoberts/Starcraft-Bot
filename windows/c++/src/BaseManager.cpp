@@ -1,7 +1,7 @@
 #include "BaseManager.h"
 #include "GlobalManager.h"
 
-BaseManager::BaseManager(GlobalManager* manager_) : workerManager(this), armyManager(this), queue(manager_), manager(manager_) {
+BaseManager::BaseManager(GlobalManager* manager_) : workerManager(this), armyManager(this), queue(manager_, 0), manager(manager_) {
     const BWAPI::UnitType commandCenterType = BWAPI::Broodwar->self()->getRace().getCenter();
     const BWAPI::Unit commandCenter = Tools::GetUnitOfType(commandCenterType);
     initialize(commandCenter);
@@ -9,13 +9,13 @@ BaseManager::BaseManager(GlobalManager* manager_) : workerManager(this), armyMan
 }
 
 
-BaseManager::BaseManager(GlobalManager* manager_, BWAPI::Unit commandCenter) : workerManager(this), armyManager(this), queue(manager_), manager(manager_) {
+BaseManager::BaseManager(GlobalManager* manager_, BWAPI::Unit commandCenter) : workerManager(this), armyManager(this), queue(manager_, 0), manager(manager_) {
     initialize(commandCenter);
 }
 
 
 
-BaseManager::BaseManager(GlobalManager* manager_, int baseNumber_, BWAPI::Unit worker) : workerManager(this), armyManager(this), queue(manager_), manager(manager_) {
+BaseManager::BaseManager(GlobalManager* manager_, int baseNumber_, BWAPI::Unit worker) : workerManager(this), armyManager(this), queue(manager_, baseNumber_), manager(manager_) {
     baseNumber = baseNumber_;
     this->constructCommandCenter(worker);
 
@@ -48,7 +48,7 @@ void BaseManager::update() {
     queue.update();
     bool isEnemy = false;
     for (auto enemy : BWAPI::Broodwar->enemy()->getUnits()) {
-        if (enemy->getPosition().getDistance(basePosition) < 1000) {
+        if (enemy->getPosition().getDistance((BWAPI::Position)(basePosition)) < 1000) {
             armyManager.onAttack(enemy);
             isEnemy = true;
             break;
@@ -69,11 +69,20 @@ void BaseManager::setBuildOrder(std::vector<BWAPI::Unit> buildOrder) {
 
 
 void BaseManager::constructCommandCenter(BWAPI::Unit worker) {
+    if (BWAPI::Broodwar->self()->getStartLocation() == BWAPI::TilePosition(31, 7))
+        basePosition = BWAPI::TilePosition(65, 23);
+    else
+        basePosition = BWAPI::TilePosition(25, 108);
+
     BWAPI::UnitType centerType = BWAPI::Broodwar->self()->getRace().getCenter();
+    BWAPI::UnitType workerType = BWAPI::Broodwar->self()->getRace().getWorker();
     // TODO : construct command center (without using the queue)
-
-
-
+    queue.addTask(centerType, 1000, basePosition, true);
+    workerManager.addWorker(worker);
+    queue.addTask(workerType, 200);
+    queue.addTask(workerType, 200);
+    queue.addTask(workerType, 200);
+    queue.addTask(workerType, 200);
 }
 
 

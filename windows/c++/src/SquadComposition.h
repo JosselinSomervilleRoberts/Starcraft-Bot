@@ -44,5 +44,5 @@ public:
     std::vector<BWAPI::UnitType> squadTypes;
     std::vector<float> squadProportions;
     int multiplier = 1;
-    int level = 2;
+    int level = 1;
 };

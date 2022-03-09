@@ -12,8 +12,7 @@
 
 using namespace BWAPI;
 
-BuildQueue::BuildQueue(GlobalManager* manager)
-    : m_manager(manager) {
+BuildQueue::BuildQueue(GlobalManager* manager, int index_base_) : index_base(index_base_), m_manager(manager) {
     std::cout << "Constructor buildQueue" << std::endl;
 }
 
@@ -189,13 +188,15 @@ void BuildQueue::update() {
 
     
     for (int i = 0; i < std::min((size_t)(5), m_buildQueue.size()); i++) {
-        BWAPI::Broodwar->drawTextScreen(28, 15 + 10 * i, std::to_string(m_buildQueue[i]->getPriority()).c_str());
         std::string name = m_buildQueue[i]->getName();
         eraseSubStr(name, "Protoss_");
-        BWAPI::Broodwar->drawTextScreen(40, 15 + 10*i, ("- " + name).c_str());
-        BWAPI::Broodwar->drawTextScreen(155, 15 + 10 * i, ("M : " + std::to_string(std::visit([](const auto& field) { return field.mineralPrice(); }, m_buildQueue[i]->getObject()))).c_str());
-        BWAPI::Broodwar->drawTextScreen(195, 15 + 10 * i, ("G : " + std::to_string(std::visit([](const auto& field) { return field.gasPrice(); }, m_buildQueue[i]->getObject()))).c_str());
-        BWAPI::Broodwar->drawTextScreen(235, 15 + 10 * i, m_buildQueue[i]->toString().c_str());
+        int addY = 0;
+        if (index_base > 0) addY = 100;
+        BWAPI::Broodwar->drawTextScreen(28, addY + 15 + 10 * i, std::to_string(m_buildQueue[i]->getPriority()).c_str());
+        BWAPI::Broodwar->drawTextScreen(40,  addY+15 + 10*i, ("- " + name).c_str());
+        BWAPI::Broodwar->drawTextScreen(155, addY+15 + 10 * i, ("M : " + std::to_string(std::visit([](const auto& field) { return field.mineralPrice(); }, m_buildQueue[i]->getObject()))).c_str());
+        BWAPI::Broodwar->drawTextScreen(195, addY+15 + 10 * i, ("G : " + std::to_string(std::visit([](const auto& field) { return field.gasPrice(); }, m_buildQueue[i]->getObject()))).c_str());
+        BWAPI::Broodwar->drawTextScreen(235, addY+15 + 10 * i, m_buildQueue[i]->toString().c_str());
     }
 }
 void BuildQueue::clearAll() {

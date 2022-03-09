@@ -194,18 +194,20 @@ void WorkerManager::update() {
 
 
 	// Display available resources
-	BWAPI::Broodwar->drawTextScreen(435, 15, "A: %d", cristalAim);
-	BWAPI::Broodwar->drawTextScreen(503, 15, "A: %d", gasAim);
-	BWAPI::Broodwar->drawTextScreen(435+1, 25, "N: %d", cristalNeed);
-	BWAPI::Broodwar->drawTextScreen(503+1, 25, "N: %d", gasNeed);
-	BWAPI::Broodwar->drawTextScreen(435-3, 35, "W: %d", workersCristal.size());
-	BWAPI::Broodwar->drawTextScreen(503-3, 35, "W: %d", workersGas.size());
-	BWAPI::Broodwar->drawTextScreen(435 - 1, 45, "D: %d", nbWorkersCristalWanted);
-	BWAPI::Broodwar->drawTextScreen(503 - 1, 45, "D: %d", nbWorkersGasWanted);
-	if(refineryState == BuildingState::NOT_BUILT) BWAPI::Broodwar->drawTextScreen(503 - 1, 65, "NOT BUILT");
-	else if (refineryState == BuildingState::WAITING_CONSTRUCTION) BWAPI::Broodwar->drawTextScreen(503 - 1, 65, "IN QUEUE");
-	else if (refineryState == BuildingState::CONSTRUCTING) BWAPI::Broodwar->drawTextScreen(503 - 1, 65, "CONSTRUCTING");
-	else if (refineryState == BuildingState::CONSTRUCTED) BWAPI::Broodwar->drawTextScreen(503 - 1, 65, "CONSTRUCTED");
+	int addY = 0;
+	if (base->baseNumber > 0) addY = 100;
+	BWAPI::Broodwar->drawTextScreen(435, addY+15, "A: %d", cristalAim);
+	BWAPI::Broodwar->drawTextScreen(503, addY + 15, "A: %d", gasAim);
+	BWAPI::Broodwar->drawTextScreen(435+1, addY + 25, "N: %d", cristalNeed);
+	BWAPI::Broodwar->drawTextScreen(503+1, addY + 25, "N: %d", gasNeed);
+	BWAPI::Broodwar->drawTextScreen(435-3, addY + 35, "W: %d", workersCristal.size());
+	BWAPI::Broodwar->drawTextScreen(503-3, addY + 35, "W: %d", workersGas.size());
+	BWAPI::Broodwar->drawTextScreen(435 - 1, addY + 45, "D: %d", nbWorkersCristalWanted);
+	BWAPI::Broodwar->drawTextScreen(503 - 1, addY + 45, "D: %d", nbWorkersGasWanted);
+	if(refineryState == BuildingState::NOT_BUILT) BWAPI::Broodwar->drawTextScreen(503 - 1, addY + 65, "NOT BUILT");
+	else if (refineryState == BuildingState::WAITING_CONSTRUCTION) BWAPI::Broodwar->drawTextScreen(503 - 1, addY + 65, "IN QUEUE");
+	else if (refineryState == BuildingState::CONSTRUCTING) BWAPI::Broodwar->drawTextScreen(503 - 1, addY + 65, "CONSTRUCTING");
+	else if (refineryState == BuildingState::CONSTRUCTED) BWAPI::Broodwar->drawTextScreen(503 - 1, addY + 65, "CONSTRUCTED");
 
 
 	BWAPI::Broodwar->drawTextScreen(571, 15, "Tot: %d", workers.size());

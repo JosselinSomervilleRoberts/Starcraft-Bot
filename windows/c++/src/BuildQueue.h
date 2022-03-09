@@ -12,7 +12,7 @@
     class BuildQueue {
     public:
         
-        BuildQueue(GlobalManager* manager);
+        BuildQueue(GlobalManager* manager, int index_base_);
 
         void addTask(std::variant<BWAPI::UnitType, BWAPI::UpgradeType, BWAPI::TechType> toBuild, int priority = 0, BWAPI::TilePosition position = BWAPI::Broodwar->self()->getStartLocation(), bool unique = false);
         void addTask(BWAPI::UnitType toBuild, int priority = 0, bool unique = false);
@@ -37,7 +37,7 @@
     private:
         std::vector<BuildTask*> m_buildQueue;
         GlobalManager* m_manager;
-        
+        int index_base = 0;
     };
 
  // namespace
