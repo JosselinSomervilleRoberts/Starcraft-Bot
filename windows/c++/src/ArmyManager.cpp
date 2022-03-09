@@ -76,7 +76,7 @@ void ArmyManager::computeRepartition() {
 				if ((float)attackSoldiers.size() / (float)soldiers.size() < 0.45 && (soldiers[i]->getType() != BWAPI::UnitTypes::Protoss_Observer || std::rand() <= RAND_MAX / 2)) {
 					attackSoldiers.push_back(soldiers[i]);
 				}
-				else if ((float)patrolSoldiers.size() / (float)soldiers.size() < 0.55 && soldiers[i]->getType() != BWAPI::UnitTypes::Protoss_Observer)
+				else if ((float)patrolSoldiers.size() / (float)soldiers.size() < 0.15 && soldiers[i]->getType() != BWAPI::UnitTypes::Protoss_Observer)
 					patrolSoldiers.push_back(soldiers[i]);
 				else
 					defenseSoldiers.push_back(soldiers[i]);
