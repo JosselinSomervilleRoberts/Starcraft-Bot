@@ -19,14 +19,29 @@ void SquadComposition::setComposition() {
 		squadProportions = { 1.0f };
 	}
 
+	
+	
+	// Army 3
+	else if (level == 4) {
+		Requirement req1 = { Protoss_Photon_Cannon, 6 };
+		Requirement req2 = { Protoss_Forge, 1 };
+		Requirement req3 = { BWAPI::UpgradeTypes::Protoss_Ground_Weapons, 3 };
+		Requirement req4 = { Protoss_Templar_Archives, 1 };
+		Requirement req5 = { BWAPI::UpgradeTypes::Protoss_Ground_Armor, 3 };
+		Requirement req6 = { BWAPI::UpgradeTypes::Protoss_Plasma_Shields, 3 };
+		requirements = { req1, req2, req3, req4 };
+		squadTypes = { Protoss_Observer, Protoss_Dragoon };
+		squadProportions = { 0.1f, 0.75f };
+	}
+
 	// Army 2
 	else {
+		Requirement req1 = { Protoss_Photon_Cannon, 2 };
 		Requirement req2 = { Protoss_Gateway, 2 };
 		Requirement req3 = { BWAPI::UpgradeTypes::Singularity_Charge, 1 };
-		Requirement req4 = { BWAPI::UnitTypes::Protoss_Assimilator, 1 };
-		requirements = { req2, req3, req4 };
-		squadTypes = { Protoss_Zealot, Protoss_Observer, Protoss_Dragoon };
-		squadProportions = { 0.15f, 0.1f, 0.75f };
+		requirements = { req1, req2, req3 };
+		squadTypes = { Protoss_Observer, Protoss_Dragoon };
+		squadProportions = { 0.1f, 0.9f };
 	}
 }
 

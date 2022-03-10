@@ -73,6 +73,12 @@ void WorkerManager::computeRepartition() {
 			base->constructRefinery(nbWorkersGasWanted);
 		nbWorkersGasWanted = 0;
 	}
+	
+	if ((refineryState == BuildingState::CONSTRUCTED) && (BWAPI::Broodwar->self()->supplyUsed() > 30)) {
+		nbWorkersGasWanted = NB_WORKERS_MAX_PER_GAS;
+		nbWorkersCristalWanted = nbWorkersTotal - nbWorkersGasWanted;
+	}
+
 
 	float timeForCristal = timeForCristalPerWorker / nbWorkersCristalWanted;
 	float timeForGas     = timeForGasPerWorker     / nbWorkersGasWanted;
@@ -311,7 +317,18 @@ void WorkerManager::setRefineryState(BuildingState state) {
 }
 
 void WorkerManager::onUnitDestroyed(BWAPI::Unit worker) {
-	std::remove(workers.begin(), workers.end(), worker);
-	std::remove(workersAvailable.begin(), workersAvailable.end(), worker);
-	nbWorkersTotal--;
+	auto indexWorker = std::find(workers.begin(), workers.end(), worker);
+	if (indexWorker != workers.end()) {
+		workers.erase(indexWorker);
+		nbWorkersTotal--;
+	}
+
+	indexWorker = std::find(workersCristal.begin(), workersCristal.end(), worker);
+	if (indexWorker != workersCristal.end()) workersCristal.erase(indexWorker);
+
+	indexWorker = std::find(workersGas.begin(), workersGas.end(), worker);
+	if (indexWorker != workersGas.end()) workersGas.erase(indexWorker);
+
+	indexWorker = std::find(workersAvailable.begin(), workersAvailable.end(), worker);
+	if (indexWorker != workersAvailable.end()) workersAvailable.erase(indexWorker);
 }

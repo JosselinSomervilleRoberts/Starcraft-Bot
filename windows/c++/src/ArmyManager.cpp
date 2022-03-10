@@ -109,7 +109,7 @@ void ArmyManager::update() {
 	computeRepartition();
 	// We check if we need to change the repartition
 	BWAPI::Position enemyPos;  
-	if (mode == Mode::attack && attackSoldiers.size()>=20) {
+	if (mode == Mode::attack && attackSoldiers.size()>=40) {
 		if(BWAPI::Broodwar->self()->getStartLocation() != BWAPI::TilePosition(31, 7))
 			enemyPos = (BWAPI::Position)BWAPI::TilePosition(31, 7); // Conversion of Tile Position to position  BWAPI::Broodwar->enemy()->getStartLocation()
 		else

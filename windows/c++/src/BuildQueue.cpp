@@ -127,7 +127,7 @@ void BuildQueue::addTask(std::variant<BWAPI::UnitType, BWAPI::UpgradeType, BWAPI
     else if (std::holds_alternative<BWAPI::TechType>(object)) {
         BWAPI::TechType techType = std::get<BWAPI::TechType>(object);
         auto building = techType.whatResearches();
-        if (Tools::CountUnitsOfType(building, BWAPI::Broodwar->self()->getUnits()) < 1)
+        if (true)//Tools::CountUnitsOfType(building, BWAPI::Broodwar->self()->getUnits()) < 1)
             addTask(building, priority + ADDITIONAL_PRIORITY_REQUIREMENTS, true);
     }
 
