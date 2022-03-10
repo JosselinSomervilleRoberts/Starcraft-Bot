@@ -57,11 +57,16 @@ void ArmyManager::computeRepartition() {
 	}
 	else if (mode == Mode::attack) {
 		attackSoldiers.clear();
+		int nb_observer = 0;
 		for (auto soldier : soldiers) {
-			if (soldier->getType() == BWAPI::UnitTypes::Protoss_Observer && std::rand() <= RAND_MAX/2 )
+			if (soldier->getType() == BWAPI::UnitTypes::Protoss_Observer && nb_observer < 2) {
 				defenseSoldiers.push_back(soldier);
-			else
+				nb_observer++;
+			}
+			else if (soldier->getType() != BWAPI::UnitTypes::Protoss_Observer || nb_observer < 4) { // We only put 2 observer max per squad
+				nb_observer++;
 				attackSoldiers.push_back(soldier);
+			}
 		}
 	}
 	else if (mode == Mode::normal) {
@@ -103,7 +108,7 @@ void ArmyManager::update() {
 	checkRepartition();
 	computeRepartition();
 	// We check if we need to change the repartition
-	BWAPI::Position enemyPos;
+	BWAPI::Position enemyPos;  
 	if (mode == Mode::attack && attackSoldiers.size()>=20) {
 		if(BWAPI::Broodwar->self()->getStartLocation() != BWAPI::TilePosition(31, 7))
 			enemyPos = (BWAPI::Position)BWAPI::TilePosition(31, 7); // Conversion of Tile Position to position  BWAPI::Broodwar->enemy()->getStartLocation()
@@ -237,15 +242,26 @@ void ArmyManager::noAttack() {
 	}
 }
 void ArmyManager::attack(BWAPI::Unit soldier, BWAPI::Unit threat) {
-	soldier->attack(threat->getPosition());
+	if(soldier->isIdle() && soldier->canAttack())
+		soldier->attack(threat->getPosition());
+	else if(soldier->isIdle() && !soldier->canAttack())
+		soldier->move(threat->getPosition());
 }
 void ArmyManager::attack(std::vector<BWAPI::Unit> soldiers, BWAPI::Unit threat) {
-	for(auto soldier : soldiers)
-		soldier->attack(threat->getPosition());
+	for (auto soldier : soldiers) {
+		if (soldier->isIdle() && soldier->canAttack())
+			soldier->attack(threat->getPosition());
+		else if (soldier->isIdle() && !soldier->canAttack())
+			soldier->move(threat->getPosition());
+	}
 }
 void ArmyManager::attack(std::vector<BWAPI::Unit> soldiers, BWAPI::Position position) {
-	for (auto soldier : soldiers)
-		soldier->attack(position);
+	for (auto soldier : soldiers) {
+		if(soldier->isIdle() && soldier->canAttack())
+			soldier->attack(position);
+		else if (soldier->isIdle() && !soldier->canAttack())
+			soldier->move(position);
+	}
 
 }
 void ArmyManager::onUnitDestroyed(BWAPI::Unit unit) {
