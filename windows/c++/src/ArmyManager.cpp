@@ -109,25 +109,28 @@ void ArmyManager::update() {
 	computeRepartition();
 	// We check if we need to change the repartition
 	BWAPI::Position enemyPos;  
-	if (mode == Mode::attack && attackSoldiers.size()>=40) {
-		if(BWAPI::Broodwar->self()->getStartLocation() != BWAPI::TilePosition(31, 7))
+	if (mode == Mode::attack && attackSoldiers.size() >= 40) {
+		if (BWAPI::Broodwar->self()->getStartLocation() != BWAPI::TilePosition(31, 7))
 			enemyPos = (BWAPI::Position)BWAPI::TilePosition(31, 7); // Conversion of Tile Position to position  BWAPI::Broodwar->enemy()->getStartLocation()
 		else
 			enemyPos = (BWAPI::Position)BWAPI::TilePosition(64, 118);
-		//2nd base 70,13 top,  25,105?
 		attack(attackSoldiers, enemyPos);
 		mode = Mode::normal;
 	}
-	
+	else if(mode == Mode::attack && BWAPI::Broodwar->self()->getStartLocation() == BWAPI::TilePosition(31, 7))
+		attack(soldiers, (BWAPI::Position)(BWAPI::TilePosition(63, 23)));
+	else if (mode == Mode::attack && BWAPI::Broodwar->self()->getStartLocation() != BWAPI::TilePosition(31, 7))
+		attack(soldiers, (BWAPI::Position)(BWAPI::TilePosition(32, 106)));
 	else if (mode == Mode::normal)
 	{
-		if (BWAPI::Broodwar->self()->getStartLocation() != BWAPI::TilePosition(31, 7)){
+		if (BWAPI::Broodwar->self()->getStartLocation() != BWAPI::TilePosition(31, 7)) {
 			enemyPos = (BWAPI::Position)BWAPI::TilePosition(31, 7); // Conversion of Tile Position to position  BWAPI::Broodwar->enemy()->getStartLocation()
 		}
-		else{
+		else {
 			enemyPos = (BWAPI::Position)BWAPI::TilePosition(64, 118);
 		}
 		//ATTACK
+
 		if (attackSoldiers.size() > 15) {
 			attack(attackSoldiers, enemyPos);
 			for (auto soldier : attackSoldiers) {
@@ -138,13 +141,23 @@ void ArmyManager::update() {
 				}
 			}
 		}
+		if (soldiers.size() > 40)
+			mode = Mode::attack;
+		
 
 		//PATROL
-		
-	}
-	if (mode == Mode::defense && defenseSoldiers.size() >= 15 && state != Mode::attack)
-		mode = Mode::normal;
 
+	}
+	else if (mode == Mode::defense && defenseSoldiers.size() >= 20 && state != Mode::attack)
+		mode = Mode::normal;
+	else if (mode == Mode::defense && BWAPI::Broodwar->self()->getStartLocation() == BWAPI::TilePosition(31, 7))
+		attack(soldiers, (BWAPI::Position)(BWAPI::TilePosition(63, 23)));
+	else if(mode == Mode::defense && BWAPI::Broodwar->self()->getStartLocation() != BWAPI::TilePosition(31, 7))
+		attack(soldiers, (BWAPI::Position)(BWAPI::TilePosition(32,106)));
+	if(BWAPI::Broodwar->self()->getStartLocation() == BWAPI::TilePosition(31, 7))
+		attack(defenseSoldiers, (BWAPI::Position)(BWAPI::TilePosition(63, 23)));
+	else
+		attack(defenseSoldiers, (BWAPI::Position)(BWAPI::TilePosition(32, 106)));
 
 	if (state == Mode::attack) {
 		//attack(defenseSoldiers, (BWAPI::Position)BWAPI::Broodwar->self()->getStartLocation());

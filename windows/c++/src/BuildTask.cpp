@@ -116,7 +116,7 @@ void BuildTask::update(bool& enoughMinerals, bool& enoughGas) {
                     m_worker = m_manager->acquireWorker();// m_toBuild.whatBuilds().first);// , Position(m_position));
                     if (m_worker != nullptr) {
                         // Go to next state
-                        if (!m_toBuild.requiresPsi() || Tools::GetUnitOfType(pylonType))
+                        if (!m_toBuild.requiresPsi() || Tools::GetUnitOfType(pylonType)) //If a pylon has already been created
                             m_state = State::moveToPosition;
                     }
                 } break;
@@ -127,12 +127,12 @@ void BuildTask::update(bool& enoughMinerals, bool& enoughGas) {
                 if (!m_allocatedBuildPosition)
                     m_buildPosition = m_exactPosition ? m_position : BWAPI::Broodwar->getBuildLocation(m_toBuild, m_position);
                 
-                if (m_buildPosition.isValid()) {
+                
+                if (m_buildPosition.isValid()){
                     m_allocatedBuildPosition = true;
                     assert(m_worker != nullptr);
                     const BWAPI::Position movePosition =
                         BWAPI::Position(m_buildPosition) + BWAPI::Position(m_toBuild.tileSize()) / 2;
-
                     // DEBUG
                     BWAPI::Broodwar->registerEvent([worker = m_worker, movePosition](BWAPI::Game*) {
                         BWAPI::Broodwar->drawLineMap(worker->getPosition(), movePosition, BWAPI::Colors::Purple);

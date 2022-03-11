@@ -14,6 +14,16 @@ using namespace BWAPI;
 
 BuildQueue::BuildQueue(GlobalManager* manager, int index_base_) : index_base(index_base_), m_manager(manager) {
     std::cout << "Constructor buildQueue" << std::endl;
+    if (BWAPI::Broodwar->self()->getStartLocation() != BWAPI::TilePosition(31, 7)) {
+        pylonPos = { BWAPI::TilePosition(49,109),BWAPI::TilePosition(31, 104) };
+        cannonPos = { BWAPI::TilePosition(47,106), BWAPI::TilePosition(46,108),BWAPI::TilePosition(33, 102) };
+    }
+    else {
+        pylonPos = { BWAPI::TilePosition(47,20), BWAPI::TilePosition(62, 22) };
+        cannonPos = { BWAPI::TilePosition(49,19),  BWAPI::TilePosition(48,17), BWAPI::TilePosition(62, 25) };
+    }
+        
+    
 }
 
 
@@ -29,7 +39,7 @@ void BuildQueue::addTask(BWAPI::TechType toBuild, int priority, bool unique) {
     addTask(toBuild, priority, BWAPI::Broodwar->self()->getStartLocation(), unique);
 }
 
-void BuildQueue::addTask(std::variant<BWAPI::UnitType, BWAPI::UpgradeType, BWAPI::TechType> toBuild, int priority, TilePosition position, bool unique) {
+void BuildQueue::addTask(std::variant<BWAPI::UnitType, BWAPI::UpgradeType, BWAPI::TechType> toBuild, int priority, TilePosition position, bool unique, bool exactPos) {
     //std::cout << "Add Task : toBuild " << toBuild << " - " << m_buildQueue.size() << std::endl;
     BuildTask* buildtask;
 
@@ -45,7 +55,6 @@ void BuildQueue::addTask(std::variant<BWAPI::UnitType, BWAPI::UpgradeType, BWAPI
         }
     }
     //TODO: when we add an unit, we check its requiredTech and requiredUnits and then check if they are already done and finally add them to queue (as unique)
-    
     if (indexTask >= 0) {
         buildtask = m_buildQueue[indexTask];
         if (buildtask->getPriority() >= priority) return;
@@ -60,7 +69,21 @@ void BuildQueue::addTask(std::variant<BWAPI::UnitType, BWAPI::UpgradeType, BWAPI
         /*for (auto unit : std::get<BWAPI::UnitType>(toBuild).requiredUnits()) {
             std::cout << "UNIT REQUIRED : " << unit.first << std::endl;
         }*/
-        buildtask = new BuildTask(m_manager, std::get<BWAPI::UnitType>(toBuild), priority, position);
+        if (std::get<BWAPI::UnitType>(toBuild).getType(std::get<BWAPI::UnitType>(toBuild).getName()) == BWAPI::UnitTypes::Protoss_Pylon && pylonPos.size() > 0) {
+            position = pylonPos[0];
+            exactPos = true;
+            auto index = std::find(pylonPos.begin(), pylonPos.end(), position);
+            if (index != pylonPos.end()) pylonPos.erase(index);
+        }
+        else if (std::get<BWAPI::UnitType>(toBuild).getType(std::get<BWAPI::UnitType>(toBuild).getName()) == BWAPI::UnitTypes::Protoss_Photon_Cannon && cannonPos.size() > 0) {
+           
+            position = cannonPos[0];
+            exactPos = true;
+            auto index = std::find(cannonPos.begin(), cannonPos.end(), cannonPos[0]);
+            if (index != cannonPos.end()) cannonPos.erase(index);
+        }
+
+        buildtask = new BuildTask(m_manager, std::get<BWAPI::UnitType>(toBuild), priority, position, exactPos);
         buildtask->unique = unique;
     }
     else if (std::holds_alternative<BWAPI::UpgradeType>(toBuild)) {

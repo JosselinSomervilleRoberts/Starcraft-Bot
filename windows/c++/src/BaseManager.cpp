@@ -124,8 +124,9 @@ void BaseManager::unitDestroyed(BWAPI::Unit unit) {
             // Here decide what we do
             // TODO : change to have more clever behaviour
             BWAPI::UnitType type = unit->getType();
+            std::variant<BWAPI::UnitType, BWAPI::UpgradeType, BWAPI::TechType> toBuild = type;
             if (type.isBuilding())
-                queue.addTask(type, 100);
+                queue.addTask(toBuild, 100, (BWAPI::TilePosition)unit->getPosition(), false, true);
         }
         else if (unit->getType() == BWAPI::Broodwar->self()->getRace().getWorker()) {
             //queue.addTask(unit->getType(), 50);
