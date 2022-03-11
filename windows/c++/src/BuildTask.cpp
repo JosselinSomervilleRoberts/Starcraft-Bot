@@ -122,6 +122,7 @@ void BuildTask::update(bool& enoughMinerals, bool& enoughGas) {
                 } break;
 
             case State::moveToPosition:
+                if (!m_worker->exists()) m_state = State::acquireWorker; //checks if worker is still alive
                 if (m_toBuild == refineryType) m_manager->setRefineryState(BuildingState::CONSTRUCTING);
 
                 if (!m_allocatedBuildPosition)
@@ -172,6 +173,7 @@ void BuildTask::update(bool& enoughMinerals, bool& enoughGas) {
                 break;
 
             case State::building:
+                if (!m_buildingUnit->isBeingConstructed()) m_state = State::initialize;
                 progress = 100 - (100 * m_buildingUnit->getRemainingBuildTime() / m_toBuild.buildTime());
                 break;
 
