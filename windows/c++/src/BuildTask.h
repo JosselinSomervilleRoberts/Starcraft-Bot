@@ -49,7 +49,7 @@
         std::variant<BWAPI::UnitType, BWAPI::UpgradeType, BWAPI::TechType> getObject();
 
         void setComplete() { m_state = State::finalize; };
-
+        void restart(BWAPI::Unit unit);
         bool unique = false;
         
     private:

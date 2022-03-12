@@ -15,12 +15,12 @@ using namespace BWAPI;
 BuildQueue::BuildQueue(GlobalManager* manager, int index_base_) : index_base(index_base_), m_manager(manager) {
     std::cout << "Constructor buildQueue" << std::endl;
     if (BWAPI::Broodwar->self()->getStartLocation() != BWAPI::TilePosition(31, 7)) {
-        pylonPos = { BWAPI::TilePosition(49,109),BWAPI::TilePosition(31, 104) };
-        cannonPos = { BWAPI::TilePosition(47,106), BWAPI::TilePosition(46,108),BWAPI::TilePosition(33, 102) };
+        pylonPos = { BWAPI::TilePosition(49,109),BWAPI::TilePosition(30, 103) };
+        cannonPos = { BWAPI::TilePosition(47,106), BWAPI::TilePosition(45,107),BWAPI::TilePosition(33, 102), BWAPI::TilePosition(31, 101) };
     }
     else {
-        pylonPos = { BWAPI::TilePosition(47,20), BWAPI::TilePosition(62, 22) };
-        cannonPos = { BWAPI::TilePosition(49,19),  BWAPI::TilePosition(48,17), BWAPI::TilePosition(62, 25) };
+        pylonPos = { BWAPI::TilePosition(47,20), BWAPI::TilePosition(64, 24) };
+        cannonPos = { BWAPI::TilePosition(49,19),  BWAPI::TilePosition(48,17), BWAPI::TilePosition(60, 25), BWAPI::TilePosition(62, 25) };
     }
         
     
@@ -311,4 +311,10 @@ int BuildQueue::getPriorityOfGas() {
         }
     }
     return 0;
+}
+
+void BuildQueue::unitDestroyed(BWAPI::Unit unit) {
+    for (auto task : m_buildQueue) {
+        task->restart(unit);
+    }
 }

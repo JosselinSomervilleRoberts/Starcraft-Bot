@@ -170,10 +170,14 @@ void BuildTask::update(bool& enoughMinerals, bool& enoughGas) {
                     m_manager->releaseWorker(m_worker);
                     if (m_toBuild == refineryType) m_manager->setRefineryState(BuildingState::CONSTRUCTING);
                 }
+                else if(!BWAPI::Broodwar->canBuildHere(m_buildPosition, m_toBuild, m_worker)) // if a building has been constructed during the time the worker arrived
+                    m_state = State::moveToPosition;
+
                 break;
 
             case State::building:
                 if (!m_buildingUnit->isBeingConstructed()) m_state = State::initialize;
+
                 progress = 100 - (100 * m_buildingUnit->getRemainingBuildTime() / m_toBuild.buildTime());
                 break;
 
@@ -351,3 +355,7 @@ std::variant<BWAPI::UnitType, BWAPI::UpgradeType, BWAPI::TechType> BuildTask::ge
     return m_techUpgrade;
 }
 
+void BuildTask::restart(BWAPI::Unit unit) {
+    if (m_toBuild.getID() != BWAPI::UnitTypes::Enum::None && (m_toBuild.isBuilding() && m_buildingUnit != nullptr && m_buildingUnit == unit))
+        m_state = State::initialize;
+}
